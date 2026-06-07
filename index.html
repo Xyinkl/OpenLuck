@@ -4,62 +4,86 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OpenLuck — 区块链公开抽奖</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ══════════════════════════════════════════════════════
+   NES.CSS-INSPIRED DESIGN SYSTEM
+   Border technique: border-image with pixel SVG
+   Button depth: ::after inset box-shadow
+   Font: Press Start 2P (pixel font)
+══════════════════════════════════════════════════════ */
 
+/* ─── SVG pixel border shortcuts ─────────────────────
+   Sharp 5×5: corner pixels transparent → notched look
+   Rounded 8×8: used for containers
+*/
 :root {
-  --black:    #111111;
-  --white:    #ffffff;
-  --bg:       #f0ede4;
-  --card:     #faf9f6;
-  --blue:     #1565d8;
-  --blue-hi:  #3a7ff0;
-  --yellow:   #f5b800;
-  --yellow-hi:#ffd84a;
-  --orange:   #e86827;
-  --orange-hi:#f59050;
-  --red:      #cc2200;
-  --red-hi:   #e04030;
-  --green:    #1a7a35;
-  --cyan:     #0060a0;
-  --dim:      #666666;
-  --bw:       3px;          /* border width */
-  --corner:   7px;          /* notch size */
-  --header-h: 64px;
+  --black:    #212529;
+  --white:    #fff;
+  --blue:     #209cee;
+  --blue-d:   #006bb3;
+  --yellow:   #f7d51d;
+  --yellow-d: #e59400;
+  --red:      #e76e55;
+  --red-d:    #8c2022;
+  --green:    #92cc41;
+  --green-d:  #4aa52e;
+  --shadow:   #adafbc;
+  --dim:      #777;
+  --header-h: 72px;
+
+  /* 5×5 sharp pixel border SVG (dark) */
+  --pb5: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Cpath d='M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z' fill='%23212529'/%3E%3C/svg%3E");
 }
 
-/* ════ BASE ════ */
-html { background: var(--bg); }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { background: var(--white); }
 body {
   height: 100vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 14px;
+  font-family: 'Press Start 2P', 'SimHei', monospace;
+  font-size: 11px;
   color: var(--black);
-  line-height: 1.6;
+  line-height: 1.8;
+  background: var(--white);
 }
 
-/* ════ FULL-WIDTH GLOBAL HEADER ════ */
+/* ─── PIXEL BORDER BASE ──────────────────────────────
+   Apply to .pb elements — inherits NES corner style
+*/
+.pb {
+  border-style: solid;
+  border-width: 4px;
+  border-image-slice: 2;
+  border-image-width: 2;
+  border-image-outset: 2;
+  border-image-source: var(--pb5);
+  border-image-repeat: stretch;
+}
+
+/* ─── GLOBAL HEADER ──────────────────────────────── */
 .global-header {
   height: var(--header-h);
-  width: 100%;           /* spans entire viewport — no max-width */
+  width: 100%;
   flex-shrink: 0;
   background: var(--white);
-  border-bottom: var(--bw) solid var(--black);
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 0 28px;
-  box-shadow: 0 var(--bw) 0 var(--black);
+  border-bottom: 4px solid var(--black);
+  position: relative;
+  z-index: 10;
 }
-.global-header .logo { font-size: 30px; }
-.global-header h1    { font-size: 22px; font-weight: bold; letter-spacing: 1px; }
-.global-header p     { font-size: 12px; color: var(--dim); margin-top: 1px; }
-.global-header nav   { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+.global-header .logo { font-size: 28px; }
+.global-header h1    { font-size: 16px; font-family: 'Press Start 2P', monospace; }
+.global-header p     { font-size: 9px; color: var(--dim); margin-top: 4px; line-height: 1.6; }
+.global-header nav   { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
-/* ════ SNAP SCROLL CONTAINER ════ */
+/* ─── SNAP SCROLL ────────────────────────────────── */
 .snap-wrap {
   flex: 1;
   overflow-y: scroll;
@@ -67,8 +91,9 @@ body {
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
 }
+.snap-wrap::-webkit-scrollbar { display: none; }
 
-/* ════ SCREENS — centered at 1200 px ════ */
+/* ─── SCREEN ─────────────────────────────────────── */
 .screen {
   height: calc(100vh - var(--header-h));
   scroll-snap-align: start;
@@ -77,219 +102,201 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
-  background: var(--card);
-  border-left:  var(--bw) solid var(--black);
-  border-right: var(--bw) solid var(--black);
+  background: var(--white);
+  border-left:  4px solid var(--black);
+  border-right: 4px solid var(--black);
 }
 
-/* ════ PIXEL BOX
-   Outer: 3px solid black border
-   Corners: square "notch" via ::before painting bg-color squares
-   Pixel shadow via ::after
-════ */
+/* ─── PIXEL CONTAINER (pbox) ─────────────────────── */
 .pbox {
-  border: var(--bw) solid var(--black);
   position: relative;
   background: var(--white);
-  padding: 18px;
-  margin-bottom: 16px;
+  padding: 18px 18px 14px;
+  margin: 8px 4px 20px;    /* outset compensation: 4px sides, 8px top for label */
+  border-style: solid;
+  border-width: 4px;
+  border-image-slice: 2;
+  border-image-width: 2;
+  border-image-outset: 2;
+  border-image-source: var(--pb5);
+  border-image-repeat: stretch;
 }
 
-/* Notched pixel corners — bg-color squares overlay each corner */
-.pbox::before {
-  content: '';
-  position: absolute;
-  inset: calc(0px - var(--bw));
-  pointer-events: none;
-  z-index: 2;
-  background:
-    var(--bg) top    left  / var(--corner) var(--corner) no-repeat,
-    var(--bg) top    right / var(--corner) var(--corner) no-repeat,
-    var(--bg) bottom left  / var(--corner) var(--corner) no-repeat,
-    var(--bg) bottom right / var(--corner) var(--corner) no-repeat;
-}
-/* Pixel shadow dot — only on standalone pboxes, not inside info columns */
-.pbox::after {
-  content: '';
-  position: absolute;
-  bottom: calc(0px - var(--bw) * 2 - 2px);
-  right:  calc(0px - var(--bw) * 2 - 2px);
-  width: 8px; height: 8px;
-  background: var(--black);
-  z-index: 1;
-}
-.info-col .pbox::after { display: none; }
-
-/* Section label — floats on top border, above corner mask */
-.pbox-lbl {
-  position: absolute;
-  top: 0; left: 14px;
-  transform: translateY(-60%);
-  background: var(--white);   /* clips the border behind it */
+/* Floating title label — NES.css .with-title pattern */
+.pbox > .title {
+  display: table;
   padding: 0 8px;
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 3px;
+  margin: -2.2rem 0 0.9rem;
+  font-size: 9px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--black);
-  z-index: 3;                 /* above the corner mask (z:2) */
+  background: var(--white);
+  font-family: 'Press Start 2P', monospace;
 }
 
-/* ════ SCROLL BODY ════ */
+/* ─── SCROLL BODY ────────────────────────────────── */
 .scroll-body {
   flex: 1;
   overflow-y: auto;
-  padding: 18px 20px 0;
+  padding: 14px 20px 0;
 }
 .scroll-body::-webkit-scrollbar { width: 6px; }
-.scroll-body::-webkit-scrollbar-track { background: #e0ddd4; }
+.scroll-body::-webkit-scrollbar-track { background: #f0f0f0; }
 .scroll-body::-webkit-scrollbar-thumb { background: var(--black); }
 
-/* ════ BUTTONS — double-color 3D bevel ════
-   Structure: outer black border → colored face → inner white highlight bevel
-   On press: shadow collapses, element shifts
-════ */
+/* ─── BUTTONS — NES.css style ────────────────────
+   Structure:
+   - border-image for pixel corners
+   - ::after inset box-shadow for 3D depth
+   - hover: brighter bg + deeper shadow
+   - active: shadow flips inward
+*/
 .btn {
-  padding: 9px 18px;
-  border: var(--bw) solid var(--black);
-  cursor: pointer;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
-  font-weight: bold;
-  text-decoration: none;
+  border-style: solid;
+  border-width: 4px;
+  border-image-slice: 2;
+  border-image-width: 2;
+  border-image-outset: 2;
+  border-image-source: var(--pb5);
+  border-image-repeat: stretch;
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
+  padding: 8px 14px;
+  margin: 4px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  cursor: pointer;
   background: var(--white);
   color: var(--black);
-  position: relative;
+  text-decoration: none;
   user-select: none;
-  transition: filter .1s, transform .06s;
-  /* 3D bevel: inner highlight + drop shadow */
-  box-shadow:
-    inset 2px  2px 0 rgba(255,255,255,.45),
-    inset -2px -2px 0 rgba(0,0,0,.15),
-    4px 4px 0 var(--black);
+  vertical-align: middle;
+  outline: none;
 }
-.btn:hover  { filter: brightness(1.12); }
-.btn:active {
-  transform: translate(4px, 4px);
-  box-shadow:
-    inset 2px  2px 0 rgba(0,0,0,.15),
-    inset -2px -2px 0 rgba(255,255,255,.2);
+.btn::after {
+  position: absolute;
+  top: -4px; right: -4px; bottom: -4px; left: -4px;
+  content: "";
+  box-shadow: inset -4px -4px var(--shadow);
 }
-.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn:hover { background: #e7e7e7; }
+.btn:hover::after { box-shadow: inset -6px -6px var(--shadow); }
+.btn:active::after { box-shadow: inset 4px 4px var(--shadow); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
 
-/* color variants */
-.btn-blue {
-  background: var(--blue);
-  color: var(--white);
-  box-shadow:
-    inset 2px  2px 0 rgba(255,255,255,.35),
-    inset -2px -2px 0 rgba(0,0,0,.2),
-    4px 4px 0 var(--black);
-}
-.btn-blue:hover   { background: var(--blue-hi); filter: none; }
+/* ─── Button color variants ─────────────────────── */
+.btn-blue { background: var(--blue); color: var(--white); }
+.btn-blue::after { box-shadow: inset -4px -4px var(--blue-d); }
+.btn-blue:hover  { background: #108de0; }
+.btn-blue:hover::after { box-shadow: inset -6px -6px var(--blue-d); }
+.btn-blue:active::after { box-shadow: inset 4px 4px var(--blue-d); }
 
-.btn-yellow {
-  background: var(--yellow);
-  color: var(--black);
-  box-shadow:
-    inset 2px  2px 0 rgba(255,255,255,.5),
-    inset -2px -2px 0 rgba(0,0,0,.15),
-    4px 4px 0 var(--black);
-}
-.btn-yellow:hover { background: var(--yellow-hi); filter: none; }
+.btn-yellow { background: var(--yellow); color: var(--black); }
+.btn-yellow::after { box-shadow: inset -4px -4px var(--yellow-d); }
+.btn-yellow:hover  { background: #f2c409; }
+.btn-yellow:hover::after { box-shadow: inset -6px -6px var(--yellow-d); }
+.btn-yellow:active::after { box-shadow: inset 4px 4px var(--yellow-d); }
 
-.btn-orange {
-  background: var(--orange);
-  color: var(--white);
-  box-shadow:
-    inset 2px  2px 0 rgba(255,255,255,.35),
-    inset -2px -2px 0 rgba(0,0,0,.2),
-    4px 4px 0 var(--black);
-}
-.btn-orange:hover { background: var(--orange-hi); filter: none; }
+.btn-red { background: var(--red); color: var(--white); }
+.btn-red::after { box-shadow: inset -4px -4px var(--red-d); }
+.btn-red:hover  { background: #ce372b; }
+.btn-red:hover::after { box-shadow: inset -6px -6px var(--red-d); }
+.btn-red:active::after { box-shadow: inset 4px 4px var(--red-d); }
 
-.btn-red {
-  background: var(--red);
-  color: var(--white);
-  box-shadow:
-    inset 2px  2px 0 rgba(255,255,255,.3),
-    inset -2px -2px 0 rgba(0,0,0,.25),
-    4px 4px 0 var(--black);
-}
-.btn-red:hover    { background: var(--red-hi); filter: none; }
+.btn-green { background: var(--green); color: var(--black); }
+.btn-green::after { box-shadow: inset -4px -4px var(--green-d); }
+.btn-green:hover  { background: #76c442; }
+.btn-green:hover::after { box-shadow: inset -6px -6px var(--green-d); }
+.btn-green:active::after { box-shadow: inset 4px 4px var(--green-d); }
 
-.btn-gray {
-  background: #e8e5dc;
-  color: var(--black);
-  box-shadow:
-    inset 2px  2px 0 rgba(255,255,255,.6),
-    inset -2px -2px 0 rgba(0,0,0,.1),
-    4px 4px 0 var(--black);
-}
-.btn-gray:hover   { background: #f0ede4; filter: none; }
+/* ─── Button sizes ───────────────────────────────── */
+.btn-sm  { padding: 5px 10px; font-size: 9px; }
+.btn-lg  { padding: 11px 22px; font-size: 12px; }
 
-/* sizes */
-.btn-sm  { padding: 6px 14px; font-size: 12px; }
-.btn-lg  { padding: 13px 30px; font-size: 15px; }
-
-/* nav link buttons (no bevel shadow, flat) */
+/* ─── Nav header buttons ─────────────────────────── */
 .nav-btn {
-  padding: 7px 16px;
-  border: var(--bw) solid var(--black);
-  font-size: 12px; font-weight: bold;
-  text-decoration: none; cursor: pointer;
-  display: inline-block;
-  font-family: 'Courier New', monospace;
-  box-shadow:
-    inset 2px  2px 0 rgba(255,255,255,.3),
-    inset -2px -2px 0 rgba(0,0,0,.15),
-    3px 3px 0 var(--black);
-  transition: filter .1s;
+  border-style: solid;
+  border-width: 4px;
+  border-image-slice: 2;
+  border-image-width: 2;
+  border-image-outset: 2;
+  border-image-source: var(--pb5);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 13px;
+  margin: 4px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
 }
-.nav-btn:hover  { filter: brightness(1.1); }
-.nav-btn:active { transform: translate(3px,3px); box-shadow: none; }
-.nav-btn-blue   { background: var(--blue);   color: var(--white); }
-.nav-btn-gray   { background: #e8e5dc;        color: var(--black); }
+.nav-btn::after {
+  position: absolute;
+  top: -4px; right: -4px; bottom: -4px; left: -4px;
+  content: "";
+  box-shadow: inset -4px -4px var(--shadow);
+}
+.nav-btn-blue { background: var(--blue); color: var(--white); }
+.nav-btn-blue::after { box-shadow: inset -4px -4px var(--blue-d); }
+.nav-btn-blue:hover { background: #108de0; }
+.nav-btn-blue:hover::after { box-shadow: inset -6px -6px var(--blue-d); }
+.nav-btn-gray { background: #e7e7e7; color: var(--black); }
+.nav-btn-gray:hover { background: #d0d0d0; }
 
-/* ════ FORM ════ */
-.fg { margin-bottom: 13px; }
+/* ─── FORM FIELDS ────────────────────────────────── */
+.fg { margin-bottom: 12px; }
 .fg label {
   display: block;
-  font-size: 11px; font-weight: bold;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: var(--dim); margin-bottom: 5px;
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 6px;
+  font-family: 'Press Start 2P', monospace;
 }
 .fg input {
-  width: 100%;
+  width: 260px;  /* default; overridden per-field below */
   background: var(--white);
-  border: var(--bw) dashed var(--black);
   color: var(--black);
-  padding: 11px 14px;            /* taller */
-  font-family: 'Courier New', monospace;
-  font-size: 14px; outline: none;
-  transition: border-color .1s, border-style .1s;
+  padding: 10px 12px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  outline: none;
+  /* NES-style input border */
+  border-style: solid;
+  border-width: 4px;
+  border-image-slice: 2;
+  border-image-width: 2;
+  border-image-outset: 2;
+  border-image-source: var(--pb5);
+  border-image-repeat: stretch;
+  margin: 4px 0;
 }
-.fg input:focus { border-style: solid; border-color: var(--blue); }
-#configBox .fg input { width: 260px; }
+.fg input:focus {
+  border-image-source: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Cpath d='M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z' fill='%23209cee'/%3E%3C/svg%3E");
+}
 #configBox .row2 .fg { flex: 0 0 auto; }
-.row2 { display: flex; gap: 12px; }
-.row2 .fg { flex: 1; }
+#targetBlock { width: 130px; }
+.row2 { display: flex; gap: 12px; flex-wrap: nowrap; }
+.eta  { font-size: 8px; color: var(--dim); margin: -4px 0 10px 4px; min-height: 16px; line-height: 1.8; }
 
-.eta { font-size: 12px; color: var(--dim); margin-top: -8px; margin-bottom: 12px; min-height: 18px; }
-
-/* ════ BLOCK STATUS BAR ════ */
+/* ─── BLOCK STATUS BAR ───────────────────────────── */
 .blockbar {
-  display: flex; align-items: center; gap: 12px;
-  padding: 9px 16px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
   background: var(--white);
-  border: var(--bw) solid var(--black);
-  margin-bottom: 16px;
-  font-size: 13px; font-weight: bold;
-  box-shadow: 3px 3px 0 var(--black);
+  margin: 4px 4px 16px;
+  font-size: 10px; font-weight: bold;
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2;
+  border-image-source: var(--pb5);
 }
 .dot {
   width: 10px; height: 10px;
@@ -301,176 +308,234 @@ body {
 .dot.err { background: var(--red); animation: none; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
 
-/* ════ CONSOLE ════ */
+/* ─── CONSOLE / LOG ──────────────────────────────── */
 .console {
   background: var(--white);
-  border: var(--bw) solid var(--black);
-  padding: 10px 14px;
+  padding: 8px 10px;
   overflow-y: auto;
-  font-size: 12px;
-  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  font-family: 'Press Start 2P', monospace;
+  line-height: 2;
 }
 .console p { margin: 2px 0; }
-.c-info    { color: var(--cyan); }
-.c-success { color: var(--green); }
+.c-info    { color: var(--blue); }
+.c-success { color: var(--green-d); }
 .c-error   { color: var(--red); }
-.c-warn    { color: #9a7010; }
+.c-warn    { color: #b07800; }
 .c-dim     { color: var(--dim); }
 
-/* ════ COUNTDOWN ════ */
-.countdown-wrap { text-align: center; padding: 16px 10px; }
+/* ─── COUNTDOWN ──────────────────────────────────── */
+.countdown-wrap { text-align: center; padding: 14px 10px; }
 .countdown-num {
-  font-size: 58px; color: var(--orange);
-  letter-spacing: 6px; font-weight: bold;
-  font-variant-numeric: tabular-nums;
+  font-size: 44px; color: var(--red);
+  letter-spacing: 4px; font-weight: bold;
+  font-family: 'Press Start 2P', monospace;
   text-shadow: 4px 4px 0 rgba(0,0,0,.08);
 }
-.countdown-sub { font-size: 12px; color: var(--dim); margin-top: 6px; font-weight: bold; }
+.countdown-sub {
+  font-size: 9px; color: var(--dim);
+  margin-top: 8px; font-weight: bold;
+  font-family: 'Press Start 2P', monospace;
+}
 
-/* ════ WINNERS ════ */
-.winners-grid { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 0; }
+/* ─── WINNERS ────────────────────────────────────── */
+.winners-grid { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 0; }
 .winner-chip {
-  background: var(--orange); color: var(--white);
-  padding: 7px 18px;
-  border: var(--bw) solid var(--black);
-  font-size: 16px; font-weight: bold;
-  box-shadow: 4px 4px 0 var(--black);
+  background: var(--red);
+  color: var(--white);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-family: 'Press Start 2P', monospace;
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2;
+  border-image-source: var(--pb5);
+  position: relative;
   animation: pop .3s ease both;
 }
-.winner-chip:hover { filter: brightness(1.1); }
+.winner-chip::after {
+  position: absolute;
+  top: -4px; right: -4px; bottom: -4px; left: -4px;
+  content: "";
+  box-shadow: inset -4px -4px var(--red-d);
+}
+.winner-chip:hover { background: #ce372b; }
 @keyframes pop { 0%{transform:scale(0);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
 
 .hash-val {
-  font-size: 11px; color: var(--cyan);
-  word-break: break-all; line-height: 1.5;
+  font-size: 9px; color: var(--blue);
+  word-break: break-all; line-height: 2;
   border-left: 4px solid var(--black); padding-left: 10px;
+  font-family: 'Press Start 2P', monospace;
 }
-.result-meta { font-size: 12px; color: var(--dim); margin-bottom: 10px; font-weight: bold; }
-.result-meta strong { color: var(--orange); }
-.btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 13px; }
+.result-meta { font-size: 9px; color: var(--dim); margin-bottom: 10px; }
+.result-meta strong { color: var(--red); }
+.btns { display: flex; gap: 0; flex-wrap: wrap; margin-top: 10px; }
 
-/* ════ NAV ARROW ════ */
+/* ─── SCREEN 1 GRID ──────────────────────────────── */
+.s1-grid {
+  flex: 1;
+  display: flex;
+  gap: 0;
+  overflow: hidden;
+}
+.s1-main {
+  flex: 3;
+  overflow-y: auto;
+  padding: 14px 12px 0 20px;
+}
+.s1-aside {
+  flex: 2;
+  overflow-y: auto;
+  padding: 14px 20px 0 8px;
+  border-left: 4px solid var(--black);
+}
+.s1-main::-webkit-scrollbar, .s1-aside::-webkit-scrollbar { width: 5px; }
+.s1-main::-webkit-scrollbar-thumb, .s1-aside::-webkit-scrollbar-thumb { background: var(--black); }
+
+/* ─── NAV ARROW ──────────────────────────────────── */
 .nav-arrow {
   flex-shrink: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 14px;
-  padding: 10px 0 12px;
-  background: var(--card);
+  padding: 6px 0 8px;
+  background: var(--white);
 }
 .arrow-btn {
   display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 2px;
-  width: 56px; height: 56px;
-  border: var(--bw) solid var(--black);
+  flex-direction: column; gap: 1px;
+  width: 28px; height: 28px;
+  cursor: pointer;
+  font-size: 10px;
+  font-family: 'Press Start 2P', monospace;
   background: var(--yellow);
-  cursor: pointer; font-size: 20px; font-weight: bold;
-  box-shadow:
-    inset 2px  2px 0 rgba(255,255,255,.4),
-    inset -2px -2px 0 rgba(0,0,0,.1),
-    4px 4px 0 var(--black);
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2;
+  border-image-source: var(--pb5);
+  position: relative;
   user-select: none;
-  transition: filter .1s;
 }
-.arrow-btn:hover  { filter: brightness(1.1); }
-.arrow-btn:active { box-shadow: none; transform: translate(4px,4px); }
-.arrow-label {
-  font-size: 9px; font-weight: bold; letter-spacing: 1px;
-  font-family: 'Courier New', monospace;
+.arrow-btn::after {
+  position: absolute;
+  top: -4px; right: -4px; bottom: -4px; left: -4px;
+  content: "";
+  box-shadow: inset -4px -4px var(--yellow-d);
 }
+.arrow-btn:hover { background: #f2c409; }
+.arrow-btn:hover::after { box-shadow: inset -6px -6px var(--yellow-d); }
+.arrow-btn:active::after { box-shadow: inset 4px 4px var(--yellow-d); }
+.arrow-label { display: none; }
 
-/* ════ INFO PANEL ════ */
-.sec {
-  font-size: 12px; font-weight: bold;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: var(--black); margin-bottom: 8px; margin-top: 4px;
+/* ─── INFO PANELS ────────────────────────────────── */
+.info-grid {
+  display: flex; gap: 0;
+  flex: 1; overflow: hidden;
+  padding: 14px 0 0;
 }
-.sec.toggle {
-  cursor: pointer; user-select: none;
-  display: flex; justify-content: space-between; align-items: center;
-  border-bottom: 2px solid var(--black); padding-bottom: 5px;
+.info-col {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 20px 0;
+  border-right: 4px solid var(--black);
 }
-.sec.toggle:hover { color: var(--blue); border-color: var(--blue); }
-.toggle-icon { font-size: 11px; color: var(--dim); }
-
-hr { border: none; border-top: 2px solid #d8d4c8; margin: 12px 0; }
-.info { font-size: 13px; color: var(--dim); line-height: 1.8; }
-.info strong { color: var(--orange); font-weight: bold; }
-
-.steps { margin: 8px 0; }
-.step { display: flex; gap: 10px; margin-bottom: 9px; font-size: 13px; }
-.step-n {
-  background: var(--black); color: var(--white);
-  min-width: 24px; height: 24px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: bold;
-  flex-shrink: 0; margin-top: 2px;
-}
-.step-t { color: var(--dim); line-height: 1.7; }
-.step-t em { color: var(--orange); font-style: normal; font-weight: bold; }
-
-.rpc-item { margin-bottom: 10px; font-size: 13px; }
-.rpc-name { color: var(--black); font-weight: bold; }
-.rpc-url  { color: var(--blue); font-size: 12px; display: block; padding-left: 14px; margin-top: 2px; }
-.rpc-note { color: var(--dim); font-size: 12px; display: block; padding-left: 14px; }
-
-.codeblock {
-  background: #f0ede4;
-  border: var(--bw) solid var(--black);
-  padding: 13px; font-size: 12px; color: #204070;
-  margin: 10px 0; overflow-x: auto;
-  white-space: pre; line-height: 1.6;
-}
-
-.py-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.py-link {
-  padding: 6px 13px;
-  border: var(--bw) solid var(--black);
-  font-size: 12px; font-weight: bold;
-  text-decoration: none;
-  font-family: 'Courier New', monospace;
-  box-shadow: 3px 3px 0 var(--black);
-  transition: filter .1s;
-}
-.py-link:hover  { filter: brightness(1.1); }
-.py-link:active { box-shadow: none; transform: translate(3px,3px); }
-.py-colab  { background: #f4a800; color: #000; }
-.py-replit { background: #5b2d8e; color: #fff; }
-.py-online { background: var(--blue); color: #fff; }
-.py-jup    { background: var(--orange); color: #fff; }
-
-/* ════ INFO GRID ════ */
-.info-grid { display: flex; gap: 18px; flex: 1; overflow: hidden; padding: 14px 20px 12px; }
-.info-col { flex: 1; overflow-y: auto; padding-right: 4px; padding-top: 14px; }
+.info-col:last-child { border-right: none; }
 .info-col::-webkit-scrollbar { width: 5px; }
-.info-col::-webkit-scrollbar-track { background: #e0ddd4; }
 .info-col::-webkit-scrollbar-thumb { background: var(--black); }
 
-/* ════ FOOTER ════ */
+.info-text {
+  font-size: 10px; color: var(--dim);
+  line-height: 2.2;
+  font-family: 'Press Start 2P', monospace;
+}
+.info-text strong { color: var(--red); }
+
+.step { display: flex; gap: 10px; margin-bottom: 10px; font-size: 10px; }
+.step-n {
+  background: var(--black); color: var(--white);
+  min-width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-family: 'Press Start 2P', monospace;
+  flex-shrink: 0; margin-top: 2px;
+}
+.step-t { color: var(--dim); line-height: 2.2; font-size: 9px; }
+.step-t em { color: var(--red); font-style: normal; }
+
+.toggle-hdr {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 9px; cursor: pointer; padding-bottom: 6px;
+  border-bottom: 2px solid var(--black); margin-bottom: 8px;
+  user-select: none;
+  font-family: 'Press Start 2P', monospace;
+}
+.toggle-hdr:hover { color: var(--blue); border-color: var(--blue); }
+
+.rpc-item { margin-bottom: 10px; }
+.rpc-name { font-size: 9px; font-weight: bold; }
+.rpc-url  { font-size: 8px; color: var(--blue); display: block; padding-left: 12px; margin-top: 2px; }
+.rpc-note { font-size: 8px; color: var(--dim); display: block; padding-left: 12px; }
+
+.codeblock {
+  background: #f8f8f6;
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2;
+  border-image-source: var(--pb5);
+  padding: 14px 14px 14px 16px;
+  font-size: 10px; color: #204070;
+  margin: 10px 4px;
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.8;
+  font-family: 'Courier New', monospace;
+}
+
+.py-links { display: flex; flex-wrap: wrap; gap: 0; margin: 8px 0 4px; }
+
+/* ─── SECTION DIVIDER TITLE ──────────────────────── */
+.sec-title {
+  font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: 'Press Start 2P', monospace;
+  margin: 12px 0 8px;
+  color: var(--black);
+}
+
+/* ─── FOOTER ─────────────────────────────────────── */
 .site-footer {
   padding: 8px 20px;
-  border-top: var(--bw) solid var(--black);
-  font-size: 11px; color: var(--dim);
+  border-top: 4px solid var(--black);
+  font-size: 8px; color: var(--dim);
   flex-shrink: 0;
-  display: flex; gap: 18px;
+  display: flex; gap: 18px; align-items: center;
   background: var(--white);
-  font-weight: bold;
+  font-family: 'Press Start 2P', monospace;
 }
 .site-footer a { color: var(--dim); text-decoration: none; }
 .site-footer a:hover { color: var(--black); }
+
+/* ─── WHY-BOX (screen 1 right) ───────────────────── */
+.why-item { display: flex; gap: 8px; margin-bottom: 10px; }
+.why-bullet {
+  flex-shrink: 0; margin-top: 3px;
+  width: 8px; height: 8px; background: var(--black);
+}
+.why-text { font-size: 9px; color: var(--dim); line-height: 2.2; }
+.why-text em { color: var(--red); font-style: normal; }
 </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════════════
-     GLOBAL HEADER — full page width
-════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════════
+     GLOBAL HEADER — full viewport width
+══════════════════════════════════════════════════ -->
 <header class="global-header">
   <span class="logo">🎲</span>
   <div>
     <h1>OpenLuck</h1>
-    <p>基于以太坊区块哈希的公开透明抽奖 · 完全可独立验证</p>
+    <p>基于以太坊区块哈希 · 公开透明抽奖 · 完全可独立验证</p>
   </div>
   <nav>
     <a href="history.html" class="nav-btn nav-btn-blue">📋 历史记录</a>
@@ -478,155 +543,198 @@ hr { border: none; border-top: 2px solid #d8d4c8; margin: 12px 0; }
   </nav>
 </header>
 
-<!-- ════════════════════════════════════════
-     SNAP SCROLL CONTAINER
-════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════════
+     SNAP SCROLL WRAP
+══════════════════════════════════════════════════ -->
 <div class="snap-wrap">
 
-  <!-- ══ SCREEN 1 — LOTTERY TOOL ══ -->
+  <!-- ═══ SCREEN 1 — LOTTERY TOOL ═══ -->
   <section class="screen" id="screen-tool">
 
-    <div class="scroll-body">
+    <!-- Block status bar -->
+    <div class="blockbar">
+      <span class="dot" id="connDot"></span>
+      <span style="color:var(--dim);font-size:9px">当前区块：</span>
+      <span id="currentBlock" style="color:var(--red)">连接中…</span>
+      <span style="color:var(--dim);margin-left:auto;font-size:8px">每 ~15 秒自动刷新</span>
+    </div>
 
-      <!-- Block status bar -->
-      <div class="blockbar">
-        <span class="dot" id="connDot"></span>
-        <span style="color:var(--dim)">当前区块：</span>
-        <span id="currentBlock" style="color:var(--orange)">连接中…</span>
-        <span style="color:var(--dim);margin-left:auto;font-size:11px;font-weight:normal">每 ~15 秒自动刷新</span>
-      </div>
+    <!-- Two-column content -->
+    <div class="s1-grid">
 
-      <!-- Config -->
-      <div class="pbox" id="configBox">
-        <span class="pbox-lbl">配置抽奖</span>
-        <div style="display:flex;gap:12px;align-items:flex-end;">
-          <div class="fg" style="flex:0 0 auto">
-            <label>目标区块号（须大于当前区块）</label>
-            <input type="number" id="targetBlock" placeholder="例：21000000" min="1" oninput="onBlockInput()">
+      <!-- LEFT: config + state panels -->
+      <div class="s1-main">
+
+        <!-- Config box -->
+        <div class="pbox" id="configBox">
+          <p class="title">配置抽奖</p>
+
+          <div style="display:flex;gap:0;align-items:flex-end;flex-wrap:wrap;">
+            <div class="fg" style="flex:0 0 auto;">
+              <label>目标区块号（须大于当前区块）</label>
+              <input type="number" id="targetBlock" placeholder="例：21000000" min="1" oninput="onBlockInput()">
+            </div>
+            <div style="margin-bottom:12px;display:flex;flex-wrap:wrap;">
+              <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(20)">+20</button>
+              <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(50)">+50</button>
+              <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(100)">+100</button>
+              <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(500)">+500</button>
+            </div>
           </div>
-          <div style="margin-bottom:13px;display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(20)">+20</button>
-            <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(50)">+50</button>
-            <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(100)">+100</button>
-            <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(500)">+500</button>
+          <div class="eta" id="blockEta"></div>
+
+          <div class="row2">
+            <div class="fg">
+              <label>总参与人数</label>
+              <input type="number" id="totalP" placeholder="例：100" min="2">
+            </div>
+            <div class="fg">
+              <label>中奖人数</label>
+              <input type="number" id="winnerN" placeholder="例：3" min="1">
+            </div>
           </div>
-        </div>
-        <div class="eta" id="blockEta"></div>
-        <div class="row2">
+
           <div class="fg">
-            <label>总参与人数</label>
-            <input type="number" id="totalP" placeholder="例：100" min="2">
+            <label>抽奖标题（可选）</label>
+            <input type="text" id="lotteryTitle" placeholder="例：2025 年会抽奖">
           </div>
-          <div class="fg">
-            <label>中奖人数</label>
-            <input type="number" id="winnerN" placeholder="例：3" min="1">
+
+          <div class="btns">
+            <button class="btn btn-red btn-lg" id="startBtn" onclick="startLottery()">🎲 开始抽奖</button>
+            <button class="btn btn-sm" onclick="resetAll()">重置</button>
+          </div>
+        </div><!-- /configBox -->
+
+        <!-- Countdown -->
+        <div class="pbox" id="countdownBox" style="display:none">
+          <p class="title">等待区块</p>
+          <div class="countdown-wrap">
+            <div class="countdown-num" id="cdNum">--:--:--</div>
+            <div class="countdown-sub">目标区块 <strong id="cdBlock" style="color:var(--red)">—</strong></div>
+            <div class="countdown-sub" style="margin-top:6px">剩余约 <strong id="cdBlocksLeft" style="color:var(--red)">—</strong> 个区块</div>
+          </div>
+          <div class="console" id="waitLog" style="height:80px;border-top:2px solid #eee;margin-top:8px;"></div>
+        </div>
+
+        <!-- Results -->
+        <div class="pbox" id="resultsBox" style="display:none">
+          <p class="title">抽奖结果</p>
+          <div class="result-meta">
+            区块 <strong id="rBlock">—</strong> &nbsp;·&nbsp;
+            总人数 <strong id="rTotal">—</strong> &nbsp;·&nbsp;
+            中奖 <strong id="rCount">—</strong> 人
+          </div>
+          <div style="font-size:8px;color:var(--dim);margin-bottom:4px;">区块哈希：</div>
+          <div class="hash-val" id="rHash">—</div>
+          <div class="sec-title" style="margin-top:14px">🏆 中奖号码</div>
+          <div class="winners-grid" id="winnersGrid"></div>
+          <div class="btns" style="margin-top:10px">
+            <button class="btn btn-sm" onclick="copyResult()">📋 复制结果</button>
+            <button class="btn btn-sm" onclick="resetAll()">再抽一次</button>
           </div>
         </div>
-        <div class="fg">
-          <label>抽奖标题（可选）</label>
-          <input type="text" id="lotteryTitle" placeholder="例：2025 年会抽奖">
-        </div>
-        <div class="btns">
-          <button class="btn btn-orange btn-lg" id="startBtn" onclick="startLottery()">🎲 开始抽奖</button>
-          <button class="btn btn-gray btn-sm" onclick="resetAll()">重置</button>
-        </div>
-      </div>
 
-      <!-- Countdown -->
-      <div class="pbox" id="countdownBox" style="display:none">
-        <span class="pbox-lbl">等待区块</span>
-        <div class="countdown-wrap">
-          <div class="countdown-num" id="cdNum">--:--:--</div>
-          <div class="countdown-sub">目标区块 <strong id="cdBlock" style="color:var(--orange)">—</strong></div>
-          <div class="countdown-sub" style="margin-top:4px">剩余约 <strong id="cdBlocksLeft" style="color:var(--orange)">—</strong> 个区块</div>
+        <!-- Log -->
+        <div class="pbox">
+          <p class="title">Console</p>
+          <div id="mainLog" style="height:100px;overflow-y:auto;font-size:9px;font-family:'Press Start 2P',monospace;line-height:2;padding:4px 0;">
+            <p class="c-dim">// 操作日志</p>
+          </div>
         </div>
-        <div class="console" id="waitLog" style="height:90px"></div>
-      </div>
 
-      <!-- Results -->
-      <div class="pbox" id="resultsBox" style="display:none">
-        <span class="pbox-lbl">抽奖结果</span>
-        <div class="result-meta">
-          区块 <strong id="rBlock">—</strong>&nbsp;·&nbsp;
-          总人数 <strong id="rTotal">—</strong>&nbsp;·&nbsp;
-          中奖 <strong id="rCount">—</strong> 人
+      </div><!-- /s1-main -->
+
+      <!-- RIGHT: why block hash sidebar -->
+      <div class="s1-aside">
+        <div class="pbox">
+          <p class="title">为什么用区块哈希</p>
+          <p class="info-text" style="margin-bottom:12px;">
+            以太坊每 <em>~12 秒</em> 出一个新区块。哈希值由全网数千个验证者共同决定，<em>任何人——包括本站——都无法提前预测或篡改</em>。
+          </p>
+          <div class="why-item">
+            <div class="why-bullet"></div>
+            <div class="why-text">哈希值 <em>在区块出现前完全未知</em></div>
+          </div>
+          <div class="why-item">
+            <div class="why-bullet"></div>
+            <div class="why-text">一旦确认 <em>永远不变</em>，任何人可在 Etherscan 查询</div>
+          </div>
+          <div class="why-item">
+            <div class="why-bullet"></div>
+            <div class="why-text"><em>本站不托管随机数</em>，你可用 Python 独立还原结果</div>
+          </div>
+          <div class="why-item">
+            <div class="why-bullet"></div>
+            <div class="why-text">算法：<em>SHA256(哈希 + 轮次)</em> 迭代取模，公开可复现</div>
+          </div>
         </div>
-        <div style="font-size:11px;color:var(--dim);margin-bottom:5px;font-weight:bold;">区块哈希：</div>
-        <div class="hash-val" id="rHash">—</div>
-        <div class="sec" style="margin-top:14px">🏆 中奖号码</div>
-        <div class="winners-grid" id="winnersGrid"></div>
-        <div class="btns" style="margin-top:12px">
-          <button class="btn btn-gray btn-sm" onclick="copyResult()">📋 复制结果</button>
-          <button class="btn btn-gray btn-sm" onclick="resetAll()">再抽一次</button>
+
+        <div class="pbox">
+          <p class="title">抽奖流程</p>
+          <div class="step"><span class="step-n">1</span><div class="step-t">确定人数 <em>N</em>，每人分配编号 <em>1…N</em></div></div>
+          <div class="step"><span class="step-n">2</span><div class="step-t">选定未来区块号 <em>B</em>，公告参与者</div></div>
+          <div class="step"><span class="step-n">3</span><div class="step-t">等待区块 <em>B</em> 被以太坊网络确认</div></div>
+          <div class="step"><span class="step-n">4</span><div class="step-t">取区块 <em>B</em> 的哈希 <em>H</em>（64位十六进制）</div></div>
+          <div class="step"><span class="step-n">5</span><div class="step-t">迭代 <em>SHA256(H+轮次)</em>，取模得出中奖号码</div></div>
+          <div class="step"><span class="step-n">6</span><div class="step-t">任何人可独立还原，<em>无需信任本站</em></div></div>
         </div>
-      </div>
 
-      <!-- Log -->
-      <div class="pbox">
-        <span class="pbox-lbl">日志</span>
-        <div id="mainLog" style="height:110px;overflow-y:auto;font-size:12px;font-family:'Courier New',monospace;padding:4px 0;">
-          <p class="c-dim">// 操作日志</p>
+        <div class="pbox">
+          <p class="title">Etherscan 验证</p>
+          <p class="info-text" style="margin-bottom:10px;">
+            抽奖完成后，在 Etherscan 搜索目标区块号，即可查阅区块哈希，与本站结果交叉验证。
+          </p>
+          <a href="https://etherscan.io" target="_blank" class="btn btn-blue btn-sm">🔍 打开 Etherscan</a>
         </div>
-      </div>
+      </div><!-- /s1-aside -->
 
-    </div><!-- /scroll-body -->
+    </div><!-- /s1-grid -->
 
-    <!-- Down arrow — no top border line -->
+    <!-- Down nav arrow -->
     <div class="nav-arrow">
       <div class="arrow-btn"
            onclick="document.getElementById('screen-info').scrollIntoView({behavior:'smooth'})">
         <span>▼</span>
-        <span class="arrow-label">原理说明</span>
+        <span class="arrow-label">原理</span>
       </div>
     </div>
 
   </section><!-- /screen-tool -->
 
 
-  <!-- ══ SCREEN 2 — INFO ══ -->
+  <!-- ═══ SCREEN 2 — INFO ═══ -->
   <section class="screen" id="screen-info">
 
-    <!-- Back arrow bar -->
-    <div class="nav-arrow" style="border-bottom: var(--bw) solid var(--black); padding: 8px 0;">
+    <!-- Back nav -->
+    <div class="nav-arrow" style="border-bottom:4px solid var(--black);padding:8px 0;">
       <div class="arrow-btn"
-           style="background:var(--blue);
-                  box-shadow: inset 2px 2px 0 rgba(255,255,255,.3), inset -2px -2px 0 rgba(0,0,0,.2), 4px 4px 0 var(--black);"
+           style="background:var(--blue);"
            onclick="document.getElementById('screen-tool').scrollIntoView({behavior:'smooth'})">
         <span style="color:#fff">▲</span>
-        <span class="arrow-label" style="color:#fff">返回抽奖</span>
+        <span class="arrow-label" style="color:#fff">返回</span>
       </div>
     </div>
 
-    <!-- Two-column info -->
+    <!-- Two-column info grid -->
     <div class="info-grid">
 
+      <!-- LEFT: algorithm + ETH nodes -->
       <div class="info-col">
         <div class="pbox">
-          <span class="pbox-lbl">为什么用区块哈希</span>
-          <p class="info">以太坊每 <strong>~12 秒</strong>产生一个新区块。哈希值由全网数千验证者共同决定，
-            <strong>任何人——包括本站——都无法提前预测或篡改</strong>。
-            选取未来区块哈希作为随机种子，结果完全公开、可独立验证。</p>
+          <p class="title">抽奖算法</p>
+          <div class="step"><span class="step-n">1</span><div class="step-t">seed = SHA256( blockHash + round )</div></div>
+          <div class="step"><span class="step-n">2</span><div class="step-t">num = BigInt(seed[:16], 16) % N + 1</div></div>
+          <div class="step"><span class="step-n">3</span><div class="step-t">跳过已中奖号码，round++ 继续</div></div>
+          <div class="step"><span class="step-n">4</span><div class="step-t">重复直至满足中奖人数</div></div>
         </div>
 
         <div class="pbox">
-          <span class="pbox-lbl">抽奖算法</span>
-          <div class="steps">
-            <div class="step"><span class="step-n">1</span><div class="step-t">确定参与人数 <em>N</em>，每人分配编号 <em>1…N</em></div></div>
-            <div class="step"><span class="step-n">2</span><div class="step-t">选定未来区块号 <em>B</em>，公告所有参与者</div></div>
-            <div class="step"><span class="step-n">3</span><div class="step-t">等待区块 <em>B</em> 被以太坊网络确认</div></div>
-            <div class="step"><span class="step-n">4</span><div class="step-t">从链上取区块 <em>B</em> 的哈希 <em>H</em>（64位十六进制）</div></div>
-            <div class="step"><span class="step-n">5</span><div class="step-t">迭代：<em>seed = SHA256(H + round)</em>，取 <em>seed mod N + 1</em>，跳过重复</div></div>
-            <div class="step"><span class="step-n">6</span><div class="step-t">任何人可用相同算法独立还原，无需信任本站</div></div>
+          <p class="title">ETH 节点</p>
+          <div class="toggle-hdr" onclick="toggleRpc()">
+            <span>📡 公共 RPC 节点（免费）</span>
+            <span id="rpcToggleIcon" style="font-size:8px">▼ 收起</span>
           </div>
-        </div>
-
-        <div class="pbox">
-          <span class="pbox-lbl">ETH 节点</span>
-          <div class="sec toggle" onclick="toggleRpc()">
-            <span>📡 公共 RPC 节点（免费无需注册）</span>
-            <span class="toggle-icon" id="rpcToggleIcon">▼ 收起</span>
-          </div>
-          <div id="rpcSection" style="margin-top:10px">
+          <div id="rpcSection">
             <div class="rpc-item">
               <span class="rpc-name">▸ Cloudflare ETH</span>
               <code class="rpc-url">https://cloudflare-eth.com</code>
@@ -644,27 +752,23 @@ hr { border: none; border-top: 2px solid #d8d4c8; margin: 12px 0; }
               <span class="rpc-name">▸ Ankr</span>
               <code class="rpc-url">https://rpc.ankr.com/eth</code>
             </div>
-            <div class="rpc-item">
-              <span class="rpc-name">▸ Etherscan</span>
-              <span class="rpc-note"><a href="https://etherscan.io" target="_blank" style="color:var(--blue)">etherscan.io</a> 搜索区块号可查阅哈希</span>
-            </div>
           </div>
         </div>
-      </div>
+      </div><!-- /info-col left -->
 
+      <!-- RIGHT: Python verification -->
       <div class="info-col">
         <div class="pbox">
-          <span class="pbox-lbl">Python 独立验证</span>
-          <p class="info" style="margin-bottom:10px;">不信任本站？粘贴以下代码到任意 Python 环境自行还原结果：</p>
+          <p class="title">Python 独立验证</p>
+          <p class="info-text" style="margin-bottom:10px;">粘贴以下代码到任意 Python 环境，自行还原中奖结果：</p>
           <div class="py-links">
-            <a href="https://colab.research.google.com" target="_blank" class="py-link py-colab">Google Colab</a>
-            <a href="https://replit.com/languages/python3" target="_blank" class="py-link py-replit">Replit</a>
-            <a href="https://www.online-python.com" target="_blank" class="py-link py-online">OnlinePython</a>
+            <a href="https://colab.research.google.com" target="_blank" class="btn btn-yellow btn-sm">Google Colab</a>
+            <a href="https://replit.com/languages/python3" target="_blank" class="btn btn-blue btn-sm">Replit</a>
+            <a href="https://www.online-python.com" target="_blank" class="btn btn-sm">OnlinePython</a>
           </div>
-          <div style="position:relative;margin-top:10px;">
-            <button class="btn btn-gray btn-sm" id="copyCodeBtn"
-                    style="position:absolute;top:7px;right:7px;z-index:4;font-size:11px;padding:4px 11px;
-                           box-shadow:inset 2px 2px 0 rgba(255,255,255,.6),inset -2px -2px 0 rgba(0,0,0,.1),3px 3px 0 var(--black);"
+          <div style="position:relative;margin-top:8px;">
+            <button class="btn btn-sm" id="copyCodeBtn"
+                    style="position:absolute;top:8px;right:8px;z-index:4;font-size:8px;"
                     onclick="copyCode()">📋 复制</button>
             <div class="codeblock" id="pyCodeblock"># ── 验证中奖结果 ──
 import hashlib, requests
@@ -695,7 +799,7 @@ print("区块哈希:", block_hash)
 print("中奖号码:", sorted(winners))</div>
           </div>
         </div>
-      </div>
+      </div><!-- /info-col right -->
 
     </div><!-- /info-grid -->
 
@@ -774,26 +878,29 @@ function onBlockInput() {
   const span = document.getElementById('codeBlockNum');
   if (span) span.textContent = v || '21000000';
 }
+
 function updateEta() {
   const etaEl  = document.getElementById('blockEta');
   const target = parseInt(document.getElementById('targetBlock').value);
   if (!currentBlock || !target) { etaEl.textContent = ''; return; }
   if (target <= currentBlock) {
     etaEl.style.color = 'var(--red)';
-    etaEl.textContent = '⚠ 该区块已过去，请选更大的区块号'; return;
+    etaEl.textContent = '⚠ 该区块已过去'; return;
   }
   etaEl.style.color = 'var(--dim)';
   const secs = (target - currentBlock) * 12;
-  etaEl.textContent = `⏱ 约 ${fmtDur(secs)} 后到达（预计 ${new Date(Date.now()+secs*1000).toLocaleString('zh-CN')}）`;
+  etaEl.textContent = `约 ${fmtDur(secs)} 后到达`;
 }
+
 function fmtDur(s) {
   const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=s%60;
-  return h>0?`${h}小时${m}分`:m>0?`${m}分${ss}秒`:`${ss}秒`;
+  return h>0?`${h}时${m}分`:m>0?`${m}分${ss}秒`:`${ss}秒`;
 }
+
 function setQuickBlock(d) {
-  if (!currentBlock) { alert('请等待区块加载'); return; }
+  if (!currentBlock) { return log('❌ 区块未加载', 'c-error'); }
   document.getElementById('targetBlock').value = currentBlock + d;
-  updateEta();
+  onBlockInput();
 }
 
 function toggleRpc() {
@@ -811,7 +918,7 @@ function startLottery() {
   const title  = document.getElementById('lotteryTitle').value.trim() || '未命名抽奖';
 
   if (!currentBlock)                         return log('❌ 当前区块未加载', 'c-error');
-  if (!target || target <= currentBlock)     return log(`❌ 目标区块须大于当前 #${currentBlock}`, 'c-error');
+  if (!target || target <= currentBlock)     return log(`❌ 目标区块须大于 #${currentBlock}`, 'c-error');
   if (!total || total < 2)                   return log('❌ 总人数至少 2 人', 'c-error');
   if (!count || count < 1 || count >= total) return log(`❌ 中奖人数须在 1~${total-1}`, 'c-error');
 
@@ -850,7 +957,7 @@ function startPolling() {
       document.getElementById('currentBlock').textContent = '#' + n.toLocaleString();
       document.getElementById('connDot').className = 'dot';
       const left = lotteryState.target - n;
-      if (left > 0) log(`⏳ #${n}，还剩 ${left} 块…`, 'c-dim', 'waitLog');
+      if (left > 0) log(`⏳ #${n}，还剩 ${left} 块`, 'c-dim', 'waitLog');
       else { clearInterval(pollTimer); await executeDrawing(); }
     } catch (e) { log(`⚠ ${e.message}`, 'c-warn', 'waitLog'); }
   }, 13000);
@@ -872,6 +979,7 @@ async function executeDrawing() {
     lotteryState.winners = winners;
     lotteryState.completedAt = new Date().toISOString();
     showResults();
+    saveRecord();
   } catch (e) {
     log(`❌ ${e.message}`, 'c-error', 'waitLog');
     lotteryState.done = false;
@@ -907,7 +1015,6 @@ function showResults() {
     grid.appendChild(c);
   }, i * 180));
   log(`🎉 完成！中奖：${winners.join(', ')}`, 'c-success');
-  saveRecord();   // auto-save silently
 }
 
 async function saveRecord() {
@@ -925,7 +1032,6 @@ async function saveRecord() {
     });
     if (r.ok) { log('💾 已保存到服务器', 'c-success'); saveLocal(payload); return; }
   } catch (_) {}
-  log('⚠ 服务器不可用，已存本地', 'c-warn');
   saveLocal(payload);
 }
 function saveLocal(payload) {
@@ -949,8 +1055,8 @@ function copyResult() {
   if (!lotteryState?.winners) return;
   const { title, target, hash, total, count, winners, completedAt } = lotteryState;
   const text = [
-    '【OpenLuck 抽奖结果】',`标题：${title}`,`区块：#${target}`,`哈希：${hash}`,
-    `总人数：${total}  中奖 ${count} 人`,`中奖号码：${winners.join(', ')}`,
+    '【OpenLuck 抽奖结果】', `标题：${title}`, `区块：#${target}`, `哈希：${hash}`,
+    `总人数：${total}  中奖 ${count} 人`, `中奖号码：${winners.join(', ')}`,
     `时间：${new Date(completedAt).toLocaleString('zh-CN')}`,
     `验证：https://github.com/Xyinkl/OpenLuck`,
   ].join('\n');
@@ -974,7 +1080,7 @@ function resetAll() {
   log('🎲 OpenLuck 启动，连接以太坊…');
   await refreshBlock();
   if (currentBlock) log(`✅ 已连接，当前 #${currentBlock.toLocaleString()}`, 'c-success');
-  else log('⚠ 连接失败，15 秒后重试…', 'c-warn');
+  else log('⚠ 连接失败，15 秒后重试', 'c-warn');
   setInterval(refreshBlock, 15000);
 })();
 </script>
