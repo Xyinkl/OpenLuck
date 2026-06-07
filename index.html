@@ -6,20 +6,22 @@
 <title>OpenLuck — 区块链公开抽奖</title>
 <style>
 :root {
-  --bg:       #0f0e17;
-  --bg-box:   #13121f;
-  --bg-deep:  #0a0912;
+  --bg:       #f5f4ef;
+  --bg-box:   #ffffff;
+  --bg-deep:  #ece8de;
   --border:   #e86827;
   --border-l: #f09050;
-  --text:     #d4d3e8;
-  --dim:      #5c5b72;
-  --cyan:     #3de8c0;
-  --green:    #3de860;
-  --red:      #e83d3d;
-  --yellow:   #e8c03d;
+  --text:     #252334;
+  --dim:      #8a8898;
+  --cyan:     #0070a0;
+  --green:    #1a7a35;
+  --red:      #c43030;
+  --yellow:   #9a7010;
   --btn-y:    #c88818;
   --btn-o:    #e86827;
   --btn-b:    #1858c8;
+  --divider:  #ddd8cc;
+  --input-bd: #ccc8bc;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -38,14 +40,15 @@ body {
 /* ── HEADER ── */
 header {
   padding: 10px 18px;
-  border-bottom: 2px solid #1e1c30;
+  border-bottom: 2px solid var(--divider);
   display: flex;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  background: var(--bg-box);
 }
 header .logo { font-size: 26px; }
-header h1 { font-size: 18px; color: #fff; letter-spacing: 1px; }
+header h1 { font-size: 18px; color: var(--text); letter-spacing: 1px; }
 header p  { font-size: 10px; color: var(--dim); margin-top: 1px; }
 header nav {
   margin-left: auto;
@@ -61,8 +64,8 @@ header nav a {
   cursor: pointer;
 }
 .btn-nav-hist  { background: var(--btn-b); color: #fff; border-color: #3070e0; }
-.btn-nav-gh    { background: #1c1c28; color: #aaa; border-color: #333; }
-.btn-nav-hist:hover, .btn-nav-gh:hover { filter: brightness(1.25); }
+.btn-nav-gh    { background: #f0ece4; color: #666; border-color: #ccc; }
+.btn-nav-hist:hover, .btn-nav-gh:hover { filter: brightness(1.1); }
 
 /* ── MAIN ── */
 .main {
@@ -78,10 +81,10 @@ header nav a {
 }
 .panel::-webkit-scrollbar { width: 5px; }
 .panel::-webkit-scrollbar-track { background: var(--bg-deep); }
-.panel::-webkit-scrollbar-thumb { background: #2a2840; }
+.panel::-webkit-scrollbar-thumb { background: var(--input-bd); }
 .panel::-webkit-scrollbar-thumb:hover { background: var(--border); }
 
-.left  { width: 44%; border-right: 2px solid #1e1c30; }
+.left  { width: 44%; border-right: 2px solid var(--divider); }
 .right { flex: 1; }
 
 /* ── PIXEL BOX ── */
@@ -91,8 +94,8 @@ header nav a {
   margin-bottom: 14px;
   padding: 14px;
   background: var(--bg-box);
+  box-shadow: 2px 2px 0 rgba(232,104,39,.12);
 }
-/* corner pixels */
 .pbox::before,
 .pbox::after {
   content: '';
@@ -124,7 +127,17 @@ header nav a {
   margin-bottom: 8px;
   margin-top: 4px;
 }
-hr { border: none; border-top: 1px solid #1e1c30; margin: 12px 0; }
+.sec.toggle {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sec.toggle:hover { opacity: .8; }
+.toggle-icon { font-size: 10px; color: var(--dim); }
+
+hr { border: none; border-top: 1px solid var(--divider); margin: 12px 0; }
 
 /* ── INFO TEXT ── */
 .info { font-size: 12px; color: var(--dim); line-height: 1.8; }
@@ -162,14 +175,14 @@ hr { border: none; border-top: 1px solid #1e1c30; margin: 12px 0; }
   display: inline-block;
   transition: filter .1s;
 }
-.btn:hover  { filter: brightness(1.2); }
-.btn:active { transform: translate(1px,1px); filter: brightness(.9); }
+.btn:hover  { filter: brightness(1.1); }
+.btn:active { transform: translate(1px,1px); filter: brightness(.95); }
 .btn:disabled { opacity: .4; cursor: not-allowed; }
 
 .btn-o { background: var(--btn-o); color: #fff; border-color: var(--border-l); }
 .btn-b { background: var(--btn-b); color: #fff; border-color: #3070e0; }
-.btn-y { background: var(--btn-y); color: #111; border-color: #e0a030; }
-.btn-g { background: #1c1c28; color: #888; border-color: #2a2840; }
+.btn-y { background: var(--btn-y); color: #fff; border-color: #e0a030; }
+.btn-g { background: #f0ece4; color: #666; border-color: #ccc; }
 .btn-sm { padding: 4px 10px; font-size: 11px; }
 
 /* Python platform badges */
@@ -184,15 +197,15 @@ hr { border: none; border-top: 1px solid #1e1c30; margin: 12px 0; }
 .py-replit { background: #5b2d8e; color: #fff; border-color: #7b4db0; }
 .py-online { background: #1a5276; color: #fff; border-color: #2980b9; }
 .py-jup    { background: #e66820; color: #fff; border-color: #f08030; }
-.py-link:hover { filter: brightness(1.15); }
+.py-link:hover { filter: brightness(1.1); }
 
 /* ── CODE BLOCK ── */
 .codeblock {
   background: var(--bg-deep);
-  border: 1px solid #222;
+  border: 1px solid var(--divider);
   padding: 10px;
   font-size: 11px;
-  color: #88c0f0;
+  color: #205080;
   margin: 8px 0;
   overflow-x: auto;
   white-space: pre;
@@ -205,10 +218,11 @@ hr { border: none; border-top: 1px solid #1e1c30; margin: 12px 0; }
   align-items: center;
   gap: 10px;
   padding: 7px 12px;
-  background: var(--bg-deep);
-  border: 1px solid #222;
+  background: var(--bg-box);
+  border: 1px solid var(--divider);
   margin-bottom: 12px;
   font-size: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
 }
 .dot {
   width: 7px; height: 7px;
@@ -217,6 +231,7 @@ hr { border: none; border-top: 1px solid #1e1c30; margin: 12px 0; }
   flex-shrink: 0;
   animation: blink 1.8s step-end infinite;
 }
+.dot.err { background: var(--red); animation: none; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
 /* ── FORM ── */
@@ -224,8 +239,8 @@ hr { border: none; border-top: 1px solid #1e1c30; margin: 12px 0; }
 .fg label { display: block; color: var(--dim); font-size: 10px; letter-spacing: 1px; margin-bottom: 4px; text-transform: uppercase; }
 .fg input {
   width: 100%;
-  background: var(--bg-deep);
-  border: 2px solid #2a2840;
+  background: var(--bg);
+  border: 2px solid var(--input-bd);
   color: var(--text);
   padding: 7px 10px;
   font-family: 'Courier New', monospace;
@@ -244,7 +259,7 @@ hr { border: none; border-top: 1px solid #1e1c30; margin: 12px 0; }
 /* ── CONSOLE ── */
 .console {
   background: var(--bg-deep);
-  border: 1px solid #1e1c30;
+  border: 1px solid var(--divider);
   padding: 9px;
   overflow-y: auto;
   font-size: 11px;
@@ -267,7 +282,7 @@ hr { border: none; border-top: 1px solid #1e1c30; margin: 12px 0; }
   color: var(--border);
   letter-spacing: 5px;
   font-weight: bold;
-  text-shadow: 0 0 24px rgba(232,104,39,.45);
+  text-shadow: 0 0 24px rgba(232,104,39,.25);
   font-variant-numeric: tabular-nums;
 }
 .countdown-sub { font-size: 11px; color: var(--dim); margin-top: 5px; }
@@ -300,14 +315,15 @@ hr { border: none; border-top: 1px solid #1e1c30; margin: 12px 0; }
 /* ── FOOTER ── */
 footer {
   padding: 6px 18px;
-  border-top: 1px solid #1a1828;
+  border-top: 1px solid var(--divider);
   font-size: 10px;
-  color: #2e2c45;
+  color: #aaa;
   flex-shrink: 0;
   display: flex;
   gap: 16px;
+  background: var(--bg-box);
 }
-footer a { color: #3a3850; text-decoration: none; }
+footer a { color: #bbb; text-decoration: none; }
 footer a:hover { color: var(--dim); }
 </style>
 </head>
@@ -356,27 +372,43 @@ footer a:hover { color: var(--dim); }
 
       <hr>
 
-      <div class="sec">📡 ETH 区块哈希获取渠道</div>
-      <p class="info" style="margin-bottom:10px;">以下均为免费公开节点，无需注册或 API Key：</p>
+      <!-- ETH Nodes — collapsible, hidden by default -->
+      <div class="sec toggle" onclick="toggleRpc()">
+        <span>📡 ETH 区块哈希获取渠道</span>
+        <span class="toggle-icon" id="rpcToggleIcon">▶ 展开</span>
+      </div>
+      <div id="rpcSection" style="display:none">
+        <p class="info" style="margin-bottom:10px;">以下均为免费公开节点，无需注册或 API Key：</p>
 
-      <div class="rpc-item">
-        <span class="rpc-name">▸ Cloudflare ETH（首选）</span>
-        <code class="rpc-url">POST https://cloudflare-eth.com</code>
-        <span class="rpc-note">Cloudflare 官方以太坊公共节点，本站默认使用</span>
-      </div>
-      <div class="rpc-item">
-        <span class="rpc-name">▸ Llama RPC</span>
-        <code class="rpc-url">POST https://eth.llamarpc.com</code>
-        <span class="rpc-note">LlamaNodes 免费公共节点，备用</span>
-      </div>
-      <div class="rpc-item">
-        <span class="rpc-name">▸ Ankr Public RPC</span>
-        <code class="rpc-url">POST https://rpc.ankr.com/eth</code>
-        <span class="rpc-note">Ankr 免费节点，二级备用</span>
-      </div>
-      <div class="rpc-item">
-        <span class="rpc-name">▸ Etherscan 区块浏览器</span>
-        <span class="rpc-note">前往 <a href="https://etherscan.io" target="_blank" style="color:var(--cyan)">etherscan.io</a> 搜索区块号，可直接查阅哈希</span>
+        <div class="rpc-item">
+          <span class="rpc-name">▸ Cloudflare ETH（首选）</span>
+          <code class="rpc-url">POST https://cloudflare-eth.com</code>
+          <span class="rpc-note">Cloudflare 官方以太坊公共节点，本站默认使用</span>
+        </div>
+        <div class="rpc-item">
+          <span class="rpc-name">▸ PublicNode</span>
+          <code class="rpc-url">POST https://ethereum-rpc.publicnode.com</code>
+          <span class="rpc-note">高可用性公共节点</span>
+        </div>
+        <div class="rpc-item">
+          <span class="rpc-name">▸ Llama RPC</span>
+          <code class="rpc-url">POST https://eth.llamarpc.com</code>
+          <span class="rpc-note">LlamaNodes 免费公共节点，备用</span>
+        </div>
+        <div class="rpc-item">
+          <span class="rpc-name">▸ Ankr Public RPC</span>
+          <code class="rpc-url">POST https://rpc.ankr.com/eth</code>
+          <span class="rpc-note">Ankr 免费节点，二级备用</span>
+        </div>
+        <div class="rpc-item">
+          <span class="rpc-name">▸ 1RPC</span>
+          <code class="rpc-url">POST https://1rpc.io/eth</code>
+          <span class="rpc-note">隐私优先的公共节点</span>
+        </div>
+        <div class="rpc-item">
+          <span class="rpc-name">▸ Etherscan 区块浏览器</span>
+          <span class="rpc-note">前往 <a href="https://etherscan.io" target="_blank" style="color:var(--cyan)">etherscan.io</a> 搜索区块号，可直接查阅哈希</span>
+        </div>
       </div>
 
       <hr>
@@ -428,7 +460,7 @@ print("中奖号码:", sorted(winners))</div>
 
     <!-- Block status -->
     <div class="blockbar">
-      <span class="dot"></span>
+      <span class="dot" id="connDot"></span>
       <span style="color:var(--dim)">当前区块：</span>
       <span id="currentBlock" style="color:var(--border)">连接中…</span>
       <span style="color:var(--dim);margin-left:auto;font-size:11px;">每 ~15 秒自动刷新</span>
@@ -529,8 +561,11 @@ print("中奖号码:", sorted(winners))</div>
 // ══════════════════════════════════════════
 const RPC_ENDPOINTS = [
   'https://cloudflare-eth.com',
+  'https://ethereum-rpc.publicnode.com',
   'https://eth.llamarpc.com',
   'https://rpc.ankr.com/eth',
+  'https://1rpc.io/eth',
+  'https://rpc.payload.de',
 ];
 
 // ══════════════════════════════════════════
@@ -558,17 +593,24 @@ function log(msg, cls = 'c-info', panelId = 'mainLog') {
 //  ETH RPC
 // ══════════════════════════════════════════
 async function rpc(method, params) {
+  const errors = [];
   for (const ep of RPC_ENDPOINTS) {
     try {
+      const controller = new AbortController();
+      const tid = setTimeout(() => controller.abort(), 8000);
       const r = await fetch(ep, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jsonrpc: '2.0', method, params, id: 1 }),
-        signal: AbortSignal.timeout(9000),
+        signal: controller.signal,
       });
+      clearTimeout(tid);
       const d = await r.json();
       if (d.result !== undefined && d.result !== null) return d.result;
-    } catch (_) { /* try next */ }
+      if (d.error) errors.push(`${ep}: ${d.error.message}`);
+    } catch (e) {
+      errors.push(`${ep}: ${e.message}`);
+    }
   }
   throw new Error('所有 RPC 节点均无法连接');
 }
@@ -589,12 +631,14 @@ async function refreshBlock() {
   try {
     currentBlock = await fetchCurrentBlock();
     document.getElementById('currentBlock').textContent = '#' + currentBlock.toLocaleString();
+    document.getElementById('connDot').className = 'dot';
     updateEta();
     if (lotteryState && !lotteryState.done && currentBlock >= lotteryState.targetBlock) {
       await executeDrawing();
     }
   } catch (e) {
-    document.getElementById('currentBlock').textContent = '连接失败';
+    document.getElementById('currentBlock').textContent = '连接失败，重试中…';
+    document.getElementById('connDot').className = 'dot err';
   }
 }
 
@@ -635,6 +679,17 @@ function setQuickBlock(delta) {
 }
 
 // ══════════════════════════════════════════
+//  RPC SECTION TOGGLE
+// ══════════════════════════════════════════
+function toggleRpc() {
+  const el   = document.getElementById('rpcSection');
+  const icon = document.getElementById('rpcToggleIcon');
+  const show = el.style.display === 'none';
+  el.style.display = show ? 'block' : 'none';
+  icon.textContent = show ? '▼ 收起' : '▶ 展开';
+}
+
+// ══════════════════════════════════════════
 //  START LOTTERY
 // ══════════════════════════════════════════
 function startLottery() {
@@ -666,7 +721,7 @@ function startLottery() {
 }
 
 // ══════════════════════════════════════════
-//  COUNTDOWN TICKER (client-side estimate)
+//  COUNTDOWN TICKER
 // ══════════════════════════════════════════
 function startCountdown() {
   if (cdTimer) clearInterval(cdTimer);
@@ -693,6 +748,7 @@ function startPolling() {
       const n = await fetchCurrentBlock();
       currentBlock = n;
       document.getElementById('currentBlock').textContent = '#' + n.toLocaleString();
+      document.getElementById('connDot').className = 'dot';
       updateEta();
       const left = lotteryState.target - n;
       if (left > 0) {
@@ -735,7 +791,7 @@ async function executeDrawing() {
     showResults();
   } catch (e) {
     log(`❌ ${e.message}`, 'c-error', 'waitLog');
-    lotteryState.done = false; // allow retry via polling
+    lotteryState.done = false;
   }
 }
 
@@ -865,7 +921,11 @@ function resetAll() {
 (async () => {
   log('🎲 OpenLuck 启动中，连接以太坊网络…');
   await refreshBlock();
-  log('✅ 已连接到以太坊主网', 'c-success');
+  if (currentBlock) {
+    log('✅ 已连接到以太坊主网，当前区块 #' + currentBlock.toLocaleString(), 'c-success');
+  } else {
+    log('⚠ 连接失败，将在 15 秒后重试…', 'c-warn');
+  }
   setInterval(refreshBlock, 15000);
 })();
 </script>
