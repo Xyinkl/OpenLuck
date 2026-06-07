@@ -884,19 +884,15 @@ body {
                     style="position:absolute;top:8px;right:8px;z-index:4;font-size:8px;"
                     onclick="copyCode()">📋 复制</button>
             <div class="codeblock" id="pyCodeblock" style="flex:1;"># ── 验证中奖结果 ──
-import hashlib, requests
+# 在 Etherscan 搜索区块 <span id="codeBlockNum">21000000</span>，
+# 复制页面上的 Block Hash，粘贴到下方。
+import hashlib
 
-BLOCK_NUMBER = <span id="codeBlockNum">21000000</span>  # 目标区块号
-TOTAL        = 100       # 总参与人数
-COUNT        = 3         # 中奖人数
+BLOCK_HASH = "在此粘贴区块哈希值"  # 64位十六进制，无需0x前缀
+TOTAL      = 100  # 总参与人数
+COUNT      = 3    # 中奖人数
 
-r = requests.post("https://cloudflare-eth.com", json={
-    "jsonrpc": "2.0",
-    "method":  "eth_getBlockByNumber",
-    "params":  [hex(BLOCK_NUMBER), False],
-    "id": 1
-})
-block_hash = r.json()["result"]["hash"][2:]
+block_hash = BLOCK_HASH.strip().lower().removeprefix("0x")
 
 winners, selected, rnd = [], set(), 0
 while len(winners) &lt; COUNT:

@@ -5,276 +5,343 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OpenLuck — 历史记录</title>
 <style>
+/* ══════════════════════════════════════════════════════
+   DESIGN SYSTEM — mirrors index.html
+══════════════════════════════════════════════════════ */
 :root {
-  --bg:       #f5f4ef;
-  --bg-box:   #ffffff;
-  --bg-deep:  #ece8de;
-  --border:   #e86827;
-  --border-l: #f09050;
-  --text:     #252334;
-  --dim:      #8a8898;
-  --cyan:     #0070a0;
-  --green:    #1a7a35;
-  --red:      #c43030;
-  --yellow:   #9a7010;
-  --divider:  #ddd8cc;
-  --input-bd: #ccc8bc;
+  --black:    #212529;
+  --white:    #fff;
+  --blue:     #209cee;
+  --blue-d:   #006bb3;
+  --yellow:   #f7d51d;
+  --yellow-d: #e59400;
+  --red:      #e76e55;
+  --red-d:    #8c2022;
+  --green:    #92cc41;
+  --green-d:  #4aa52e;
+  --shadow:   #adafbc;
+  --dim:      #777;
+  --header-h: 72px;
+  --pb5: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Cpath d='M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z' fill='%23212529'/%3E%3C/svg%3E");
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--white); }
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 13px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-/* HEADER */
-header {
-  padding: 10px 18px;
-  border-bottom: 2px solid var(--divider);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-  background: var(--bg-box);
-}
-header .logo { font-size: 26px; }
-header h1 { font-size: 18px; color: var(--text); }
-header p  { font-size: 10px; color: var(--dim); margin-top: 1px; }
-header nav { margin-left: auto; display: flex; gap: 6px; }
-header nav a {
-  padding: 5px 12px;
-  border: 2px solid;
-  font-size: 11px;
-  text-decoration: none;
-  cursor: pointer;
-  color: #666;
-  border-color: #ccc;
-  background: #f0ece4;
-}
-header nav a.active { color: var(--border); border-color: var(--border); background: #fff5ec; }
-header nav a:hover  { filter: brightness(1.1); }
-
-/* MAIN */
-main { flex: 1; padding: 18px; max-width: 1000px; margin: 0 auto; width: 100%; }
-
-/* TOOLBAR */
-.toolbar {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-.toolbar input {
-  flex: 1;
-  min-width: 200px;
-  background: var(--bg-box);
-  border: 2px solid var(--input-bd);
-  color: var(--text);
-  padding: 7px 12px;
-  font-family: 'Courier New', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 13px;
+  color: var(--black);
 }
-.toolbar input:focus { outline: none; border-color: var(--border); }
 
-.btn {
-  padding: 7px 14px;
-  border: 2px solid;
-  cursor: pointer;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  text-decoration: none;
-  display: inline-block;
-}
-.btn:hover  { filter: brightness(1.2); }
-.btn:active { transform: translate(1px,1px); }
-.btn-o { background: #e86827; color: #fff; border-color: #f09050; }
-.btn-b { background: #1858c8; color: #fff; border-color: #3070e0; }
-.btn-g { background: #f0ece4; color: #666; border-color: #ccc; }
-.btn-sm { padding: 4px 10px; font-size: 11px; }
-
-/* STATS BAR */
-.stats {
+/* ─── GLOBAL HEADER ──────────────────────────────── */
+.global-header {
+  height: var(--header-h);
+  width: 100%;
+  flex-shrink: 0;
+  background: var(--white);
   display: flex;
-  gap: 20px;
-  padding: 8px 14px;
-  background: var(--bg-box);
-  border: 1px solid var(--divider);
-  margin-bottom: 16px;
-  font-size: 12px;
-}
-.stat-item { display: flex; flex-direction: column; gap: 2px; }
-.stat-label { color: var(--dim); font-size: 10px; }
-.stat-val   { color: var(--border); font-size: 16px; }
-
-/* RECORD CARD */
-.record-card {
-  background: var(--bg-box);
-  border: 2px solid var(--input-bd);
-  padding: 14px;
-  margin-bottom: 10px;
+  align-items: center;
+  gap: 14px;
+  padding: 0 28px;
   position: relative;
-  transition: border-color .15s;
-  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  z-index: 10;
 }
-.record-card:hover { border-color: var(--border); }
+.global-header .logo { font-size: 28px; }
+.global-header h1    { font-size: 16px; font-weight: 700; }
+.global-header p     { font-size: 12px; color: var(--dim); margin-top: 4px; }
+.global-header nav   { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
-.record-card::after {
-  content: '';
-  position: absolute;
-  bottom: -3px; right: -3px;
-  width: 4px; height: 4px;
-  background: var(--input-bd);
-  transition: background .15s;
+/* ─── BUTTONS ────────────────────────────────────── */
+.btn {
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2; border-image-source: var(--pb5);
+  border-image-repeat: stretch;
+  position: relative; display: inline-flex;
+  align-items: center; justify-content: center; gap: 5px;
+  padding: 6px 10px; margin: 6px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px; font-weight: 700;
+  white-space: nowrap; cursor: pointer;
+  background: var(--white); color: var(--black);
+  text-decoration: none; user-select: none;
+  vertical-align: middle; outline: none;
 }
-.record-card:hover::after { background: var(--border); }
+.btn::after {
+  position: absolute; top: -4px; right: -4px; bottom: -4px; left: -4px;
+  content: ""; box-shadow: inset -4px -4px var(--shadow);
+}
+.btn:hover { background: #e7e7e7; }
+.btn:hover::after { box-shadow: inset -6px -6px var(--shadow); }
+.btn:active::after { box-shadow: inset 4px 4px var(--shadow); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-blue   { background: var(--blue);   color: var(--white); }
+.btn-blue::after   { box-shadow: inset -4px -4px var(--blue-d); }
+.btn-blue:hover    { background: #108de0; }
+.btn-blue:hover::after   { box-shadow: inset -6px -6px var(--blue-d); }
+.btn-blue:active::after  { box-shadow: inset 4px 4px var(--blue-d); }
+
+.btn-yellow { background: var(--yellow); color: var(--black); }
+.btn-yellow::after { box-shadow: inset -4px -4px var(--yellow-d); }
+.btn-yellow:hover  { background: #f2c409; }
+.btn-yellow:hover::after { box-shadow: inset -6px -6px var(--yellow-d); }
+.btn-yellow:active::after { box-shadow: inset 4px 4px var(--yellow-d); }
+
+.btn-red    { background: var(--red);    color: var(--white); }
+.btn-red::after    { box-shadow: inset -4px -4px var(--red-d); }
+.btn-red:hover     { background: #ce372b; }
+.btn-red:hover::after    { box-shadow: inset -6px -6px var(--red-d); }
+.btn-red:active::after   { box-shadow: inset 4px 4px var(--red-d); }
+
+.btn-sm { padding: 4px 7px; font-size: 12px; }
+.btn-lg { padding: 8px 15px; font-size: 16px; }
+
+/* ─── NAV BUTTONS ────────────────────────────────── */
+.nav-btn {
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2; border-image-source: var(--pb5);
+  position: relative; display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 9px; margin: 6px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px; font-weight: 700;
+  white-space: nowrap; text-decoration: none; cursor: pointer; user-select: none;
+}
+.nav-btn::after {
+  position: absolute; top: -4px; right: -4px; bottom: -4px; left: -4px;
+  content: ""; box-shadow: inset -4px -4px var(--shadow);
+}
+.nav-btn-blue { background: var(--blue); color: var(--white); }
+.nav-btn-blue::after { box-shadow: inset -4px -4px var(--blue-d); }
+.nav-btn-blue:hover { background: #108de0; }
+.nav-btn-blue:hover::after { box-shadow: inset -6px -6px var(--blue-d); }
+.nav-btn-gray { background: #e7e7e7; color: var(--black); }
+.nav-btn-gray:hover { background: #d0d0d0; }
+
+/* ─── PIXEL CONTAINER (pbox) ─────────────────────── */
+.pbox {
+  position: relative;
+  background: var(--white);
+  padding: 18px 18px 14px;
+  margin: 4px;
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2; border-image-source: var(--pb5);
+  border-image-repeat: stretch;
+}
+.pbox > .title {
+  display: table;
+  padding: 0 8px;
+  margin: -2.2rem 0 0.9rem;
+  font-size: 11px; letter-spacing: 1px;
+  text-transform: uppercase;
+  background: var(--white);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
+}
+
+/* ─── FORM FIELDS ────────────────────────────────── */
+.fg { margin-bottom: 0; }
+.fg label {
+  display: block; font-size: 11px; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--dim);
+  margin-bottom: 6px; font-weight: 600;
+}
+.fg input {
+  background: var(--white); color: var(--black);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px; outline: none;
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2; border-image-source: var(--pb5);
+  border-image-repeat: stretch; margin: 4px 0;
+}
+.fg input:focus {
+  border-image-source: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Cpath d='M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z' fill='%23209cee'/%3E%3C/svg%3E");
+}
+
+/* ─── MAIN LAYOUT ────────────────────────────────── */
+main {
+  flex: 1;
+  padding: 20px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ─── SOURCE TABS ────────────────────────────────── */
+.source-tabs {
+  display: flex; gap: 0;
+  margin-bottom: 20px;
+}
+.source-tab {
+  padding: 6px 18px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; color: var(--dim);
+  border-bottom: 3px solid transparent;
+  user-select: none;
+}
+.source-tab:hover { color: var(--black); }
+.source-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* ─── STATS BAR ──────────────────────────────────── */
+.stats {
+  display: flex; gap: 28px; flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.stat-item { display: flex; flex-direction: column; gap: 3px; }
+.stat-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-val   { font-size: 20px; font-weight: 700; color: var(--red); }
+
+/* ─── TOOLBAR ────────────────────────────────────── */
+.toolbar {
+  display: flex; gap: 4px; align-items: center;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.toolbar .fg { flex: 1; min-width: 220px; }
+.toolbar .fg input { width: 100%; padding: 6px 10px; }
+
+/* ─── RECORD CARD ────────────────────────────────── */
+.record-card {
+  position: relative;
+  background: var(--white);
+  padding: 16px 18px 14px;
+  margin: 4px 4px 14px;
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2; border-image-source: var(--pb5);
+  border-image-repeat: stretch;
+}
+.record-card::after {
+  position: absolute; top: -4px; right: -4px; bottom: -4px; left: -4px;
+  content: ""; box-shadow: inset -4px -4px var(--shadow);
+  pointer-events: none;
+}
 
 .card-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 10px;
+  display: flex; align-items: flex-start; gap: 12px;
+  margin-bottom: 12px;
 }
 .card-index {
-  background: var(--border);
-  color: #fff;
-  width: 28px; height: 28px;
+  background: var(--black); color: var(--white);
+  min-width: 28px; height: 28px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px;
-  flex-shrink: 0;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
 }
-.card-title { font-size: 14px; color: var(--text); }
-.card-time  { font-size: 10px; color: var(--dim); margin-top: 2px; }
+.card-title { font-size: 14px; font-weight: 700; }
+.card-time  { font-size: 11px; color: var(--dim); margin-top: 3px; }
 .card-badge {
-  margin-left: auto;
-  padding: 2px 8px;
-  font-size: 10px;
-  border: 1px solid var(--green);
-  color: var(--green);
+  margin-left: auto; padding: 3px 10px; flex-shrink: 0;
+  font-size: 10px; font-weight: 600;
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2;
+  border-image-source: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Cpath d='M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z' fill='%234aa52e'/%3E%3C/svg%3E");
+  color: var(--green-d); background: #f0fbe0;
 }
 
 .card-meta {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  font-size: 11px;
-  color: var(--dim);
-  margin-bottom: 8px;
+  display: flex; gap: 20px; flex-wrap: wrap;
+  font-size: 11px; color: var(--dim); margin-bottom: 10px;
 }
-.card-meta span { display: flex; flex-direction: column; gap: 1px; }
-.card-meta em   { color: var(--border); font-style: normal; font-size: 13px; }
+.card-meta span { display: flex; flex-direction: column; gap: 2px; }
+.card-meta em   { color: var(--red); font-style: normal; font-size: 14px; font-weight: 700; }
 
 .card-hash {
-  font-size: 10px;
-  color: var(--cyan);
-  background: var(--bg-deep);
-  padding: 5px 8px;
-  word-break: break-all;
-  margin-bottom: 8px;
-  border-left: 2px solid var(--border);
+  font-size: 10px; color: var(--blue);
+  background: #f4f8fc;
+  padding: 6px 10px; word-break: break-all;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--black);
+  font-family: 'Courier New', monospace;
 }
 
 .winners-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
+  display: flex; flex-wrap: wrap; gap: 6px;
+  align-items: center; margin-bottom: 10px;
 }
 .winner-chip {
-  background: var(--border);
-  color: #fff;
-  padding: 4px 10px;
-  border: 2px solid var(--border-l);
-  font-size: 13px;
-  font-weight: bold;
+  background: var(--red); color: var(--white);
+  padding: 6px 14px; font-size: 13px; font-weight: 700;
+  position: relative;
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2; border-image-source: var(--pb5);
 }
+.winner-chip::after {
+  position: absolute; top: -4px; right: -4px; bottom: -4px; left: -4px;
+  content: ""; box-shadow: inset -4px -4px var(--red-d);
+}
+
 .card-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--divider);
+  display: flex; gap: 0; flex-wrap: wrap;
+  padding-top: 10px; border-top: 2px solid #eee;
 }
 
-/* EMPTY STATE */
+/* ─── EMPTY STATE ────────────────────────────────── */
 .empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--dim);
+  text-align: center; padding: 60px 20px; color: var(--dim);
 }
-.empty .big { font-size: 48px; margin-bottom: 12px; }
-.empty p    { font-size: 12px; line-height: 2; }
+.empty .big { font-size: 48px; margin-bottom: 14px; }
+.empty p { font-size: 13px; line-height: 2; }
 
-/* SOURCE TOGGLE */
-.source-tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--divider);
-  margin-bottom: 16px;
-}
-.source-tab {
-  padding: 6px 16px;
-  font-size: 12px;
-  cursor: pointer;
-  color: var(--dim);
-  border-bottom: 2px solid transparent;
-}
-.source-tab.active { color: var(--border); border-bottom-color: var(--border); }
-
-/* PAGINATION */
+/* ─── PAGINATION ─────────────────────────────────── */
 .pagination {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 20px;
-  flex-wrap: wrap;
+  display: flex; gap: 0; justify-content: center;
+  margin-top: 20px; flex-wrap: wrap;
 }
-.page-btn {
-  padding: 5px 12px;
-  border: 2px solid var(--input-bd);
-  cursor: pointer;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  background: var(--bg-box);
-  color: var(--dim);
-}
-.page-btn.active { border-color: var(--border); color: var(--border); }
-.page-btn:hover  { border-color: var(--border-l); color: var(--text); }
 
-/* FOOTER */
-footer {
-  padding: 6px 18px;
-  border-top: 1px solid var(--divider);
-  font-size: 10px;
-  color: #aaa;
-  display: flex;
-  gap: 16px;
-  background: var(--bg-box);
+/* ─── FOOTER ─────────────────────────────────────── */
+.site-footer {
+  padding: 8px 20px; font-size: 11px; color: var(--dim);
+  flex-shrink: 0; display: flex; gap: 18px; align-items: center;
+  flex-wrap: wrap; background: var(--white);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
-footer a { color: #bbb; text-decoration: none; }
-footer a:hover { color: var(--dim); }
+.site-footer a { color: var(--dim); text-decoration: none; }
+.site-footer a:hover { color: var(--black); }
+
+/* ─── MOBILE ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root { --header-h: 56px; }
+  .global-header { padding: 0 14px; gap: 8px; }
+  .global-header .logo { font-size: 22px; }
+  .global-header h1 { font-size: 14px; }
+  .global-header p  { display: none; }
+  .nav-btn { padding: 4px 8px; font-size: 12px; }
+  main { padding: 12px 10px; }
+  .toolbar .fg input { width: 100%; }
+  .site-footer { gap: 8px; font-size: 10px; }
+}
 </style>
 </head>
 <body>
 
-<header>
+<!-- ══════════════════════════════════════════════════
+     GLOBAL HEADER
+══════════════════════════════════════════════════ -->
+<header class="global-header">
   <span class="logo">🎲</span>
   <div>
     <h1>OpenLuck</h1>
     <p>历史抽奖记录 — 完全公开可验证</p>
   </div>
   <nav>
-    <a href="index.html">🎲 发起抽奖</a>
-    <a href="history.html" class="active">📋 历史记录</a>
-    <a href="https://github.com/Xyinkl/OpenLuck" target="_blank">⭐ GitHub</a>
+    <a href="index.html" class="nav-btn nav-btn-gray">🎲 发起抽奖</a>
+    <a href="history.html" class="nav-btn nav-btn-blue">📋 历史记录</a>
+    <a href="https://github.com/Xyinkl/OpenLuck" target="_blank" class="nav-btn nav-btn-gray">⭐ GitHub</a>
   </nav>
 </header>
 
+<!-- ══════════════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════════════ -->
 <main>
+
   <!-- Source toggle -->
   <div class="source-tabs">
     <div class="source-tab active" id="tab-server" onclick="switchSource('server')">🌐 服务器记录</div>
@@ -282,30 +349,48 @@ footer a:hover { color: var(--dim); }
   </div>
 
   <!-- Stats -->
-  <div class="stats" id="statsBar">
-    <div class="stat-item"><span class="stat-label">总抽奖次数</span><span class="stat-val" id="statTotal">—</span></div>
-    <div class="stat-item"><span class="stat-label">参与总人次</span><span class="stat-val" id="statParticipants">—</span></div>
-    <div class="stat-item"><span class="stat-label">最近一次</span><span class="stat-val" id="statLatest">—</span></div>
+  <div class="pbox" id="statsBar" style="margin-bottom:16px;">
+    <p class="title">抽奖统计</p>
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-label">总抽奖次数</span>
+        <span class="stat-val" id="statTotal">—</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">参与总人次</span>
+        <span class="stat-val" id="statParticipants">—</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">最近一次</span>
+        <span class="stat-val" id="statLatest" style="font-size:14px;">—</span>
+      </div>
+    </div>
   </div>
 
   <!-- Toolbar -->
   <div class="toolbar">
-    <input id="searchInput" type="text" placeholder="搜索标题 / 区块号 / 哈希…" oninput="render()">
-    <button class="btn btn-g btn-sm" onclick="document.getElementById('searchInput').value='';render()">清空</button>
-    <button class="btn btn-b btn-sm" onclick="loadRecords()">🔄 刷新</button>
-    <button class="btn btn-g btn-sm" onclick="exportJSON()">⬇ 导出 JSON</button>
+    <div class="fg">
+      <input id="searchInput" type="text" placeholder="搜索标题 / 区块号 / 哈希…" oninput="render()">
+    </div>
+    <button class="btn btn-sm" onclick="document.getElementById('searchInput').value='';render()">清空</button>
+    <button class="btn btn-blue btn-sm" onclick="loadRecords()">🔄 刷新</button>
+    <button class="btn btn-sm" onclick="exportJSON()">⬇ 导出 JSON</button>
   </div>
 
   <!-- Records list -->
   <div id="recordsList"></div>
   <div class="pagination" id="paginationBar"></div>
+
 </main>
 
-<footer>
-  <span>OpenLuck · 历史记录</span>
+<!-- ══════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <span>OpenLuck · 历史抽奖记录</span>
   <a href="index.html">发起抽奖</a>
   <a href="https://github.com/Xyinkl/OpenLuck" target="_blank">GitHub</a>
-  <a href="https://etherscan.io" target="_blank">Etherscan 验证</a>
+  <a href="https://etherscan.io" target="_blank">Etherscan</a>
 </footer>
 
 <script>
@@ -313,7 +398,7 @@ const PAGE_SIZE = 10;
 
 let allRecords  = [];
 let currentPage = 1;
-let currentSrc  = 'server'; // 'server' | 'local'
+let currentSrc  = 'server';
 
 // ── SOURCE SWITCH ──────────────────────────────
 function switchSource(src) {
@@ -330,29 +415,24 @@ async function loadRecords() {
 
   if (currentSrc === 'local') {
     allRecords = JSON.parse(localStorage.getItem('openluck_records') || '[]');
-    // sort newest first
     allRecords.sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
     currentPage = 1;
     render();
     return;
   }
 
-  // Server fetch
   try {
     const r = await fetch('/api/lottery');
     if (!r.ok) throw new Error('HTTP ' + r.status);
     allRecords = await r.json();
     allRecords.sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
   } catch (e) {
-    // Fallback to local if server unavailable
     allRecords = JSON.parse(localStorage.getItem('openluck_records') || '[]');
     allRecords.sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
     if (allRecords.length === 0) {
       listEl.innerHTML = `<div class="empty">
         <div class="big">🔌</div>
-        <p>服务器暂时无法连接。<br>
-        已切换到本地记录（共 ${allRecords.length} 条）。<br>
-        本地保存的记录仅在此浏览器可见。</p></div>`;
+        <p>服务器暂时无法连接。<br>已切换到本地记录（共 ${allRecords.length} 条）。</p></div>`;
       updateStats(allRecords);
       return;
     }
@@ -364,7 +444,7 @@ async function loadRecords() {
 
 // ── RENDER ─────────────────────────────────────
 function render() {
-  const q       = (document.getElementById('searchInput').value || '').toLowerCase();
+  const q        = (document.getElementById('searchInput').value || '').toLowerCase();
   const filtered = allRecords.filter(r => {
     if (!q) return true;
     return (
@@ -379,14 +459,18 @@ function render() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   if (currentPage > totalPages) currentPage = 1;
 
-  const slice = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-
+  const slice  = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
   const listEl = document.getElementById('recordsList');
+
   if (filtered.length === 0) {
     listEl.innerHTML = `<div class="empty">
       <div class="big">🎲</div>
-      <p>${allRecords.length === 0 ? '还没有任何抽奖记录。<br>去发起第一次抽奖吧！' : '没有匹配的记录。'}</p>
-      ${allRecords.length === 0 ? '<br><a href="index.html" style="color:var(--border);font-size:13px">→ 发起抽奖</a>' : ''}
+      <p>${allRecords.length === 0
+        ? '还没有任何抽奖记录。<br>去发起第一次抽奖吧！'
+        : '没有匹配的记录。'}</p>
+      ${allRecords.length === 0
+        ? '<br><a href="index.html" style="color:var(--red);font-size:13px;font-weight:700;">→ 发起抽奖</a>'
+        : ''}
     </div>`;
     document.getElementById('paginationBar').innerHTML = '';
     return;
@@ -398,15 +482,18 @@ function render() {
   const pbar = document.getElementById('paginationBar');
   if (totalPages <= 1) { pbar.innerHTML = ''; return; }
   let html = '';
-  if (currentPage > 1) html += `<button class="page-btn" onclick="gotoPage(${currentPage - 1})">◀ 上一页</button>`;
+  if (currentPage > 1)
+    html += `<button class="btn btn-sm" onclick="gotoPage(${currentPage - 1})">◀ 上一页</button>`;
   for (let p = 1; p <= totalPages; p++) {
-    if (p === currentPage) html += `<button class="page-btn active">${p}</button>`;
+    if (p === currentPage)
+      html += `<button class="btn btn-blue btn-sm">${p}</button>`;
     else if (p <= 2 || p >= totalPages - 1 || Math.abs(p - currentPage) <= 1)
-      html += `<button class="page-btn" onclick="gotoPage(${p})">${p}</button>`;
+      html += `<button class="btn btn-sm" onclick="gotoPage(${p})">${p}</button>`;
     else if (Math.abs(p - currentPage) === 2)
-      html += `<span style="color:var(--dim);padding:5px 4px">…</span>`;
+      html += `<span style="color:var(--dim);padding:5px 4px;line-height:2;">…</span>`;
   }
-  if (currentPage < totalPages) html += `<button class="page-btn" onclick="gotoPage(${currentPage + 1})">下一页 ▶</button>`;
+  if (currentPage < totalPages)
+    html += `<button class="btn btn-sm" onclick="gotoPage(${currentPage + 1})">下一页 ▶</button>`;
   pbar.innerHTML = html;
 }
 
@@ -437,13 +524,12 @@ function buildCard(rec, idx) {
     </div>
 
     <div class="card-hash">${esc(hashDisp)}</div>
-
     <div class="winners-row">${winners}</div>
 
     <div class="card-actions">
-      <a href="${esUrl}" target="_blank" class="btn btn-g btn-sm">🔍 Etherscan 验证</a>
-      <button class="btn btn-g btn-sm" onclick="copyCard(${idx - 1})">📋 复制结果</button>
-      <button class="btn btn-g btn-sm" onclick="openVerifier(${idx - 1})">⚙ 验证算法</button>
+      <a href="${esUrl}" target="_blank" class="btn btn-sm">🔍 Etherscan 验证</a>
+      <button class="btn btn-sm" onclick="copyCard(${idx - 1})">📋 复制结果</button>
+      <button class="btn btn-yellow btn-sm" onclick="openVerifier(${idx - 1})">⚙ 验证算法</button>
     </div>
   </div>`;
 }
@@ -480,12 +566,9 @@ function copyCard(rawIdx) {
 function openVerifier(rawIdx) {
   const rec = getFiltered()[rawIdx];
   if (!rec) return;
-  const hash  = (rec.blockHash || '').replace('0x', '');
-  const code  = `# OpenLuck 验证代码\nimport hashlib\n\nBLOCK_HASH = "${hash}"\nTOTAL      = ${rec.total}\nCOUNT      = ${rec.count || rec.winners.length}\n\nwinners, selected, rnd = [], set(), 0\nwhile len(winners) < COUNT:\n    seed = f"{BLOCK_HASH}{rnd:04x}".encode()\n    h    = hashlib.sha256(seed).hexdigest()\n    num  = int(h[:16], 16) % TOTAL + 1\n    if num not in selected:\n        selected.add(num)\n        winners.append(num)\n    rnd += 1\n\nprint("中奖号码:", sorted(winners))\nprint("预期结果:", ${JSON.stringify(rec.winners)})\nprint("验证通过:", sorted(winners) == sorted(${JSON.stringify(rec.winners)}))`;
+  const hash = (rec.blockHash || '').replace('0x', '');
+  const code = `# OpenLuck 验证代码\nimport hashlib\n\nBLOCK_HASH = "${hash}"\nTOTAL      = ${rec.total}\nCOUNT      = ${rec.count || rec.winners.length}\n\nwinners, selected, rnd = [], set(), 0\nwhile len(winners) < COUNT:\n    seed = f"{BLOCK_HASH}{rnd:04x}".encode()\n    h    = hashlib.sha256(seed).hexdigest()\n    num  = int(h[:16], 16) % TOTAL + 1\n    if num not in selected:\n        selected.add(num)\n        winners.append(num)\n    rnd += 1\n\nprint("中奖号码:", sorted(winners))\nprint("预期结果:", ${JSON.stringify(rec.winners)})\nprint("验证通过:", sorted(winners) == sorted(${JSON.stringify(rec.winners)}))`;
 
-  const encoded = encodeURIComponent(code);
-  const url = `https://www.online-python.com/#${encoded}`;
-  // Copy code and open online python
   navigator.clipboard.writeText(code).then(() => {
     alert('验证代码已复制到剪贴板！\n请粘贴到在线 Python 平台运行。\n\n即将打开 OnlinePython…');
     window.open('https://www.online-python.com', '_blank');
@@ -504,10 +587,8 @@ function exportJSON() {
 // ── HELPERS ────────────────────────────────────
 function esc(s) {
   return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function getFiltered() {
