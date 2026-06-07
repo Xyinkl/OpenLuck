@@ -163,7 +163,7 @@ body {
   justify-content: center;
   gap: 5px;
   padding: 6px 10px;
-  margin: 4px;
+  margin: 6px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px;
   font-weight: 700;
@@ -229,7 +229,7 @@ body {
   align-items: center;
   gap: 5px;
   padding: 5px 9px;
-  margin: 4px;
+  margin: 6px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px;
   font-weight: 700;
@@ -594,7 +594,7 @@ body {
   /* Form inputs: full width on mobile */
   .fg input, #targetBlock, #totalP, #winnerN { width: 100%; }
   .row2 { flex-wrap: wrap; }
-  .fg > div[style*="display:flex"] { flex-wrap: wrap; gap: 6px; }
+  .fg > div[style*="display:flex"] { flex-wrap: wrap; gap: 12px; }
 
   /* Buttons: slightly compact */
   .btn    { font-size: 13px; }
@@ -655,7 +655,7 @@ body {
 
         <!-- Config box -->
         <div class="pbox" id="configBox">
-          <p class="title">配置抽奖</p>
+          <p class="title">1/7 · 配置抽奖</p>
 
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px;color:var(--dim);flex-wrap:wrap;">
             <span class="dot" id="connDot"></span>
@@ -731,7 +731,7 @@ body {
 
         <!-- Log -->
         <div class="pbox" id="logPane">
-          <p class="title">Console</p>
+          <p class="title">2/7 · Console</p>
           <div id="mainLog" style="overflow-y:auto;font-size:9px;font-family:'Courier New',monospace;line-height:2;padding:4px 0;">
             <p class="c-dim">// 操作日志</p>
           </div>
@@ -748,7 +748,7 @@ body {
           <div class="arrow-btn" onclick="mobileNav(-1)"><span>▲</span></div>
         </div>
         <div class="pbox">
-          <p class="title">为什么用区块哈希</p>
+          <p class="title">3/7 · 为什么这个抽奖绝对公平</p>
           <p class="info-text" style="margin-bottom:12px;">
             以太坊每 <em>~12 秒</em> 出一个新区块。哈希值由全网数千个验证者共同决定，<em>任何人——包括本站——都无法提前预测或篡改</em>。
           </p>
@@ -771,7 +771,7 @@ body {
         </div>
 
         <div class="pbox">
-          <p class="title">抽奖流程</p>
+          <p class="title">4/7 · 如何使用</p>
           <div class="step"><span class="step-n">1</span><div class="step-t">确定人数 <em>N</em>，每人分配编号 <em>1…N</em></div></div>
           <div class="step"><span class="step-n">2</span><div class="step-t">选定未来区块号 <em>B</em>，公告参与者</div></div>
           <div class="step"><span class="step-n">3</span><div class="step-t">等待区块 <em>B</em> 被以太坊网络确认</div></div>
@@ -821,7 +821,7 @@ body {
           <div class="arrow-btn" onclick="mobileNav(-1)"><span>▲</span></div>
         </div>
         <div class="pbox">
-          <p class="title">抽奖算法</p>
+          <p class="title">5/7 · 抽奖算法</p>
           <div class="step"><span class="step-n">1</span><div class="step-t">seed = SHA256( blockHash + round )</div></div>
           <div class="step"><span class="step-n">2</span><div class="step-t">num = BigInt(seed[:16], 16) % N + 1</div></div>
           <div class="step"><span class="step-n">3</span><div class="step-t">跳过已中奖号码，round++ 继续</div></div>
@@ -829,7 +829,7 @@ body {
         </div>
 
         <div class="pbox">
-          <p class="title">ETH 节点</p>
+          <p class="title">6/7 · ETH 节点</p>
           <div class="toggle-hdr" onclick="toggleRpc()">
             <span>📡 公共 RPC 节点（免费）</span>
             <span id="rpcToggleIcon" style="font-size:8px">▼ 收起</span>
@@ -865,7 +865,7 @@ body {
           <div class="arrow-btn" onclick="mobileNav(-1)"><span>▲</span></div>
         </div>
         <div class="pbox">
-          <p class="title">Python 独立验证</p>
+          <p class="title">7/7 · 抽奖代码，欢迎独立验证</p>
           <p class="info-text" style="margin-bottom:10px;">粘贴以下代码到任意 Python 环境，自行还原中奖结果：</p>
           <div class="py-links">
             <a href="https://colab.research.google.com" target="_blank" class="btn btn-yellow btn-sm">Google Colab</a>
