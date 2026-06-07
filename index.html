@@ -582,14 +582,21 @@ body {
     padding: 10px 12px;
   }
 
-  /* Log pane: fixed max height inside scrolling section */
-  #logPane { flex: none; }
-  #logPane #mainLog { max-height: 220px; overflow-y: auto; }
+  /* 2/7 Console: fill remaining height in s1-main */
+  #logPane { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  #logPane #mainLog { flex: 1; min-height: 0; max-height: none; overflow-y: auto; }
 
   /* Info grid: vertical */
   .info-grid { flex-direction: column; overflow: visible; padding: 0; }
-  #infoColVerify { display: flex; flex-direction: column; }
-  #infoColVerify .pbox { flex: 1; display: flex; flex-direction: column; }
+
+  /* Pages 2–4: pboxes split/fill available height */
+  .s1-aside > .pbox,
+  #mpage-left > .pbox,
+  #infoColVerify > .pbox {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
 
   /* Form inputs: full width on mobile */
   .fg input, #targetBlock, #totalP, #winnerN { width: 100%; }
@@ -617,7 +624,7 @@ body {
     position: sticky;
     z-index: 10;
   }
-  .m-nav-up   { top: 0; }
+  .m-nav-up   { top: 0; margin-bottom: 30px; }
   .m-nav-down { bottom: 0; margin-top: auto; }
 }
 </style>
