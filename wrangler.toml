@@ -15,5 +15,5 @@ pages_build_output_dir = "."
 
 [[kv_namespaces]]
 binding    = "OPENLUCK_KV"
-id         = "REPLACE_WITH_YOUR_KV_ID"
-preview_id = "REPLACE_WITH_YOUR_PREVIEW_KV_ID"
+id         = "74d72f250510403da300f875b21ad97d"
+preview_id = "38b6cb28369a448f968d142451db2e0d"
