@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OpenLuck — 区块链公开抽奖</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════════════════
    NES.CSS-INSPIRED DESIGN SYSTEM
    Border technique: border-image with pixel SVG
    Button depth: ::after inset box-shadow
-   Font: Press Start 2P (pixel font)
+   Font: System sans-serif
 ══════════════════════════════════════════════════════ */
 
 /* ─── SVG pixel border shortcuts ─────────────────────
@@ -44,8 +43,8 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-family: 'Press Start 2P', 'SimHei', monospace;
-  font-size: 11px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
   color: var(--black);
   line-height: 1.8;
   background: var(--white);
@@ -74,13 +73,12 @@ body {
   align-items: center;
   gap: 14px;
   padding: 0 28px;
-  border-bottom: 4px solid var(--black);
   position: relative;
   z-index: 10;
 }
 .global-header .logo { font-size: 28px; }
-.global-header h1    { font-size: 16px; font-family: 'Press Start 2P', monospace; }
-.global-header p     { font-size: 9px; color: var(--dim); margin-top: 4px; line-height: 1.6; }
+.global-header h1    { font-size: 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.global-header p     { font-size: 12px; color: var(--dim); margin-top: 4px; line-height: 1.6; }
 .global-header nav   { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
 /* ─── SNAP SCROLL ────────────────────────────────── */
@@ -104,8 +102,6 @@ body {
   margin: 0 auto;
   width: 100%;
   background: var(--white);
-  border-left:  4px solid var(--black);
-  border-right: 4px solid var(--black);
 }
 
 /* ─── PIXEL CONTAINER (pbox) ─────────────────────── */
@@ -128,11 +124,12 @@ body {
   display: table;
   padding: 0 8px;
   margin: -2.2rem 0 0.9rem;
-  font-size: 9px;
-  letter-spacing: 2px;
+  font-size: 11px;
+  letter-spacing: 1px;
   text-transform: uppercase;
   background: var(--white);
-  font-family: 'Press Start 2P', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
 }
 
 /* ─── SCROLL BODY ────────────────────────────────── */
@@ -165,10 +162,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  padding: 6px 14px;
+  padding: 6px 10px;
   margin: 4px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
   background: var(--white);
@@ -215,8 +213,8 @@ body {
 .btn-green:active::after { box-shadow: inset 4px 4px var(--green-d); }
 
 /* ─── Button sizes ───────────────────────────────── */
-.btn-sm  { padding: 4px 10px; font-size: 18px; }
-.btn-lg  { padding: 8px 22px; font-size: 24px; }
+.btn-sm  { padding: 4px 7px; font-size: 12px; }
+.btn-lg  { padding: 8px 15px; font-size: 16px; }
 
 /* ─── Nav header buttons ─────────────────────────── */
 .nav-btn {
@@ -230,10 +228,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 13px;
+  padding: 5px 9px;
   margin: 4px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 18px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
   white-space: nowrap;
   text-decoration: none;
   cursor: pointer;
@@ -256,20 +255,20 @@ body {
 .fg { margin-bottom: 12px; }
 .fg label {
   display: block;
-  font-size: 8px;
-  letter-spacing: 1px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: var(--dim);
   margin-bottom: 6px;
-  font-family: 'Press Start 2P', monospace;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 .fg input {
   width: 260px;  /* default; overridden per-field below */
   background: var(--white);
   color: var(--black);
-  padding: 10px 12px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 11px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
   outline: none;
   /* NES-style input border */
   border-style: solid;
@@ -291,16 +290,7 @@ body {
 .eta  { font-size: 12px; color: var(--dim); margin: -4px 0 10px 4px; min-height: 16px; line-height: 1.8;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
-/* ─── BLOCK STATUS BAR ───────────────────────────── */
-.blockbar {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 20px;
-  background: var(--white);
-  margin: 0 0 4px;
-  font-size: 10px; font-weight: bold;
-  border: none;
-  border-bottom: 2px solid #eee;
-}
+
 .dot {
   width: 10px; height: 10px;
   background: var(--green);
@@ -316,9 +306,9 @@ body {
   background: var(--white);
   padding: 8px 10px;
   overflow-y: auto;
-  font-size: 10px;
-  font-family: 'Press Start 2P', monospace;
-  line-height: 2;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  line-height: 1.8;
 }
 .console p { margin: 2px 0; }
 .c-info    { color: var(--blue); }
@@ -332,13 +322,13 @@ body {
 .countdown-num {
   font-size: 44px; color: var(--red);
   letter-spacing: 4px; font-weight: bold;
-  font-family: 'Press Start 2P', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   text-shadow: 4px 4px 0 rgba(0,0,0,.08);
 }
 .countdown-sub {
-  font-size: 9px; color: var(--dim);
+  font-size: 13px; color: var(--dim);
   margin-top: 8px; font-weight: bold;
-  font-family: 'Press Start 2P', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* ─── WINNERS ────────────────────────────────────── */
@@ -348,7 +338,8 @@ body {
   color: var(--white);
   padding: 8px 16px;
   font-size: 14px;
-  font-family: 'Press Start 2P', monospace;
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   border-style: solid; border-width: 4px;
   border-image-slice: 2; border-image-width: 2;
   border-image-outset: 2;
@@ -366,10 +357,10 @@ body {
 @keyframes pop { 0%{transform:scale(0);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
 
 .hash-val {
-  font-size: 9px; color: var(--blue);
+  font-size: 11px; color: var(--blue);
   word-break: break-all; line-height: 2;
   border-left: 4px solid var(--black); padding-left: 10px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Courier New', monospace;
 }
 .result-meta { font-size: 9px; color: var(--dim); margin-bottom: 10px; }
 .result-meta strong { color: var(--red); }
@@ -425,7 +416,7 @@ body {
   width: 28px; height: 28px;
   cursor: pointer;
   font-size: 10px;
-  font-family: 'Press Start 2P', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--yellow);
   border-style: solid; border-width: 4px;
   border-image-slice: 2; border-image-width: 2;
@@ -472,7 +463,7 @@ body {
   background: var(--black); color: var(--white);
   min-width: 22px; height: 22px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 9px; font-family: 'Press Start 2P', monospace;
+  font-size: 11px; font-weight: 700; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   flex-shrink: 0; margin-top: 3px;
 }
 .step-t {
@@ -515,9 +506,10 @@ body {
 
 /* ─── SECTION DIVIDER TITLE ──────────────────────── */
 .sec-title {
-  font-size: 9px; letter-spacing: 2px;
+  font-size: 12px; letter-spacing: 1px;
   text-transform: uppercase;
-  font-family: 'Press Start 2P', monospace;
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   margin: 12px 0 8px;
   color: var(--black);
 }
@@ -525,12 +517,11 @@ body {
 /* ─── FOOTER ─────────────────────────────────────── */
 .site-footer {
   padding: 8px 20px;
-  border-top: 4px solid var(--black);
-  font-size: 8px; color: var(--dim);
+  font-size: 11px; color: var(--dim);
   flex-shrink: 0;
   display: flex; gap: 18px; align-items: center;
   background: var(--white);
-  font-family: 'Press Start 2P', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 .site-footer a { color: var(--dim); text-decoration: none; }
 .site-footer a:hover { color: var(--black); }
@@ -546,6 +537,89 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 .why-text em { color: var(--red); font-style: normal; font-weight: 600; }
+
+/* ─── VERIFICATION COLUMN FILL-HEIGHT ───────────────── */
+#infoColVerify {
+  display: flex;
+  flex-direction: column;
+}
+#infoColVerify .pbox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── MOBILE NAV ARROWS (hidden on desktop) ─────────── */
+.m-nav { display: none; }
+
+/* ─── MOBILE ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root { --header-h: 56px; }
+
+  /* Header */
+  .global-header { padding: 0 14px; gap: 8px; }
+  .global-header .logo { font-size: 22px; }
+  .global-header h1 { font-size: 14px; }
+  .global-header p  { display: none; }
+  .nav-btn { padding: 4px 8px; font-size: 12px; }
+
+  /* Desktop-only nav arrows hidden on mobile */
+  .desktop-nav { display: none !important; }
+
+  /* 4-page snap layout: keep snap, each column = one page */
+  .snap-wrap { scroll-snap-type: y mandatory; overflow-y: scroll; }
+  .screen { height: auto; scroll-snap-align: none; }
+
+  /* Each column becomes a full-height snap page */
+  .s1-grid { flex-direction: column; overflow: visible; }
+  .s1-main, .s1-aside, .info-col {
+    height: calc(100vh - var(--header-h));
+    scroll-snap-align: start;
+    overflow-y: auto;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+  }
+
+  /* Log pane: fixed max height inside scrolling section */
+  #logPane { flex: none; }
+  #logPane #mainLog { max-height: 220px; overflow-y: auto; }
+
+  /* Info grid: vertical */
+  .info-grid { flex-direction: column; overflow: visible; padding: 0; }
+  #infoColVerify { display: flex; flex-direction: column; }
+  #infoColVerify .pbox { flex: 1; display: flex; flex-direction: column; }
+
+  /* Form inputs: full width on mobile */
+  .fg input, #targetBlock, #totalP, #winnerN { width: 100%; }
+  .row2 { flex-wrap: wrap; }
+  .fg > div[style*="display:flex"] { flex-wrap: wrap; gap: 6px; }
+
+  /* Buttons: slightly compact */
+  .btn    { font-size: 13px; }
+  .btn-sm { font-size: 11px; }
+  .btn-lg { font-size: 15px; }
+
+  /* Codeblock */
+  .codeblock { font-size: 9px; flex: 1; }
+
+  /* Footer wraps */
+  .site-footer { flex-wrap: wrap; gap: 6px; font-size: 10px; padding: 8px 12px; }
+
+  /* Mobile nav arrows */
+  .m-nav {
+    display: flex;
+    justify-content: center;
+    padding: 4px 0;
+    flex-shrink: 0;
+    background: var(--white);
+    position: sticky;
+    z-index: 10;
+  }
+  .m-nav-up   { top: 0; }
+  .m-nav-down { bottom: 0; margin-top: auto; }
+}
 </style>
 </head>
 <body>
@@ -573,14 +647,6 @@ body {
   <!-- ═══ SCREEN 1 — LOTTERY TOOL ═══ -->
   <section class="screen" id="screen-tool">
 
-    <!-- Block status bar -->
-    <div class="blockbar">
-      <span class="dot" id="connDot"></span>
-      <span style="color:var(--dim);font-size:9px">当前区块：</span>
-      <span id="currentBlock" style="color:var(--red)">连接中…</span>
-      <span style="color:var(--dim);margin-left:auto;font-size:8px">每 ~15 秒自动刷新</span>
-    </div>
-
     <!-- Two-column content -->
     <div class="s1-grid">
 
@@ -590,6 +656,13 @@ body {
         <!-- Config box -->
         <div class="pbox" id="configBox">
           <p class="title">配置抽奖</p>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px;color:var(--dim);flex-wrap:wrap;">
+            <span class="dot" id="connDot"></span>
+            <span>当前区块：</span>
+            <span id="currentBlock" style="color:var(--red);font-weight:600;">连接中…</span>
+            <a id="etherscanBtn" href="https://etherscan.io/blocks" target="_blank" class="btn btn-blue btn-sm" style="margin:0;">🔍 查看当前区块</a>
+          </div>
 
           <div class="fg" style="flex:0 0 auto;">
             <label>目标区块号（须大于当前区块）</label>
@@ -659,15 +732,21 @@ body {
         <!-- Log -->
         <div class="pbox" id="logPane">
           <p class="title">Console</p>
-          <div id="mainLog" style="overflow-y:auto;font-size:9px;font-family:'Press Start 2P',monospace;line-height:2;padding:4px 0;">
+          <div id="mainLog" style="overflow-y:auto;font-size:9px;font-family:'Courier New',monospace;line-height:2;padding:4px 0;">
             <p class="c-dim">// 操作日志</p>
           </div>
         </div>
 
+        <div class="m-nav m-nav-down">
+          <div class="arrow-btn" onclick="mobileNav(1)"><span>▼</span></div>
+        </div>
       </div><!-- /s1-main -->
 
       <!-- RIGHT: why block hash sidebar -->
       <div class="s1-aside">
+        <div class="m-nav m-nav-up">
+          <div class="arrow-btn" onclick="mobileNav(-1)"><span>▲</span></div>
+        </div>
         <div class="pbox">
           <p class="title">为什么用区块哈希</p>
           <p class="info-text" style="margin-bottom:12px;">
@@ -701,19 +780,15 @@ body {
           <div class="step"><span class="step-n">6</span><div class="step-t">任何人可独立还原，<em>无需信任本站</em></div></div>
         </div>
 
-        <div class="pbox">
-          <p class="title">Etherscan 验证</p>
-          <p class="info-text" style="margin-bottom:10px;">
-            抽奖完成后，在 Etherscan 搜索目标区块号，即可查阅区块哈希，与本站结果交叉验证。
-          </p>
-          <a href="https://etherscan.io" target="_blank" class="btn btn-blue btn-sm">🔍 打开 Etherscan</a>
+        <div class="m-nav m-nav-down">
+          <div class="arrow-btn" onclick="mobileNav(1)"><span>▼</span></div>
         </div>
       </div><!-- /s1-aside -->
 
     </div><!-- /s1-grid -->
 
     <!-- Down nav arrow -->
-    <div class="nav-arrow">
+    <div class="nav-arrow desktop-nav">
       <div class="arrow-btn"
            onclick="document.getElementById('screen-info').scrollIntoView({behavior:'smooth'})">
         <span>▼</span>
@@ -728,7 +803,7 @@ body {
   <section class="screen" id="screen-info">
 
     <!-- Back nav -->
-    <div class="nav-arrow" style="border-bottom:4px solid var(--black);padding:8px 0;">
+    <div class="nav-arrow desktop-nav" style="border-bottom:4px solid var(--black);padding:8px 0;">
       <div class="arrow-btn"
            style="background:var(--blue);"
            onclick="document.getElementById('screen-tool').scrollIntoView({behavior:'smooth'})">
@@ -741,7 +816,10 @@ body {
     <div class="info-grid">
 
       <!-- LEFT: algorithm + ETH nodes -->
-      <div class="info-col">
+      <div class="info-col" id="mpage-left">
+        <div class="m-nav m-nav-up">
+          <div class="arrow-btn" onclick="mobileNav(-1)"><span>▲</span></div>
+        </div>
         <div class="pbox">
           <p class="title">抽奖算法</p>
           <div class="step"><span class="step-n">1</span><div class="step-t">seed = SHA256( blockHash + round )</div></div>
@@ -776,10 +854,16 @@ body {
             </div>
           </div>
         </div>
+        <div class="m-nav m-nav-down">
+          <div class="arrow-btn" onclick="mobileNav(1)"><span>▼</span></div>
+        </div>
       </div><!-- /info-col left -->
 
       <!-- RIGHT: Python verification -->
-      <div class="info-col">
+      <div class="info-col" id="infoColVerify">
+        <div class="m-nav m-nav-up">
+          <div class="arrow-btn" onclick="mobileNav(-1)"><span>▲</span></div>
+        </div>
         <div class="pbox">
           <p class="title">Python 独立验证</p>
           <p class="info-text" style="margin-bottom:10px;">粘贴以下代码到任意 Python 环境，自行还原中奖结果：</p>
@@ -788,11 +872,11 @@ body {
             <a href="https://replit.com/languages/python3" target="_blank" class="btn btn-blue btn-sm">Replit</a>
             <a href="https://www.online-python.com" target="_blank" class="btn btn-sm">OnlinePython</a>
           </div>
-          <div style="position:relative;margin-top:8px;">
+          <div style="position:relative;margin-top:8px;flex:1;display:flex;flex-direction:column;">
             <button class="btn btn-sm" id="copyCodeBtn"
                     style="position:absolute;top:8px;right:8px;z-index:4;font-size:8px;"
                     onclick="copyCode()">📋 复制</button>
-            <div class="codeblock" id="pyCodeblock"># ── 验证中奖结果 ──
+            <div class="codeblock" id="pyCodeblock" style="flex:1;"># ── 验证中奖结果 ──
 import hashlib, requests
 
 BLOCK_NUMBER = <span id="codeBlockNum">21000000</span>  # 目标区块号
@@ -827,6 +911,7 @@ print("中奖号码:", sorted(winners))</div>
 
     <footer class="site-footer">
       <span>OpenLuck · 以太坊区块哈希随机数 · 完全开源可验证</span>
+      <span>Vibed by @Xyinkl in 2 hours · 感谢 <a href="https://ffmpeg.bmmmd.com/" target="_blank">ffmpeg.bmmmd.com</a> 的 UI，很喜欢所以借鉴了一下</span>
       <a href="https://github.com/Xyinkl/OpenLuck" target="_blank">GitHub</a>
       <a href="history.html">历史记录</a>
       <a href="https://etherscan.io" target="_blank">Etherscan</a>
@@ -847,6 +932,25 @@ const RPC_ENDPOINTS = [
 ];
 
 let currentBlock = null, lotteryState = null, pollTimer = null, cdTimer = null;
+
+/* ── Mobile 4-page navigation ── */
+function mobileNav(dir) {
+  const sections = [
+    document.querySelector('.s1-main'),
+    document.querySelector('.s1-aside'),
+    document.getElementById('mpage-left'),
+    document.getElementById('infoColVerify'),
+  ].filter(Boolean);
+  const wrap = document.querySelector('.snap-wrap');
+  const wrapTop = wrap.getBoundingClientRect().top;
+  let cur = 0, minD = Infinity;
+  sections.forEach((s, i) => {
+    const d = Math.abs(s.getBoundingClientRect().top - wrapTop);
+    if (d < minD) { minD = d; cur = i; }
+  });
+  const t = Math.max(0, Math.min(sections.length - 1, cur + dir));
+  sections[t].scrollIntoView({ behavior: 'smooth' });
+}
 
 function log(msg, cls = 'c-info', panelId = 'mainLog') {
   const el = document.getElementById(panelId);
@@ -885,6 +989,7 @@ async function refreshBlock() {
     currentBlock = await fetchCurrentBlock();
     document.getElementById('currentBlock').textContent = '#' + currentBlock.toLocaleString();
     document.getElementById('connDot').className = 'dot';
+    document.getElementById('etherscanBtn').href = 'https://etherscan.io/block/' + currentBlock;
     updateEta();
     if (lotteryState && !lotteryState.done && currentBlock >= lotteryState.target)
       await executeDrawing();
