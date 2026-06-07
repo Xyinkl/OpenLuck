@@ -108,7 +108,7 @@ body {
     var(--bg) bottom left  / var(--corner) var(--corner) no-repeat,
     var(--bg) bottom right / var(--corner) var(--corner) no-repeat;
 }
-/* Pixel shadow dot */
+/* Pixel shadow dot — only on standalone pboxes, not inside info columns */
 .pbox::after {
   content: '';
   position: absolute;
@@ -118,6 +118,7 @@ body {
   background: var(--black);
   z-index: 1;
 }
+.info-col .pbox::after { display: none; }
 
 /* Section label — floats on top border, above corner mask */
 .pbox-lbl {
@@ -273,6 +274,8 @@ body {
   transition: border-color .1s, border-style .1s;
 }
 .fg input:focus { border-style: solid; border-color: var(--blue); }
+#configBox .fg input { width: 260px; }
+#configBox .row2 .fg { flex: 0 0 auto; }
 .row2 { display: flex; gap: 12px; }
 .row2 .fg { flex: 1; }
 
@@ -439,7 +442,7 @@ hr { border: none; border-top: 2px solid #d8d4c8; margin: 12px 0; }
 
 /* ════ INFO GRID ════ */
 .info-grid { display: flex; gap: 18px; flex: 1; overflow: hidden; padding: 14px 20px 12px; }
-.info-col { flex: 1; overflow-y: auto; padding-right: 4px; }
+.info-col { flex: 1; overflow-y: auto; padding-right: 4px; padding-top: 14px; }
 .info-col::-webkit-scrollbar { width: 5px; }
 .info-col::-webkit-scrollbar-track { background: #e0ddd4; }
 .info-col::-webkit-scrollbar-thumb { background: var(--black); }
@@ -497,13 +500,15 @@ hr { border: none; border-top: 2px solid #d8d4c8; margin: 12px 0; }
       <div class="pbox" id="configBox">
         <span class="pbox-lbl">配置抽奖</span>
         <div style="display:flex;gap:12px;align-items:flex-end;">
-          <div class="fg" style="flex:1">
+          <div class="fg" style="flex:0 0 auto">
             <label>目标区块号（须大于当前区块）</label>
             <input type="number" id="targetBlock" placeholder="例：21000000" min="1" oninput="onBlockInput()">
           </div>
-          <div style="margin-bottom:13px;display:flex;gap:8px;">
-            <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(100)">+100 块</button>
-            <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(500)">+500 块</button>
+          <div style="margin-bottom:13px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(20)">+20</button>
+            <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(50)">+50</button>
+            <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(100)">+100</button>
+            <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(500)">+500</button>
           </div>
         </div>
         <div class="eta" id="blockEta"></div>
@@ -551,7 +556,6 @@ hr { border: none; border-top: 2px solid #d8d4c8; margin: 12px 0; }
         <div class="sec" style="margin-top:14px">🏆 中奖号码</div>
         <div class="winners-grid" id="winnersGrid"></div>
         <div class="btns" style="margin-top:12px">
-          <button class="btn btn-blue btn-sm" onclick="saveRecord()">💾 保存到历史</button>
           <button class="btn btn-gray btn-sm" onclick="copyResult()">📋 复制结果</button>
           <button class="btn btn-gray btn-sm" onclick="resetAll()">再抽一次</button>
         </div>
@@ -560,7 +564,7 @@ hr { border: none; border-top: 2px solid #d8d4c8; margin: 12px 0; }
       <!-- Log -->
       <div class="pbox">
         <span class="pbox-lbl">日志</span>
-        <div class="console" id="mainLog" style="height:110px">
+        <div id="mainLog" style="height:110px;overflow-y:auto;font-size:12px;font-family:'Courier New',monospace;padding:4px 0;">
           <p class="c-dim">// 操作日志</p>
         </div>
       </div>
@@ -582,7 +586,7 @@ hr { border: none; border-top: 2px solid #d8d4c8; margin: 12px 0; }
   <!-- ══ SCREEN 2 — INFO ══ -->
   <section class="screen" id="screen-info">
 
-    <!-- Back arrow bar — same style as 原理说明 -->
+    <!-- Back arrow bar -->
     <div class="nav-arrow" style="border-bottom: var(--bw) solid var(--black); padding: 8px 0;">
       <div class="arrow-btn"
            style="background:var(--blue);
@@ -591,7 +595,6 @@ hr { border: none; border-top: 2px solid #d8d4c8; margin: 12px 0; }
         <span style="color:#fff">▲</span>
         <span class="arrow-label" style="color:#fff">返回抽奖</span>
       </div>
-      <span style="font-weight:bold;font-size:15px;letter-spacing:3px;text-transform:uppercase">原理说明</span>
     </div>
 
     <!-- Two-column info -->
@@ -657,12 +660,16 @@ hr { border: none; border-top: 2px solid #d8d4c8; margin: 12px 0; }
             <a href="https://colab.research.google.com" target="_blank" class="py-link py-colab">Google Colab</a>
             <a href="https://replit.com/languages/python3" target="_blank" class="py-link py-replit">Replit</a>
             <a href="https://www.online-python.com" target="_blank" class="py-link py-online">OnlinePython</a>
-            <a href="https://jupyter.org/try-jupyter/lab/" target="_blank" class="py-link py-jup">JupyterLite</a>
           </div>
-          <div class="codeblock"># ── 验证中奖结果 ──
+          <div style="position:relative;margin-top:10px;">
+            <button class="btn btn-gray btn-sm" id="copyCodeBtn"
+                    style="position:absolute;top:7px;right:7px;z-index:4;font-size:11px;padding:4px 11px;
+                           box-shadow:inset 2px 2px 0 rgba(255,255,255,.6),inset -2px -2px 0 rgba(0,0,0,.1),3px 3px 0 var(--black);"
+                    onclick="copyCode()">📋 复制</button>
+            <div class="codeblock" id="pyCodeblock"># ── 验证中奖结果 ──
 import hashlib, requests
 
-BLOCK_NUMBER = 21000000  # 替换为实际区块号
+BLOCK_NUMBER = <span id="codeBlockNum">21000000</span>  # 目标区块号
 TOTAL        = 100       # 总参与人数
 COUNT        = 3         # 中奖人数
 
@@ -686,6 +693,7 @@ while len(winners) &lt; COUNT:
 
 print("区块哈希:", block_hash)
 print("中奖号码:", sorted(winners))</div>
+          </div>
         </div>
       </div>
 
@@ -760,7 +768,12 @@ async function refreshBlock() {
   }
 }
 
-function onBlockInput() { updateEta(); }
+function onBlockInput() {
+  updateEta();
+  const v = document.getElementById('targetBlock').value;
+  const span = document.getElementById('codeBlockNum');
+  if (span) span.textContent = v || '21000000';
+}
 function updateEta() {
   const etaEl  = document.getElementById('blockEta');
   const target = parseInt(document.getElementById('targetBlock').value);
@@ -894,6 +907,7 @@ function showResults() {
     grid.appendChild(c);
   }, i * 180));
   log(`🎉 完成！中奖：${winners.join(', ')}`, 'c-success');
+  saveRecord();   // auto-save silently
 }
 
 async function saveRecord() {
@@ -920,6 +934,15 @@ function saveLocal(payload) {
     recs.unshift({ ...payload, id: Date.now() });
     localStorage.setItem('openluck_records', JSON.stringify(recs.slice(0, 200)));
   }
+}
+
+function copyCode() {
+  const code = document.getElementById('pyCodeblock').textContent;
+  const btn  = document.getElementById('copyCodeBtn');
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '✓ 已复制';
+    setTimeout(() => btn.textContent = '📋 复制', 2000);
+  });
 }
 
 function copyResult() {
