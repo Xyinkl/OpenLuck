@@ -90,6 +90,7 @@ body {
   overflow-x: hidden;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
+  border: none;
 }
 .snap-wrap::-webkit-scrollbar { display: none; }
 
@@ -164,10 +165,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: 5px;
-  padding: 8px 14px;
+  padding: 6px 14px;
   margin: 4px;
   font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
+  font-size: 20px;
+  white-space: nowrap;
   cursor: pointer;
   background: var(--white);
   color: var(--black);
@@ -213,8 +215,8 @@ body {
 .btn-green:active::after { box-shadow: inset 4px 4px var(--green-d); }
 
 /* ─── Button sizes ───────────────────────────────── */
-.btn-sm  { padding: 5px 10px; font-size: 9px; }
-.btn-lg  { padding: 11px 22px; font-size: 12px; }
+.btn-sm  { padding: 4px 10px; font-size: 18px; }
+.btn-lg  { padding: 8px 22px; font-size: 24px; }
 
 /* ─── Nav header buttons ─────────────────────────── */
 .nav-btn {
@@ -228,10 +230,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 7px 13px;
+  padding: 5px 13px;
   margin: 4px;
   font-family: 'Press Start 2P', monospace;
-  font-size: 9px;
+  font-size: 18px;
+  white-space: nowrap;
   text-decoration: none;
   cursor: pointer;
   user-select: none;
@@ -283,20 +286,20 @@ body {
 }
 #configBox .row2 .fg { flex: 0 0 auto; }
 #targetBlock { width: 130px; }
+#totalP, #winnerN { width: 130px; }
 .row2 { display: flex; gap: 12px; flex-wrap: nowrap; }
-.eta  { font-size: 8px; color: var(--dim); margin: -4px 0 10px 4px; min-height: 16px; line-height: 1.8; }
+.eta  { font-size: 12px; color: var(--dim); margin: -4px 0 10px 4px; min-height: 16px; line-height: 1.8;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
 /* ─── BLOCK STATUS BAR ───────────────────────────── */
 .blockbar {
   display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px;
+  padding: 10px 20px;
   background: var(--white);
-  margin: 4px 4px 16px;
+  margin: 0 0 4px;
   font-size: 10px; font-weight: bold;
-  border-style: solid; border-width: 4px;
-  border-image-slice: 2; border-image-width: 2;
-  border-image-outset: 2;
-  border-image-source: var(--pb5);
+  border: none;
+  border-bottom: 2px solid #eee;
 }
 .dot {
   width: 10px; height: 10px;
@@ -383,12 +386,25 @@ body {
   flex: 3;
   overflow-y: auto;
   padding: 14px 12px 0 20px;
+  display: flex;
+  flex-direction: column;
+}
+/* Log pbox stretches to fill remaining height */
+#logPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+#logPane #mainLog {
+  flex: 1;
+  min-height: 0;
 }
 .s1-aside {
   flex: 2;
   overflow-y: auto;
   padding: 14px 20px 0 8px;
-  border-left: 4px solid var(--black);
+  border-left: none;
 }
 .s1-main::-webkit-scrollbar, .s1-aside::-webkit-scrollbar { width: 5px; }
 .s1-main::-webkit-scrollbar-thumb, .s1-aside::-webkit-scrollbar-thumb { background: var(--black); }
@@ -439,43 +455,46 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 14px 20px 0;
-  border-right: 4px solid var(--black);
+  border-right: none;
 }
-.info-col:last-child { border-right: none; }
 .info-col::-webkit-scrollbar { width: 5px; }
 .info-col::-webkit-scrollbar-thumb { background: var(--black); }
 
 .info-text {
-  font-size: 10px; color: var(--dim);
-  line-height: 2.2;
-  font-family: 'Press Start 2P', monospace;
+  font-size: 13px; color: var(--dim);
+  line-height: 1.8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 .info-text strong { color: var(--red); }
 
-.step { display: flex; gap: 10px; margin-bottom: 10px; font-size: 10px; }
+.step { display: flex; gap: 10px; margin-bottom: 10px; }
 .step-n {
   background: var(--black); color: var(--white);
   min-width: 22px; height: 22px;
   display: flex; align-items: center; justify-content: center;
   font-size: 9px; font-family: 'Press Start 2P', monospace;
-  flex-shrink: 0; margin-top: 2px;
+  flex-shrink: 0; margin-top: 3px;
 }
-.step-t { color: var(--dim); line-height: 2.2; font-size: 9px; }
-.step-t em { color: var(--red); font-style: normal; }
+.step-t {
+  color: var(--dim); line-height: 1.8; font-size: 13px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.step-t em { color: var(--red); font-style: normal; font-weight: 600; }
 
 .toggle-hdr {
   display: flex; justify-content: space-between; align-items: center;
-  font-size: 9px; cursor: pointer; padding-bottom: 6px;
+  font-size: 12px; cursor: pointer; padding-bottom: 6px;
   border-bottom: 2px solid var(--black); margin-bottom: 8px;
   user-select: none;
-  font-family: 'Press Start 2P', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
 }
 .toggle-hdr:hover { color: var(--blue); border-color: var(--blue); }
 
 .rpc-item { margin-bottom: 10px; }
-.rpc-name { font-size: 9px; font-weight: bold; }
-.rpc-url  { font-size: 8px; color: var(--blue); display: block; padding-left: 12px; margin-top: 2px; }
-.rpc-note { font-size: 8px; color: var(--dim); display: block; padding-left: 12px; }
+.rpc-name { font-size: 12px; font-weight: bold; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.rpc-url  { font-size: 11px; color: var(--blue); display: block; padding-left: 12px; margin-top: 2px; font-family: 'Courier New', monospace; }
+.rpc-note { font-size: 11px; color: var(--dim); display: block; padding-left: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
 .codeblock {
   background: #f8f8f6;
@@ -517,13 +536,16 @@ body {
 .site-footer a:hover { color: var(--black); }
 
 /* ─── WHY-BOX (screen 1 right) ───────────────────── */
-.why-item { display: flex; gap: 8px; margin-bottom: 10px; }
+.why-item { display: flex; gap: 10px; margin-bottom: 12px; }
 .why-bullet {
-  flex-shrink: 0; margin-top: 3px;
+  flex-shrink: 0; margin-top: 5px;
   width: 8px; height: 8px; background: var(--black);
 }
-.why-text { font-size: 9px; color: var(--dim); line-height: 2.2; }
-.why-text em { color: var(--red); font-style: normal; }
+.why-text {
+  font-size: 13px; color: var(--dim); line-height: 1.8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.why-text em { color: var(--red); font-style: normal; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -569,16 +591,16 @@ body {
         <div class="pbox" id="configBox">
           <p class="title">配置抽奖</p>
 
-          <div style="display:flex;gap:0;align-items:flex-end;flex-wrap:wrap;">
-            <div class="fg" style="flex:0 0 auto;">
-              <label>目标区块号（须大于当前区块）</label>
+          <div class="fg" style="flex:0 0 auto;">
+            <label>目标区块号（须大于当前区块）</label>
+            <div style="display:flex;align-items:center;gap:0;">
               <input type="number" id="targetBlock" placeholder="例：21000000" min="1" oninput="onBlockInput()">
-            </div>
-            <div style="margin-bottom:12px;display:flex;flex-wrap:wrap;">
-              <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(20)">+20</button>
-              <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(50)">+50</button>
-              <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(100)">+100</button>
-              <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(500)">+500</button>
+              <div style="margin-left:10px;display:flex;flex-wrap:wrap;">
+                <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(20)">+20</button>
+                <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(50)">+50</button>
+                <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(100)">+100</button>
+                <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(500)">+500</button>
+              </div>
             </div>
           </div>
           <div class="eta" id="blockEta"></div>
@@ -635,9 +657,9 @@ body {
         </div>
 
         <!-- Log -->
-        <div class="pbox">
+        <div class="pbox" id="logPane">
           <p class="title">Console</p>
-          <div id="mainLog" style="height:100px;overflow-y:auto;font-size:9px;font-family:'Press Start 2P',monospace;line-height:2;padding:4px 0;">
+          <div id="mainLog" style="overflow-y:auto;font-size:9px;font-family:'Press Start 2P',monospace;line-height:2;padding:4px 0;">
             <p class="c-dim">// 操作日志</p>
           </div>
         </div>
