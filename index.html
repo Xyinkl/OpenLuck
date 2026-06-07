@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenLuck — 区块链公开抽奖</title>
+<style>
+:root {
+  --bg:       #0f0e17;
+  --bg-box:   #13121f;
+  --bg-deep:  #0a0912;
+  --border:   #e86827;
+  --border-l: #f09050;
+  --text:     #d4d3e8;
+  --dim:      #5c5b72;
+  --cyan:     #3de8c0;
+  --green:    #3de860;
+  --red:      #e83d3d;
+  --yellow:   #e8c03d;
+  --btn-y:    #c88818;
+  --btn-o:    #e86827;
+  --btn-b:    #1858c8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── HEADER ── */
+header {
+  padding: 10px 18px;
+  border-bottom: 2px solid #1e1c30;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+header .logo { font-size: 26px; }
+header h1 { font-size: 18px; color: #fff; letter-spacing: 1px; }
+header p  { font-size: 10px; color: var(--dim); margin-top: 1px; }
+header nav {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+header nav a {
+  padding: 5px 12px;
+  border: 2px solid;
+  font-size: 11px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-nav-hist  { background: var(--btn-b); color: #fff; border-color: #3070e0; }
+.btn-nav-gh    { background: #1c1c28; color: #aaa; border-color: #333; }
+.btn-nav-hist:hover, .btn-nav-gh:hover { filter: brightness(1.25); }
+
+/* ── MAIN ── */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── PANELS ── */
+.panel {
+  overflow-y: auto;
+  padding: 14px 16px;
+}
+.panel::-webkit-scrollbar { width: 5px; }
+.panel::-webkit-scrollbar-track { background: var(--bg-deep); }
+.panel::-webkit-scrollbar-thumb { background: #2a2840; }
+.panel::-webkit-scrollbar-thumb:hover { background: var(--border); }
+
+.left  { width: 44%; border-right: 2px solid #1e1c30; }
+.right { flex: 1; }
+
+/* ── PIXEL BOX ── */
+.pbox {
+  border: 2px solid var(--border);
+  position: relative;
+  margin-bottom: 14px;
+  padding: 14px;
+  background: var(--bg-box);
+}
+/* corner pixels */
+.pbox::before,
+.pbox::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: var(--border);
+}
+.pbox::before { bottom: -4px; right: -4px; }
+.pbox::after  { bottom: -4px; left: -4px; }
+
+.pbox-lbl {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  background: var(--bg-box);
+  padding: 0 6px;
+  color: var(--border);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ── SECTION HEADINGS ── */
+.sec {
+  font-size: 11px;
+  color: var(--border);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  margin-top: 4px;
+}
+hr { border: none; border-top: 1px solid #1e1c30; margin: 12px 0; }
+
+/* ── INFO TEXT ── */
+.info { font-size: 12px; color: var(--dim); line-height: 1.8; }
+.info strong { color: var(--border); font-weight: normal; }
+
+/* ── ALGO STEPS ── */
+.steps { margin: 8px 0; }
+.step  { display: flex; gap: 9px; margin-bottom: 7px; font-size: 12px; }
+.step-n {
+  background: var(--border);
+  color: #fff;
+  min-width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-t { color: var(--dim); line-height: 1.6; }
+.step-t em { color: var(--border); font-style: normal; }
+
+/* ── RPC LIST ── */
+.rpc-item { margin-bottom: 8px; font-size: 12px; }
+.rpc-name { color: var(--text); }
+.rpc-url  { color: var(--cyan); font-size: 11px; display: block; padding-left: 10px; margin-top: 2px; }
+.rpc-note { color: var(--dim); font-size: 11px; display: block; padding-left: 10px; }
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 7px 14px;
+  border: 2px solid;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  text-decoration: none;
+  display: inline-block;
+  transition: filter .1s;
+}
+.btn:hover  { filter: brightness(1.2); }
+.btn:active { transform: translate(1px,1px); filter: brightness(.9); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.btn-o { background: var(--btn-o); color: #fff; border-color: var(--border-l); }
+.btn-b { background: var(--btn-b); color: #fff; border-color: #3070e0; }
+.btn-y { background: var(--btn-y); color: #111; border-color: #e0a030; }
+.btn-g { background: #1c1c28; color: #888; border-color: #2a2840; }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+
+/* Python platform badges */
+.py-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.py-link {
+  padding: 4px 10px;
+  border: 2px solid;
+  font-size: 11px;
+  text-decoration: none;
+}
+.py-colab  { background: #f4a800; color: #000; border-color: #f9c840; }
+.py-replit { background: #5b2d8e; color: #fff; border-color: #7b4db0; }
+.py-online { background: #1a5276; color: #fff; border-color: #2980b9; }
+.py-jup    { background: #e66820; color: #fff; border-color: #f08030; }
+.py-link:hover { filter: brightness(1.15); }
+
+/* ── CODE BLOCK ── */
+.codeblock {
+  background: var(--bg-deep);
+  border: 1px solid #222;
+  padding: 10px;
+  font-size: 11px;
+  color: #88c0f0;
+  margin: 8px 0;
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.6;
+}
+
+/* ── BLOCK STATUS BAR ── */
+.blockbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  background: var(--bg-deep);
+  border: 1px solid #222;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+.dot {
+  width: 7px; height: 7px;
+  background: var(--green);
+  display: inline-block;
+  flex-shrink: 0;
+  animation: blink 1.8s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── FORM ── */
+.fg { margin-bottom: 10px; }
+.fg label { display: block; color: var(--dim); font-size: 10px; letter-spacing: 1px; margin-bottom: 4px; text-transform: uppercase; }
+.fg input {
+  width: 100%;
+  background: var(--bg-deep);
+  border: 2px solid #2a2840;
+  color: var(--text);
+  padding: 7px 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+.fg input:focus { outline: none; border-color: var(--border); }
+
+.row2 { display: flex; gap: 8px; }
+.row2 .fg { flex: 1; }
+
+.eta { font-size: 11px; color: var(--dim); margin-top: -6px; margin-bottom: 10px; min-height: 16px; }
+
+/* ── BUTTONS ROW ── */
+.btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+/* ── CONSOLE ── */
+.console {
+  background: var(--bg-deep);
+  border: 1px solid #1e1c30;
+  padding: 9px;
+  overflow-y: auto;
+  font-size: 11px;
+  color: var(--cyan);
+}
+.console p { margin: 2px 0; }
+.c-info    { color: var(--cyan); }
+.c-success { color: var(--green); }
+.c-error   { color: var(--red); }
+.c-warn    { color: var(--yellow); }
+.c-dim     { color: var(--dim); }
+
+/* ── COUNTDOWN ── */
+.countdown-wrap {
+  text-align: center;
+  padding: 16px 10px;
+}
+.countdown-num {
+  font-size: 52px;
+  color: var(--border);
+  letter-spacing: 5px;
+  font-weight: bold;
+  text-shadow: 0 0 24px rgba(232,104,39,.45);
+  font-variant-numeric: tabular-nums;
+}
+.countdown-sub { font-size: 11px; color: var(--dim); margin-top: 5px; }
+
+/* ── WINNERS ── */
+.winners-grid { display: flex; flex-wrap: wrap; gap: 7px; padding: 10px 0; }
+.winner-chip {
+  background: var(--border);
+  color: #fff;
+  padding: 5px 13px;
+  border: 2px solid var(--border-l);
+  font-size: 15px;
+  font-weight: bold;
+  animation: pop .3s ease both;
+}
+@keyframes pop { 0%{transform:scale(0);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+
+/* hash display */
+.hash-val {
+  font-size: 10px;
+  color: var(--cyan);
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+/* result meta */
+.result-meta { font-size: 11px; color: var(--dim); margin-bottom: 8px; }
+.result-meta span { color: var(--border); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 6px 18px;
+  border-top: 1px solid #1a1828;
+  font-size: 10px;
+  color: #2e2c45;
+  flex-shrink: 0;
+  display: flex;
+  gap: 16px;
+}
+footer a { color: #3a3850; text-decoration: none; }
+footer a:hover { color: var(--dim); }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <span class="logo">🎲</span>
+  <div>
+    <h1>OpenLuck</h1>
+    <p>基于以太坊区块哈希的公开透明抽奖</p>
+  </div>
+  <nav>
+    <a href="history.html" class="btn btn-nav-hist">📋 历史记录</a>
+    <a href="https://github.com/Xyinkl/OpenLuck" target="_blank" class="btn btn-nav-gh">⭐ GitHub</a>
+  </nav>
+</header>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- ════════════ LEFT: HOW IT WORKS ════════════ -->
+  <div class="panel left">
+
+    <div class="pbox">
+      <span class="pbox-lbl">抽奖原理</span>
+
+      <div class="sec">🔗 为什么用区块哈希？</div>
+      <p class="info">
+        以太坊每 <strong>~12 秒</strong>产生一个新区块。每个区块的哈希值由全网数千个验证者共同决定，
+        <strong>任何人——包括本网站——都无法提前预测或篡改</strong>。
+        选取一个未来区块的哈希作为随机种子，结果完全公开、可独立验证。
+      </p>
+
+      <hr>
+
+      <div class="sec">📐 抽奖算法（可自行验证）</div>
+      <div class="steps">
+        <div class="step"><span class="step-n">1</span><div class="step-t">确定参与人数 <em>N</em>，每人分配编号 <em>1…N</em></div></div>
+        <div class="step"><span class="step-n">2</span><div class="step-t">选定一个未来区块号 <em>B</em>，公告所有参与者</div></div>
+        <div class="step"><span class="step-n">3</span><div class="step-t">等待区块 <em>B</em> 被以太坊网络打包确认</div></div>
+        <div class="step"><span class="step-n">4</span><div class="step-t">从链上取得区块 <em>B</em> 的 256 位哈希 <em>H</em>（64 个十六进制字符）</div></div>
+        <div class="step"><span class="step-n">5</span><div class="step-t">迭代生成中奖号码：<em>seed = SHA256(H + round)</em>，取 <em>seed mod N + 1</em>，跳过重复，直到凑满中奖人数</div></div>
+        <div class="step"><span class="step-n">6</span><div class="step-t">任何人可用相同算法独立还原结果，无需信任本站</div></div>
+      </div>
+
+      <hr>
+
+      <div class="sec">📡 ETH 区块哈希获取渠道</div>
+      <p class="info" style="margin-bottom:10px;">以下均为免费公开节点，无需注册或 API Key：</p>
+
+      <div class="rpc-item">
+        <span class="rpc-name">▸ Cloudflare ETH（首选）</span>
+        <code class="rpc-url">POST https://cloudflare-eth.com</code>
+        <span class="rpc-note">Cloudflare 官方以太坊公共节点，本站默认使用</span>
+      </div>
+      <div class="rpc-item">
+        <span class="rpc-name">▸ Llama RPC</span>
+        <code class="rpc-url">POST https://eth.llamarpc.com</code>
+        <span class="rpc-note">LlamaNodes 免费公共节点，备用</span>
+      </div>
+      <div class="rpc-item">
+        <span class="rpc-name">▸ Ankr Public RPC</span>
+        <code class="rpc-url">POST https://rpc.ankr.com/eth</code>
+        <span class="rpc-note">Ankr 免费节点，二级备用</span>
+      </div>
+      <div class="rpc-item">
+        <span class="rpc-name">▸ Etherscan 区块浏览器</span>
+        <span class="rpc-note">前往 <a href="https://etherscan.io" target="_blank" style="color:var(--cyan)">etherscan.io</a> 搜索区块号，可直接查阅哈希</span>
+      </div>
+
+      <hr>
+
+      <div class="sec">🐍 在线 Python 自行验证</div>
+      <p class="info">不信任本网站？用以下平台粘贴代码自行验证：</p>
+      <div class="py-links">
+        <a href="https://colab.research.google.com" target="_blank" class="py-link py-colab">Google Colab</a>
+        <a href="https://replit.com/languages/python3" target="_blank" class="py-link py-replit">Replit</a>
+        <a href="https://www.online-python.com" target="_blank" class="py-link py-online">OnlinePython</a>
+        <a href="https://jupyter.org/try-jupyter/lab/" target="_blank" class="py-link py-jup">JupyterLite</a>
+      </div>
+
+      <div class="codeblock"># ── 验证中奖结果的 Python 代码 ──
+import hashlib, requests
+
+BLOCK_NUMBER = 21000000  # 替换为实际区块号
+TOTAL        = 100       # 总参与人数
+COUNT        = 3         # 中奖人数
+
+# 1. 获取区块哈希
+r = requests.post("https://cloudflare-eth.com", json={
+    "jsonrpc": "2.0",
+    "method":  "eth_getBlockByNumber",
+    "params":  [hex(BLOCK_NUMBER), False],
+    "id": 1
+})
+block_hash = r.json()["result"]["hash"][2:]  # 去掉 0x 前缀
+
+# 2. 迭代生成中奖号码
+winners, selected, rnd = [], set(), 0
+while len(winners) &lt; COUNT:
+    seed = f"{block_hash}{rnd:04x}".encode()
+    h    = hashlib.sha256(seed).hexdigest()
+    num  = int(h[:16], 16) % TOTAL + 1
+    if num not in selected:
+        selected.add(num)
+        winners.append(num)
+    rnd += 1
+
+print("区块哈希:", block_hash)
+print("中奖号码:", sorted(winners))</div>
+    </div>
+
+  </div><!-- /left -->
+
+  <!-- ════════════ RIGHT: LOTTERY TOOL ════════════ -->
+  <div class="panel right">
+
+    <!-- Block status -->
+    <div class="blockbar">
+      <span class="dot"></span>
+      <span style="color:var(--dim)">当前区块：</span>
+      <span id="currentBlock" style="color:var(--border)">连接中…</span>
+      <span style="color:var(--dim);margin-left:auto;font-size:11px;">每 ~15 秒自动刷新</span>
+    </div>
+
+    <!-- Config box -->
+    <div class="pbox" id="configBox">
+      <span class="pbox-lbl">配置抽奖</span>
+
+      <div style="display:flex;gap:8px;align-items:flex-end;">
+        <div class="fg" style="flex:1">
+          <label>目标区块号（必须大于当前区块）</label>
+          <input type="number" id="targetBlock" placeholder="例：21000000" min="1" oninput="onBlockInput()">
+        </div>
+        <div style="margin-bottom:10px;">
+          <button class="btn btn-y btn-sm" onclick="setQuickBlock(100)">+100</button>
+          <button class="btn btn-y btn-sm" onclick="setQuickBlock(500)" style="margin-left:4px">+500</button>
+        </div>
+      </div>
+      <div class="eta" id="blockEta"></div>
+
+      <div class="row2">
+        <div class="fg">
+          <label>总参与人数</label>
+          <input type="number" id="totalP" placeholder="例：100" min="2">
+        </div>
+        <div class="fg">
+          <label>中奖人数</label>
+          <input type="number" id="winnerN" placeholder="例：3" min="1">
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>抽奖标题（可选）</label>
+        <input type="text" id="lotteryTitle" placeholder="例：2025 年会抽奖">
+      </div>
+
+      <div class="btns">
+        <button class="btn btn-o" id="startBtn" onclick="startLottery()">🎲 开始抽奖</button>
+        <button class="btn btn-g btn-sm" onclick="resetAll()">重置</button>
+      </div>
+    </div>
+
+    <!-- Countdown box -->
+    <div class="pbox" id="countdownBox" style="display:none">
+      <span class="pbox-lbl">等待区块</span>
+      <div class="countdown-wrap">
+        <div class="countdown-num" id="cdNum">--:--:--</div>
+        <div class="countdown-sub">目标区块 <span id="cdBlock" style="color:var(--border)">—</span></div>
+        <div class="countdown-sub" style="margin-top:3px">剩余约 <span id="cdBlocksLeft" style="color:var(--border)">—</span> 个区块</div>
+      </div>
+      <div class="console" id="waitLog" style="height:100px"></div>
+    </div>
+
+    <!-- Results box -->
+    <div class="pbox" id="resultsBox" style="display:none">
+      <span class="pbox-lbl">抽奖结果</span>
+
+      <div class="result-meta">
+        区块 <span id="rBlock">—</span> &nbsp;·&nbsp;
+        总人数 <span id="rTotal">—</span> &nbsp;·&nbsp;
+        中奖 <span id="rCount">—</span> 人
+      </div>
+      <div style="font-size:10px;color:var(--dim);margin-bottom:4px;">区块哈希：</div>
+      <div class="hash-val" id="rHash">—</div>
+
+      <div class="sec" style="margin-top:12px">🏆 中奖号码</div>
+      <div class="winners-grid" id="winnersGrid"></div>
+
+      <div class="btns" style="margin-top:12px">
+        <button class="btn btn-b btn-sm" onclick="saveRecord()">💾 保存到历史</button>
+        <button class="btn btn-g btn-sm" onclick="copyResult()">📋 复制结果</button>
+        <button class="btn btn-g btn-sm" onclick="resetAll()">再抽一次</button>
+      </div>
+    </div>
+
+    <!-- Log -->
+    <div class="pbox">
+      <span class="pbox-lbl">日志</span>
+      <div class="console" id="mainLog" style="height:130px">
+        <p class="c-dim">// 操作日志</p>
+      </div>
+    </div>
+
+  </div><!-- /right -->
+</div><!-- /main -->
+
+<footer>
+  <span>OpenLuck · 基于以太坊区块哈希 · 完全开源可验证</span>
+  <a href="https://github.com/Xyinkl/OpenLuck" target="_blank">GitHub</a>
+  <a href="history.html">历史记录</a>
+  <a href="https://etherscan.io" target="_blank">Etherscan</a>
+</footer>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════
+const RPC_ENDPOINTS = [
+  'https://cloudflare-eth.com',
+  'https://eth.llamarpc.com',
+  'https://rpc.ankr.com/eth',
+];
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let currentBlock  = null;
+let lotteryState  = null;
+let pollTimer     = null;
+let cdTimer       = null;
+
+// ══════════════════════════════════════════
+//  LOGGING
+// ══════════════════════════════════════════
+function log(msg, cls = 'c-info', panelId = 'mainLog') {
+  const el = document.getElementById(panelId);
+  const p  = document.createElement('p');
+  p.className = cls;
+  const t = new Date().toLocaleTimeString('zh-CN', {hour12: false});
+  p.textContent = `[${t}] ${msg}`;
+  el.appendChild(p);
+  el.scrollTop = el.scrollHeight;
+}
+
+// ══════════════════════════════════════════
+//  ETH RPC
+// ══════════════════════════════════════════
+async function rpc(method, params) {
+  for (const ep of RPC_ENDPOINTS) {
+    try {
+      const r = await fetch(ep, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', method, params, id: 1 }),
+        signal: AbortSignal.timeout(9000),
+      });
+      const d = await r.json();
+      if (d.result !== undefined && d.result !== null) return d.result;
+    } catch (_) { /* try next */ }
+  }
+  throw new Error('所有 RPC 节点均无法连接');
+}
+
+async function fetchCurrentBlock() {
+  const hex = await rpc('eth_blockNumber', []);
+  return parseInt(hex, 16);
+}
+
+async function fetchBlock(num) {
+  return rpc('eth_getBlockByNumber', ['0x' + num.toString(16), false]);
+}
+
+// ══════════════════════════════════════════
+//  BLOCK STATUS BAR
+// ══════════════════════════════════════════
+async function refreshBlock() {
+  try {
+    currentBlock = await fetchCurrentBlock();
+    document.getElementById('currentBlock').textContent = '#' + currentBlock.toLocaleString();
+    updateEta();
+    if (lotteryState && !lotteryState.done && currentBlock >= lotteryState.targetBlock) {
+      await executeDrawing();
+    }
+  } catch (e) {
+    document.getElementById('currentBlock').textContent = '连接失败';
+  }
+}
+
+// ══════════════════════════════════════════
+//  ETA DISPLAY
+// ══════════════════════════════════════════
+function onBlockInput() { updateEta(); }
+
+function updateEta() {
+  const etaEl = document.getElementById('blockEta');
+  const target = parseInt(document.getElementById('targetBlock').value);
+  if (!currentBlock || !target) { etaEl.textContent = ''; return; }
+  if (target <= currentBlock) {
+    etaEl.style.color = 'var(--red)';
+    etaEl.textContent = '⚠ 该区块已过去，请选更大的区块号';
+    return;
+  }
+  etaEl.style.color = 'var(--dim)';
+  const left = target - currentBlock;
+  const secs = left * 12;
+  const eta  = new Date(Date.now() + secs * 1000).toLocaleString('zh-CN');
+  etaEl.textContent = `⏱ 约 ${fmtDur(secs)} 后到达（预计 ${eta}）`;
+}
+
+function fmtDur(s) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const ss = s % 60;
+  if (h > 0) return `${h} 小时 ${m} 分`;
+  if (m > 0) return `${m} 分 ${ss} 秒`;
+  return `${ss} 秒`;
+}
+
+function setQuickBlock(delta) {
+  if (!currentBlock) { alert('请等待当前区块加载'); return; }
+  document.getElementById('targetBlock').value = currentBlock + delta;
+  updateEta();
+}
+
+// ══════════════════════════════════════════
+//  START LOTTERY
+// ══════════════════════════════════════════
+function startLottery() {
+  const target = parseInt(document.getElementById('targetBlock').value);
+  const total  = parseInt(document.getElementById('totalP').value);
+  const count  = parseInt(document.getElementById('winnerN').value);
+  const title  = document.getElementById('lotteryTitle').value.trim() || '未命名抽奖';
+
+  if (!currentBlock)         return log('❌ 当前区块未加载，稍后重试', 'c-error');
+  if (!target || target <= currentBlock) return log(`❌ 目标区块必须大于当前区块 #${currentBlock}`, 'c-error');
+  if (!total || total < 2)   return log('❌ 总参与人数至少 2 人', 'c-error');
+  if (!count || count < 1 || count >= total) return log(`❌ 中奖人数须在 1 ~ ${total - 1} 之间`, 'c-error');
+
+  lotteryState = { target, total, count, title, createdAt: new Date().toISOString(), done: false };
+
+  log(`🎲 抽奖「${title}」已创建`);
+  log(`目标区块 #${target}，总人数 ${total}，中奖 ${count} 人`);
+
+  document.getElementById('configBox').style.display      = 'none';
+  document.getElementById('countdownBox').style.display   = 'block';
+  document.getElementById('resultsBox').style.display     = 'none';
+  document.getElementById('cdBlock').textContent          = '#' + target.toLocaleString();
+  document.getElementById('waitLog').innerHTML            = '';
+
+  log(`⏳ 等待区块 #${target}…`, 'c-info', 'waitLog');
+
+  startCountdown();
+  startPolling();
+}
+
+// ══════════════════════════════════════════
+//  COUNTDOWN TICKER (client-side estimate)
+// ══════════════════════════════════════════
+function startCountdown() {
+  if (cdTimer) clearInterval(cdTimer);
+  cdTimer = setInterval(() => {
+    if (!currentBlock || !lotteryState) return;
+    const left = Math.max(0, lotteryState.target - currentBlock);
+    document.getElementById('cdBlocksLeft').textContent = left;
+    const secs = left * 12;
+    const h = String(Math.floor(secs / 3600)).padStart(2, '0');
+    const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
+    const s = String(secs % 60).padStart(2, '0');
+    document.getElementById('cdNum').textContent = left === 0 ? '已到达！' : `${h}:${m}:${s}`;
+  }, 1000);
+}
+
+// ══════════════════════════════════════════
+//  POLLING
+// ══════════════════════════════════════════
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(async () => {
+    if (!lotteryState || lotteryState.done) { clearInterval(pollTimer); return; }
+    try {
+      const n = await fetchCurrentBlock();
+      currentBlock = n;
+      document.getElementById('currentBlock').textContent = '#' + n.toLocaleString();
+      updateEta();
+      const left = lotteryState.target - n;
+      if (left > 0) {
+        log(`⏳ 当前 #${n}，还剩 ${left} 块…`, 'c-dim', 'waitLog');
+      } else {
+        clearInterval(pollTimer);
+        await executeDrawing();
+      }
+    } catch (e) {
+      log(`⚠ 轮询错误：${e.message}`, 'c-warn', 'waitLog');
+    }
+  }, 13000);
+}
+
+// ══════════════════════════════════════════
+//  EXECUTE DRAWING
+// ══════════════════════════════════════════
+async function executeDrawing() {
+  if (lotteryState.done) return;
+  lotteryState.done = true;
+  if (cdTimer) clearInterval(cdTimer);
+
+  log(`✅ 区块 #${lotteryState.target} 已确认！获取哈希中…`, 'c-success', 'waitLog');
+
+  try {
+    const block = await fetchBlock(lotteryState.target);
+    if (!block || !block.hash) throw new Error('区块数据为空，请重试');
+
+    const hash = block.hash.replace('0x', '');
+    log(`🔑 哈希：0x${hash.slice(0, 16)}…`, 'c-success', 'waitLog');
+    log('🎲 计算中奖号码…', 'c-info', 'waitLog');
+
+    const winners = await selectWinners(hash, lotteryState.total, lotteryState.count);
+    log(`🏆 中奖：${winners.join(', ')}`, 'c-success', 'waitLog');
+
+    lotteryState.hash    = '0x' + hash;
+    lotteryState.winners = winners;
+    lotteryState.completedAt = new Date().toISOString();
+
+    showResults();
+  } catch (e) {
+    log(`❌ ${e.message}`, 'c-error', 'waitLog');
+    lotteryState.done = false; // allow retry via polling
+  }
+}
+
+// ══════════════════════════════════════════
+//  WINNER SELECTION — SHA-256 ITERATED
+// ══════════════════════════════════════════
+async function selectWinners(blockHash, total, count) {
+  const winners  = [];
+  const selected = new Set();
+  let round = 0;
+
+  while (winners.length < count) {
+    const input  = blockHash + round.toString(16).padStart(4, '0');
+    const buf    = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+    const hex    = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    const num    = Number(BigInt('0x' + hex.slice(0, 16)) % BigInt(total)) + 1;
+
+    if (!selected.has(num)) {
+      selected.add(num);
+      winners.push(num);
+    }
+    round++;
+  }
+  return winners.sort((a, b) => a - b);
+}
+
+// ══════════════════════════════════════════
+//  SHOW RESULTS
+// ══════════════════════════════════════════
+function showResults() {
+  const { hash, target, total, count, winners } = lotteryState;
+  document.getElementById('countdownBox').style.display = 'none';
+  document.getElementById('resultsBox').style.display   = 'block';
+  document.getElementById('rBlock').textContent  = '#' + target.toLocaleString();
+  document.getElementById('rTotal').textContent  = total;
+  document.getElementById('rCount').textContent  = count;
+  document.getElementById('rHash').textContent   = hash;
+
+  const grid = document.getElementById('winnersGrid');
+  grid.innerHTML = '';
+  winners.forEach((w, i) => {
+    setTimeout(() => {
+      const chip = document.createElement('div');
+      chip.className = 'winner-chip';
+      chip.textContent = '# ' + w;
+      grid.appendChild(chip);
+    }, i * 180);
+  });
+
+  log(`🎉 抽奖完成！中奖号码：${winners.join(', ')}`, 'c-success');
+}
+
+// ══════════════════════════════════════════
+//  SAVE RECORD
+// ══════════════════════════════════════════
+async function saveRecord() {
+  if (!lotteryState?.winners) return;
+  const payload = {
+    title:       lotteryState.title,
+    targetBlock: lotteryState.target,
+    blockHash:   lotteryState.hash,
+    total:       lotteryState.total,
+    count:       lotteryState.count,
+    winners:     lotteryState.winners,
+    createdAt:   lotteryState.createdAt,
+    completedAt: lotteryState.completedAt,
+  };
+
+  try {
+    const r = await fetch('/api/lottery', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload),
+    });
+    if (r.ok) { log('💾 已保存到服务器历史', 'c-success'); return; }
+  } catch (_) { /* fall through */ }
+
+  // Offline fallback → localStorage
+  const records = JSON.parse(localStorage.getItem('openluck_records') || '[]');
+  records.unshift({ ...payload, id: Date.now() });
+  localStorage.setItem('openluck_records', JSON.stringify(records.slice(0, 200)));
+  log('💾 已保存到本地历史（离线模式）', 'c-warn');
+}
+
+// ══════════════════════════════════════════
+//  COPY RESULT
+// ══════════════════════════════════════════
+function copyResult() {
+  if (!lotteryState?.winners) return;
+  const { title, target, hash, total, count, winners, completedAt } = lotteryState;
+  const text = [
+    '【OpenLuck 抽奖结果】',
+    `标题：${title}`,
+    `区块：#${target}`,
+    `哈希：${hash}`,
+    `总人数：${total} 人  中奖 ${count} 人`,
+    `中奖号码：${winners.join(', ')}`,
+    `时间：${new Date(completedAt).toLocaleString('zh-CN')}`,
+    `验证代码：https://github.com/Xyinkl/OpenLuck`,
+  ].join('\n');
+  navigator.clipboard.writeText(text).then(() => log('📋 结果已复制到剪贴板', 'c-success'));
+}
+
+// ══════════════════════════════════════════
+//  RESET
+// ══════════════════════════════════════════
+function resetAll() {
+  if (pollTimer) clearInterval(pollTimer);
+  if (cdTimer)   clearInterval(cdTimer);
+  lotteryState = null;
+
+  document.getElementById('configBox').style.display    = 'block';
+  document.getElementById('countdownBox').style.display = 'none';
+  document.getElementById('resultsBox').style.display   = 'none';
+  document.getElementById('startBtn').disabled           = false;
+  document.getElementById('targetBlock').value           = '';
+  document.getElementById('totalP').value                = '';
+  document.getElementById('winnerN').value               = '';
+  document.getElementById('lotteryTitle').value          = '';
+  document.getElementById('blockEta').textContent        = '';
+  log('🔄 已重置，可开始新抽奖');
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+(async () => {
+  log('🎲 OpenLuck 启动中，连接以太坊网络…');
+  await refreshBlock();
+  log('✅ 已连接到以太坊主网', 'c-success');
+  setInterval(refreshBlock, 15000);
+})();
+</script>
+</body>
+</html>

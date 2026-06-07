@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenLuck — 历史记录</title>
+<style>
+:root {
+  --bg:       #0f0e17;
+  --bg-box:   #13121f;
+  --bg-deep:  #0a0912;
+  --border:   #e86827;
+  --border-l: #f09050;
+  --text:     #d4d3e8;
+  --dim:      #5c5b72;
+  --cyan:     #3de8c0;
+  --green:    #3de860;
+  --red:      #e83d3d;
+  --yellow:   #e8c03d;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+header {
+  padding: 10px 18px;
+  border-bottom: 2px solid #1e1c30;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+header .logo { font-size: 26px; }
+header h1 { font-size: 18px; color: #fff; }
+header p  { font-size: 10px; color: var(--dim); margin-top: 1px; }
+header nav { margin-left: auto; display: flex; gap: 6px; }
+header nav a {
+  padding: 5px 12px;
+  border: 2px solid;
+  font-size: 11px;
+  text-decoration: none;
+  cursor: pointer;
+  color: #aaa;
+  border-color: #333;
+  background: #1c1c28;
+}
+header nav a.active { color: var(--border); border-color: var(--border); background: #1f1a14; }
+header nav a:hover  { filter: brightness(1.3); }
+
+/* MAIN */
+main { flex: 1; padding: 18px; max-width: 1000px; margin: 0 auto; width: 100%; }
+
+/* TOOLBAR */
+.toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.toolbar input {
+  flex: 1;
+  min-width: 200px;
+  background: var(--bg-deep);
+  border: 2px solid #2a2840;
+  color: var(--text);
+  padding: 7px 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+.toolbar input:focus { outline: none; border-color: var(--border); }
+
+.btn {
+  padding: 7px 14px;
+  border: 2px solid;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn:hover  { filter: brightness(1.2); }
+.btn:active { transform: translate(1px,1px); }
+.btn-o { background: #e86827; color: #fff; border-color: #f09050; }
+.btn-b { background: #1858c8; color: #fff; border-color: #3070e0; }
+.btn-g { background: #1c1c28; color: #888; border-color: #2a2840; }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+
+/* STATS BAR */
+.stats {
+  display: flex;
+  gap: 20px;
+  padding: 8px 14px;
+  background: var(--bg-box);
+  border: 1px solid #1e1c30;
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+.stat-item { display: flex; flex-direction: column; gap: 2px; }
+.stat-label { color: var(--dim); font-size: 10px; }
+.stat-val   { color: var(--border); font-size: 16px; }
+
+/* RECORD CARD */
+.record-card {
+  background: var(--bg-box);
+  border: 2px solid #2a2840;
+  padding: 14px;
+  margin-bottom: 10px;
+  position: relative;
+  transition: border-color .15s;
+}
+.record-card:hover { border-color: var(--border); }
+
+.record-card::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; right: -3px;
+  width: 4px; height: 4px;
+  background: #2a2840;
+  transition: background .15s;
+}
+.record-card:hover::after { background: var(--border); }
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.card-index {
+  background: var(--border);
+  color: #fff;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.card-title { font-size: 14px; color: #fff; }
+.card-time  { font-size: 10px; color: var(--dim); margin-top: 2px; }
+.card-badge {
+  margin-left: auto;
+  padding: 2px 8px;
+  font-size: 10px;
+  border: 1px solid var(--green);
+  color: var(--green);
+}
+
+.card-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+.card-meta span { display: flex; flex-direction: column; gap: 1px; }
+.card-meta em   { color: var(--border); font-style: normal; font-size: 13px; }
+
+.card-hash {
+  font-size: 10px;
+  color: var(--cyan);
+  background: var(--bg-deep);
+  padding: 5px 8px;
+  word-break: break-all;
+  margin-bottom: 8px;
+  border-left: 2px solid var(--border);
+}
+
+.winners-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.winner-chip {
+  background: var(--border);
+  color: #fff;
+  padding: 4px 10px;
+  border: 2px solid var(--border-l);
+  font-size: 13px;
+  font-weight: bold;
+}
+.card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #1e1c30;
+}
+
+/* EMPTY STATE */
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--dim);
+}
+.empty .big { font-size: 48px; margin-bottom: 12px; }
+.empty p    { font-size: 12px; line-height: 2; }
+
+/* SOURCE TOGGLE */
+.source-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #1e1c30;
+  margin-bottom: 16px;
+}
+.source-tab {
+  padding: 6px 16px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--dim);
+  border-bottom: 2px solid transparent;
+}
+.source-tab.active { color: var(--border); border-bottom-color: var(--border); }
+
+/* PAGINATION */
+.pagination {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.page-btn {
+  padding: 5px 12px;
+  border: 2px solid #2a2840;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  background: var(--bg-box);
+  color: var(--dim);
+}
+.page-btn.active { border-color: var(--border); color: var(--border); }
+.page-btn:hover  { border-color: var(--border-l); color: var(--text); }
+
+/* FOOTER */
+footer {
+  padding: 6px 18px;
+  border-top: 1px solid #1a1828;
+  font-size: 10px;
+  color: #2e2c45;
+  display: flex;
+  gap: 16px;
+}
+footer a { color: #3a3850; text-decoration: none; }
+footer a:hover { color: var(--dim); }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">🎲</span>
+  <div>
+    <h1>OpenLuck</h1>
+    <p>历史抽奖记录 — 完全公开可验证</p>
+  </div>
+  <nav>
+    <a href="index.html">🎲 发起抽奖</a>
+    <a href="history.html" class="active">📋 历史记录</a>
+    <a href="https://github.com/Xyinkl/OpenLuck" target="_blank">⭐ GitHub</a>
+  </nav>
+</header>
+
+<main>
+  <!-- Source toggle -->
+  <div class="source-tabs">
+    <div class="source-tab active" id="tab-server" onclick="switchSource('server')">🌐 服务器记录</div>
+    <div class="source-tab" id="tab-local" onclick="switchSource('local')">💾 本地记录</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats" id="statsBar">
+    <div class="stat-item"><span class="stat-label">总抽奖次数</span><span class="stat-val" id="statTotal">—</span></div>
+    <div class="stat-item"><span class="stat-label">参与总人次</span><span class="stat-val" id="statParticipants">—</span></div>
+    <div class="stat-item"><span class="stat-label">最近一次</span><span class="stat-val" id="statLatest">—</span></div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <input id="searchInput" type="text" placeholder="搜索标题 / 区块号 / 哈希…" oninput="render()">
+    <button class="btn btn-g btn-sm" onclick="document.getElementById('searchInput').value='';render()">清空</button>
+    <button class="btn btn-b btn-sm" onclick="loadRecords()">🔄 刷新</button>
+    <button class="btn btn-g btn-sm" onclick="exportJSON()">⬇ 导出 JSON</button>
+  </div>
+
+  <!-- Records list -->
+  <div id="recordsList"></div>
+  <div class="pagination" id="paginationBar"></div>
+</main>
+
+<footer>
+  <span>OpenLuck · 历史记录</span>
+  <a href="index.html">发起抽奖</a>
+  <a href="https://github.com/Xyinkl/OpenLuck" target="_blank">GitHub</a>
+  <a href="https://etherscan.io" target="_blank">Etherscan 验证</a>
+</footer>
+
+<script>
+const PAGE_SIZE = 10;
+
+let allRecords  = [];
+let currentPage = 1;
+let currentSrc  = 'server'; // 'server' | 'local'
+
+// ── SOURCE SWITCH ──────────────────────────────
+function switchSource(src) {
+  currentSrc = src;
+  document.getElementById('tab-server').classList.toggle('active', src === 'server');
+  document.getElementById('tab-local').classList.toggle('active',  src === 'local');
+  loadRecords();
+}
+
+// ── LOAD RECORDS ───────────────────────────────
+async function loadRecords() {
+  const listEl = document.getElementById('recordsList');
+  listEl.innerHTML = '<div class="empty"><div class="big">⏳</div><p>加载中…</p></div>';
+
+  if (currentSrc === 'local') {
+    allRecords = JSON.parse(localStorage.getItem('openluck_records') || '[]');
+    // sort newest first
+    allRecords.sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
+    currentPage = 1;
+    render();
+    return;
+  }
+
+  // Server fetch
+  try {
+    const r = await fetch('/api/lottery');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    allRecords = await r.json();
+    allRecords.sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
+  } catch (e) {
+    // Fallback to local if server unavailable
+    allRecords = JSON.parse(localStorage.getItem('openluck_records') || '[]');
+    allRecords.sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
+    if (allRecords.length === 0) {
+      listEl.innerHTML = `<div class="empty">
+        <div class="big">🔌</div>
+        <p>服务器暂时无法连接。<br>
+        已切换到本地记录（共 ${allRecords.length} 条）。<br>
+        本地保存的记录仅在此浏览器可见。</p></div>`;
+      updateStats(allRecords);
+      return;
+    }
+  }
+
+  currentPage = 1;
+  render();
+}
+
+// ── RENDER ─────────────────────────────────────
+function render() {
+  const q       = (document.getElementById('searchInput').value || '').toLowerCase();
+  const filtered = allRecords.filter(r => {
+    if (!q) return true;
+    return (
+      (r.title       || '').toLowerCase().includes(q) ||
+      (r.blockHash   || '').toLowerCase().includes(q) ||
+      String(r.targetBlock || '').includes(q)
+    );
+  });
+
+  updateStats(filtered);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = 1;
+
+  const slice = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  const listEl = document.getElementById('recordsList');
+  if (filtered.length === 0) {
+    listEl.innerHTML = `<div class="empty">
+      <div class="big">🎲</div>
+      <p>${allRecords.length === 0 ? '还没有任何抽奖记录。<br>去发起第一次抽奖吧！' : '没有匹配的记录。'}</p>
+      ${allRecords.length === 0 ? '<br><a href="index.html" style="color:var(--border);font-size:13px">→ 发起抽奖</a>' : ''}
+    </div>`;
+    document.getElementById('paginationBar').innerHTML = '';
+    return;
+  }
+
+  listEl.innerHTML = slice.map((rec, i) => buildCard(rec, (currentPage - 1) * PAGE_SIZE + i + 1)).join('');
+
+  // Pagination
+  const pbar = document.getElementById('paginationBar');
+  if (totalPages <= 1) { pbar.innerHTML = ''; return; }
+  let html = '';
+  if (currentPage > 1) html += `<button class="page-btn" onclick="gotoPage(${currentPage - 1})">◀ 上一页</button>`;
+  for (let p = 1; p <= totalPages; p++) {
+    if (p === currentPage) html += `<button class="page-btn active">${p}</button>`;
+    else if (p <= 2 || p >= totalPages - 1 || Math.abs(p - currentPage) <= 1)
+      html += `<button class="page-btn" onclick="gotoPage(${p})">${p}</button>`;
+    else if (Math.abs(p - currentPage) === 2)
+      html += `<span style="color:var(--dim);padding:5px 4px">…</span>`;
+  }
+  if (currentPage < totalPages) html += `<button class="page-btn" onclick="gotoPage(${currentPage + 1})">下一页 ▶</button>`;
+  pbar.innerHTML = html;
+}
+
+function gotoPage(p) { currentPage = p; render(); window.scrollTo(0, 0); }
+
+// ── BUILD CARD ─────────────────────────────────
+function buildCard(rec, idx) {
+  const winners  = (rec.winners || []).map(w => `<span class="winner-chip">#&thinsp;${w}</span>`).join('');
+  const dateStr  = rec.completedAt ? new Date(rec.completedAt).toLocaleString('zh-CN') : '—';
+  const hashDisp = rec.blockHash   ? rec.blockHash : '—';
+  const esUrl    = rec.targetBlock ? `https://etherscan.io/block/${rec.targetBlock}` : '#';
+
+  return `
+  <div class="record-card" id="card-${idx}">
+    <div class="card-header">
+      <div class="card-index">${idx}</div>
+      <div>
+        <div class="card-title">${esc(rec.title || '未命名抽奖')}</div>
+        <div class="card-time">${dateStr}</div>
+      </div>
+      <span class="card-badge">已完成</span>
+    </div>
+
+    <div class="card-meta">
+      <span><span>区块号</span><em>#${(rec.targetBlock || '—').toLocaleString()}</em></span>
+      <span><span>总人数</span><em>${rec.total || '—'}</em></span>
+      <span><span>中奖人数</span><em>${rec.count || (rec.winners || []).length}</em></span>
+    </div>
+
+    <div class="card-hash">${esc(hashDisp)}</div>
+
+    <div class="winners-row">${winners}</div>
+
+    <div class="card-actions">
+      <a href="${esUrl}" target="_blank" class="btn btn-g btn-sm">🔍 Etherscan 验证</a>
+      <button class="btn btn-g btn-sm" onclick="copyCard(${idx - 1})">📋 复制结果</button>
+      <button class="btn btn-g btn-sm" onclick="openVerifier(${idx - 1})">⚙ 验证算法</button>
+    </div>
+  </div>`;
+}
+
+// ── STATS ──────────────────────────────────────
+function updateStats(records) {
+  document.getElementById('statTotal').textContent        = records.length;
+  document.getElementById('statParticipants').textContent = records.reduce((s, r) => s + (r.total || 0), 0);
+  const latest = records[0];
+  document.getElementById('statLatest').textContent = latest
+    ? (latest.completedAt ? new Date(latest.completedAt).toLocaleDateString('zh-CN') : '—')
+    : '—';
+}
+
+// ── COPY CARD ──────────────────────────────────
+function copyCard(rawIdx) {
+  const rec = getFiltered()[rawIdx];
+  if (!rec) return;
+  const text = [
+    '【OpenLuck 抽奖结果】',
+    `标题：${rec.title || '未命名'}`,
+    `区块：#${rec.targetBlock}`,
+    `哈希：${rec.blockHash}`,
+    `总人数：${rec.total}  中奖 ${rec.count || rec.winners.length} 人`,
+    `中奖号码：${(rec.winners || []).join(', ')}`,
+    `时间：${rec.completedAt ? new Date(rec.completedAt).toLocaleString('zh-CN') : ''}`,
+    `Etherscan：https://etherscan.io/block/${rec.targetBlock}`,
+    `验证代码：https://github.com/Xyinkl/OpenLuck`,
+  ].join('\n');
+  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
+}
+
+// ── OPEN VERIFIER ──────────────────────────────
+function openVerifier(rawIdx) {
+  const rec = getFiltered()[rawIdx];
+  if (!rec) return;
+  const hash  = (rec.blockHash || '').replace('0x', '');
+  const code  = `# OpenLuck 验证代码\nimport hashlib\n\nBLOCK_HASH = "${hash}"\nTOTAL      = ${rec.total}\nCOUNT      = ${rec.count || rec.winners.length}\n\nwinners, selected, rnd = [], set(), 0\nwhile len(winners) < COUNT:\n    seed = f"{BLOCK_HASH}{rnd:04x}".encode()\n    h    = hashlib.sha256(seed).hexdigest()\n    num  = int(h[:16], 16) % TOTAL + 1\n    if num not in selected:\n        selected.add(num)\n        winners.append(num)\n    rnd += 1\n\nprint("中奖号码:", sorted(winners))\nprint("预期结果:", ${JSON.stringify(rec.winners)})\nprint("验证通过:", sorted(winners) == sorted(${JSON.stringify(rec.winners)}))`;
+
+  const encoded = encodeURIComponent(code);
+  const url = `https://www.online-python.com/#${encoded}`;
+  // Copy code and open online python
+  navigator.clipboard.writeText(code).then(() => {
+    alert('验证代码已复制到剪贴板！\n请粘贴到在线 Python 平台运行。\n\n即将打开 OnlinePython…');
+    window.open('https://www.online-python.com', '_blank');
+  });
+}
+
+// ── EXPORT JSON ────────────────────────────────
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(allRecords, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `openluck_history_${Date.now()}.json`;
+  a.click();
+}
+
+// ── HELPERS ────────────────────────────────────
+function esc(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function getFiltered() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  return allRecords.filter(r => {
+    if (!q) return true;
+    return (r.title || '').toLowerCase().includes(q) ||
+      (r.blockHash || '').toLowerCase().includes(q) ||
+      String(r.targetBlock || '').includes(q);
+  });
+}
+
+// ── INIT ───────────────────────────────────────
+loadRecords();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+name = "openluck"
+compatibility_date = "2024-01-01"
+
+# ── Pages deployment settings ──────────────────────────────────────────────────
+# Build output directory (static files)
+pages_build_output_dir = "."
+
+# ── KV Namespace Binding ───────────────────────────────────────────────────────
+# Step 1: Create the namespace:
+#   wrangler kv:namespace create OPENLUCK_KV
+# Step 2: Copy the `id` from the output and paste below.
+# Step 3: For local dev, also create a preview namespace:
+#   wrangler kv:namespace create OPENLUCK_KV --preview
+#   paste the preview_id below.
+
+[[kv_namespaces]]
+binding    = "OPENLUCK_KV"
+id         = "REPLACE_WITH_YOUR_KV_ID"
+preview_id = "REPLACE_WITH_YOUR_PREVIEW_KV_ID"
