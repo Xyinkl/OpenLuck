@@ -326,6 +326,7 @@ main {
   .global-header p  { display: none; }
   .nav-btn { padding: 4px 8px; font-size: 12px; }
   main { padding: 12px 10px; }
+  .toolbar .fg { flex: none; width: 75%; }
   .toolbar .fg input { width: 100%; }
   .site-footer { gap: 8px; font-size: 10px; }
 }
@@ -387,7 +388,7 @@ main {
     </div>
     <button class="btn btn-sm" onclick="document.getElementById('searchInput').value='';render()">清空</button>
     <button class="btn btn-blue btn-sm" onclick="loadRecords()">🔄 刷新</button>
-    <button class="btn btn-sm" onclick="exportJSON()">⬇ 导出 JSON</button>
+    <button class="btn btn-sm" onclick="exportJSON()">⬇ 导出</button>
   </div>
 
   <!-- Records list -->
