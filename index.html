@@ -741,6 +741,59 @@ body {
         <div class="pbox" id="countdownBox" style="display:none">
           <p class="title">等待区块</p>
           <div class="countdown-wrap">
+            <svg id="hourglassSvg" viewBox="0 0 60 65" xmlns="http://www.w3.org/2000/svg"
+                 shape-rendering="crispEdges" style="display:block;margin:0 auto 12px;">
+              <defs>
+                <clipPath id="hg-top">
+                  <polygon points="5,5 55,5 55,10 50,10 50,15 45,15 45,20 40,20 40,25 35,25 35,30 25,30 25,25 20,25 20,20 15,20 15,15 10,15 10,10 5,10"/>
+                </clipPath>
+                <clipPath id="hg-bot">
+                  <polygon points="25,30 35,30 35,35 40,35 40,40 45,40 45,45 50,45 50,50 55,50 55,55 5,55 5,50 10,50 10,45 15,45 15,40 20,40 20,35 25,35"/>
+                </clipPath>
+              </defs>
+              <!-- White fill for interiors -->
+              <polygon points="5,5 55,5 55,10 50,10 50,15 45,15 45,20 40,20 40,25 35,25 35,30 25,30 25,25 20,25 20,20 15,20 15,15 10,15 10,10 5,10" fill="white"/>
+              <polygon points="25,30 35,30 35,35 40,35 40,40 45,40 45,45 50,45 50,50 55,50 55,55 5,55 5,50 10,50 10,45 15,45 15,40 20,40 20,35 25,35" fill="white"/>
+              <!-- Animated sand top (draining) -->
+              <rect x="0" y="5" width="60" height="25" fill="#e76e55" clip-path="url(#hg-top)">
+                <animate attributeName="y"      values="5;30;5"   dur="3s" repeatCount="indefinite" calcMode="linear"/>
+                <animate attributeName="height" values="25;0;25"  dur="3s" repeatCount="indefinite" calcMode="linear"/>
+              </rect>
+              <!-- Animated sand bottom (filling) -->
+              <rect x="0" y="55" width="60" height="0" fill="#e76e55" clip-path="url(#hg-bot)">
+                <animate attributeName="y"      values="55;30;55" dur="3s" repeatCount="indefinite" calcMode="linear"/>
+                <animate attributeName="height" values="0;25;0"   dur="3s" repeatCount="indefinite" calcMode="linear"/>
+              </rect>
+              <!-- Sand stream at waist -->
+              <rect x="27" y="28" width="6" height="4" fill="#e76e55">
+                <animate attributeName="opacity" values="1;0;1" dur="0.5s" repeatCount="indefinite"/>
+              </rect>
+              <!-- Black frame caps -->
+              <rect x="0" y="0"  width="60" height="5"  fill="#212529"/>
+              <rect x="0" y="55" width="60" height="10" fill="#212529"/>
+              <!-- Left border pixels -->
+              <rect x="0"  y="5"  width="5" height="5" fill="#212529"/>
+              <rect x="5"  y="10" width="5" height="5" fill="#212529"/>
+              <rect x="10" y="15" width="5" height="5" fill="#212529"/>
+              <rect x="15" y="20" width="5" height="5" fill="#212529"/>
+              <rect x="20" y="25" width="5" height="5" fill="#212529"/>
+              <rect x="20" y="30" width="5" height="5" fill="#212529"/>
+              <rect x="15" y="35" width="5" height="5" fill="#212529"/>
+              <rect x="10" y="40" width="5" height="5" fill="#212529"/>
+              <rect x="5"  y="45" width="5" height="5" fill="#212529"/>
+              <rect x="0"  y="50" width="5" height="5" fill="#212529"/>
+              <!-- Right border pixels -->
+              <rect x="55" y="5"  width="5" height="5" fill="#212529"/>
+              <rect x="50" y="10" width="5" height="5" fill="#212529"/>
+              <rect x="45" y="15" width="5" height="5" fill="#212529"/>
+              <rect x="40" y="20" width="5" height="5" fill="#212529"/>
+              <rect x="35" y="25" width="5" height="5" fill="#212529"/>
+              <rect x="35" y="30" width="5" height="5" fill="#212529"/>
+              <rect x="40" y="35" width="5" height="5" fill="#212529"/>
+              <rect x="45" y="40" width="5" height="5" fill="#212529"/>
+              <rect x="50" y="45" width="5" height="5" fill="#212529"/>
+              <rect x="55" y="50" width="5" height="5" fill="#212529"/>
+            </svg>
             <div class="countdown-num" id="cdNum">--:--:--</div>
             <div class="countdown-sub">目标区块 <strong id="cdBlock" style="color:var(--red)">—</strong></div>
             <div class="countdown-sub" style="margin-top:6px">剩余约 <strong id="cdBlocksLeft" style="color:var(--red)">—</strong> 个区块</div>
@@ -1063,6 +1116,13 @@ function fmtDur(s) {
   return h>0?`${h}时${m}分`:m>0?`${m}分${ss}秒`:`${ss}秒`;
 }
 
+function sizeHourglass() {
+  const cd = document.getElementById('cdNum');
+  const hg = document.getElementById('hourglassSvg');
+  if (hg) hg.style.width = '60px';
+}
+window.addEventListener('resize', sizeHourglass);
+
 function setQuickBlock(d) {
   if (!currentBlock) { return log('❌ 区块未加载', 'c-error'); }
   document.getElementById('targetBlock').value = currentBlock + d;
@@ -1098,6 +1158,7 @@ function startLottery() {
   document.getElementById('cdBlock').textContent        = '#' + target.toLocaleString();
   document.getElementById('waitLog').innerHTML          = '';
   log(`⏳ 等待区块 #${target}…`, 'c-info', 'waitLog');
+  requestAnimationFrame(sizeHourglass);
   startCountdown(); startPolling();
 }
 
@@ -1266,6 +1327,7 @@ async function restoreActiveState() {
   document.getElementById('cdBlock').textContent        = '#' + state.target.toLocaleString();
   document.getElementById('waitLog').innerHTML          = '';
   log(`🔄 恢复进程「${state.title}」，目标 #${state.target.toLocaleString()}`, 'c-info', 'waitLog');
+  requestAnimationFrame(sizeHourglass);
 
   if (currentBlock && currentBlock >= state.target) {
     // Target block already passed — draw immediately
