@@ -297,6 +297,7 @@ body {
 .row2 { display: flex; gap: 12px; flex-wrap: nowrap; }
 .eta  { font-size: 12px; color: var(--dim); margin: -4px 0 10px 4px; min-height: 16px; line-height: 1.8;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.eta:empty { display: none; }
 
 
 .dot {
@@ -583,7 +584,7 @@ body {
 
   /* Header */
   .header-inner { padding: 0 14px; gap: 8px; }
-  .global-header .logo { font-size: 22px; }
+  .global-header .logo { font-size: 36px; }
   .global-header h1 { font-size: 14px; }
   .global-header p  { display: none; }
   .nav-btn { padding: 4px 8px; font-size: 12px; }
@@ -743,6 +744,7 @@ body {
             <div class="countdown-sub" style="margin-top:6px">剩余约 <strong id="cdBlocksLeft" style="color:var(--red)">—</strong> 个区块</div>
           </div>
           <div class="console" id="waitLog" style="height:80px;border-top:2px solid #eee;margin-top:8px;"></div>
+          <p style="text-align:center;font-size:11px;color:var(--dim);margin-top:10px;">进行中的抽奖已保存至本地，刷新或重新打开页面可自动恢复。</p>
         </div>
 
         <!-- Results -->
@@ -1087,6 +1089,7 @@ function startLottery() {
   if (!count || count < 1 || count >= total) return log(`❌ 中奖人数须在 1~${total-1}`, 'c-error');
 
   lotteryState = { target, total, count, title, createdAt: new Date().toISOString(), done: false };
+  saveActiveState();
   log(`🎲 「${title}」已创建，目标 #${target}，${total} 人抽 ${count} 人`);
 
   document.getElementById('configBox').style.display    = 'none';
@@ -1142,6 +1145,7 @@ async function executeDrawing() {
     lotteryState.hash = '0x' + hash;
     lotteryState.winners = winners;
     lotteryState.completedAt = new Date().toISOString();
+    clearActiveState();
     showResults();
     saveRecord();
   } catch (e) {
@@ -1231,6 +1235,7 @@ function resetAll() {
   if (pollTimer) clearInterval(pollTimer);
   if (cdTimer)   clearInterval(cdTimer);
   lotteryState = null;
+  clearActiveState();
   document.getElementById('configBox').style.display    = 'block';
   document.getElementById('countdownBox').style.display = 'none';
   document.getElementById('resultsBox').style.display   = 'none';
@@ -1240,12 +1245,44 @@ function resetAll() {
   log('🔄 已重置');
 }
 
+/* ── LOCAL STATE PERSISTENCE ── */
+function saveActiveState() {
+  try { localStorage.setItem('openluck_active', JSON.stringify(lotteryState)); } catch {}
+}
+
+function clearActiveState() {
+  try { localStorage.removeItem('openluck_active'); } catch {}
+}
+
+async function restoreActiveState() {
+  let state;
+  try { state = JSON.parse(localStorage.getItem('openluck_active')); } catch { clearActiveState(); return; }
+  if (!state || state.done) { clearActiveState(); return; }
+
+  lotteryState = state;
+  document.getElementById('configBox').style.display    = 'none';
+  document.getElementById('countdownBox').style.display = '';
+  document.getElementById('resultsBox').style.display   = 'none';
+  document.getElementById('cdBlock').textContent        = '#' + state.target.toLocaleString();
+  document.getElementById('waitLog').innerHTML          = '';
+  log(`🔄 恢复进程「${state.title}」，目标 #${state.target.toLocaleString()}`, 'c-info', 'waitLog');
+
+  if (currentBlock && currentBlock >= state.target) {
+    // Target block already passed — draw immediately
+    await executeDrawing();
+  } else {
+    startCountdown();
+    startPolling();
+  }
+}
+
 (async () => {
   log('🎲 OpenLuck 启动，连接以太坊…');
   await refreshBlock();
   if (currentBlock) log(`✅ 已连接，当前 #${currentBlock.toLocaleString()}`, 'c-success');
   else log('⚠ 连接失败，15 秒后重试', 'c-warn');
   setInterval(refreshBlock, 15000);
+  await restoreActiveState();
 })();
 </script>
 </body>

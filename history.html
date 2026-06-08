@@ -127,6 +127,10 @@ body {
 .nav-btn-blue::after { box-shadow: inset -4px -4px var(--blue-d); }
 .nav-btn-blue:hover { background: #108de0; }
 .nav-btn-blue:hover::after { box-shadow: inset -6px -6px var(--blue-d); }
+.nav-btn-red { background: var(--red); color: var(--white); }
+.nav-btn-red::after { box-shadow: inset -4px -4px var(--red-d); }
+.nav-btn-red:hover { background: #ce372b; }
+.nav-btn-red:hover::after { box-shadow: inset -6px -6px var(--red-d); }
 .nav-btn-gray { background: #e7e7e7; color: var(--black); }
 .nav-btn-gray:hover { background: #d0d0d0; }
 
@@ -317,7 +321,7 @@ main {
 @media (max-width: 768px) {
   :root { --header-h: 56px; }
   .header-inner { padding: 0 14px; gap: 8px; }
-  .global-header .logo { font-size: 22px; }
+  .global-header .logo { font-size: 36px; }
   .global-header h1 { font-size: 14px; }
   .global-header p  { display: none; }
   .nav-btn { padding: 4px 8px; font-size: 12px; }
@@ -340,7 +344,7 @@ main {
       <p>历史抽奖记录 — 完全公开可验证</p>
     </div>
     <nav>
-      <a href="index.html" class="nav-btn nav-btn-gray">🎲 发起抽奖</a>
+      <a href="index.html" class="nav-btn nav-btn-red">🎲 发起抽奖</a>
       <a href="https://github.com/Xyinkl/OpenLuck" target="_blank" class="nav-btn nav-btn-gray">⭐ GitHub</a>
     </nav>
   </div>
