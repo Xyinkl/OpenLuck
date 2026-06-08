@@ -326,6 +326,7 @@ body {
 .c-dim     { color: var(--dim); }
 
 /* ─── COUNTDOWN ──────────────────────────────────── */
+#countdownBox { display: flex; flex-direction: column; }
 .countdown-wrap { text-align: center; padding: 14px 10px; }
 .countdown-num {
   font-size: 44px; color: var(--red);
@@ -564,6 +565,22 @@ body {
 @media (max-width: 768px) {
   :root { --header-h: 56px; }
 
+  /* Prevent body-level scroll so header is always visible */
+  html, body { height: 100%; overflow: hidden; }
+
+  /* Countdown fills 70% of viewport height */
+  #countdownBox {
+    min-height: 70vh;
+    justify-content: center;
+  }
+  #countdownBox .countdown-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
   /* Header */
   .header-inner { padding: 0 14px; gap: 8px; }
   .global-header .logo { font-size: 22px; }
@@ -678,7 +695,7 @@ body {
             <span class="dot" id="connDot"></span>
             <span>当前区块：</span>
             <span id="currentBlock" style="color:var(--red);font-weight:600;">连接中…</span>
-            <a id="etherscanBtn" href="https://etherscan.io/blocks" target="_blank" class="btn btn-blue btn-sm" style="margin:0;">🔍 查看当前区块</a>
+            <a id="etherscanBtn" href="https://etherscan.io/blocks" target="_blank" class="btn btn-blue btn-sm" style="margin:0 0 0 auto;">🔍 查看当前区块</a>
           </div>
 
           <div class="fg" style="flex:0 0 auto;">
@@ -1073,7 +1090,7 @@ function startLottery() {
   log(`🎲 「${title}」已创建，目标 #${target}，${total} 人抽 ${count} 人`);
 
   document.getElementById('configBox').style.display    = 'none';
-  document.getElementById('countdownBox').style.display = 'block';
+  document.getElementById('countdownBox').style.display = '';
   document.getElementById('resultsBox').style.display   = 'none';
   document.getElementById('cdBlock').textContent        = '#' + target.toLocaleString();
   document.getElementById('waitLog').innerHTML          = '';
