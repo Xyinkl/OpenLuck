@@ -277,10 +277,10 @@ main {
   align-items: center; margin-bottom: 6px;
 }
 .winners-row.collapsed {
-  max-height: 70px; /* ~2 rows + outset padding */
+  max-height: 82px; /* 2 rows × ~32px + 6px gap + 6px outset/padding */
   overflow: hidden;
-  padding: 3px; /* room for border-image-outset on edges */
-  margin: -3px; /* compensate so layout doesn't shift */
+  padding: 4px;
+  margin: -4px;
 }
 .winners-toggle {
   font-size: 11px; color: var(--blue); cursor: pointer;
@@ -571,7 +571,7 @@ function initWinnersCollapse() {
     if (!btn) return;
     // Check if content overflows 2-row height
     const natural = row.scrollHeight;
-    if (natural > 72) {
+    if (natural > 86) {
       row.classList.add('collapsed');
       btn.style.display = 'inline';
     }

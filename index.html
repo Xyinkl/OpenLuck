@@ -208,6 +208,7 @@ body {
 .btn-yellow:active::after { box-shadow: inset 4px 4px #c9a000; }
 
 .btn-yellow { background: var(--yellow); color: var(--black); }
+#quickBtns { margin-left: 10px; }
 .btn-yellow::after { box-shadow: inset -4px -4px var(--yellow-d); }
 .btn-yellow:hover  { background: #f2c409; }
 .btn-yellow:hover::after { box-shadow: inset -6px -6px var(--yellow-d); }
@@ -642,6 +643,7 @@ body {
 
   /* Form inputs: full width on mobile */
   .fg input, #targetBlock, #totalP, #winnerN { width: 100%; }
+  #quickBtns { margin-top: 6px; }
   .row2 { flex-wrap: wrap; }
   .fg > div[style*="display:flex"] { flex-wrap: wrap; gap: 12px; }
 
@@ -718,9 +720,9 @@ body {
 
           <div class="fg" style="flex:0 0 auto;">
             <label>目标区块号（须大于当前区块）</label>
-            <div style="display:flex;align-items:center;gap:0;">
+            <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;">
               <input type="number" id="targetBlock" placeholder="例：21000000" min="1" oninput="onBlockInput()">
-              <div style="margin-left:10px;display:flex;flex-wrap:wrap;">
+              <div id="quickBtns" style="display:flex;flex-wrap:wrap;">
                 <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(10)">+10</button>
                 <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(20)">+20</button>
                 <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(50)">+50</button>
