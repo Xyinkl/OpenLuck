@@ -567,7 +567,8 @@ body {
   :root { --header-h: 56px; }
 
   /* Prevent body-level scroll so header is always visible */
-  html, body { height: 100%; overflow: hidden; }
+  html { height: 100dvh; overflow: hidden; }
+  body { height: 100dvh; overflow: hidden; }
 
   /* Countdown fills 70% of viewport height */
   #countdownBox {
@@ -599,7 +600,7 @@ body {
   /* Each column becomes a full-height snap page */
   .s1-grid { flex-direction: column; overflow: visible; }
   .s1-main, .s1-aside, .info-col {
-    height: calc(100vh - var(--header-h));
+    height: calc(100dvh - var(--header-h));
     scroll-snap-align: start;
     overflow-y: auto;
     flex: none;
