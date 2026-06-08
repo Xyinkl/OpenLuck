@@ -788,7 +788,7 @@ body {
         <div class="pbox">
           <p class="title">3/7 · 为什么这个抽奖绝对公平</p>
           <p class="info-text" style="margin-bottom:12px;">
-            本站不托管任何"暗箱操作"的随机数。我们将抽奖的决定权交给了全球最大的区块链共识网络——<em>任何人（包括主办方和平台）都无法干预最终结果</em>。
+            本站将抽奖的随机性交给了全球区块链共识网络以太坊——<em>任何人都无法干预最终结果</em>。
           </p>
           <div class="why-item">
             <div class="why-bullet"></div>
@@ -805,12 +805,11 @@ body {
         </div>
 
         <div class="pbox">
-          <p class="title">4/7 · 操作指南：如何参与并见证？</p>
+          <p class="title">4/7 · 操作指南：如何使用？</p>
           <div class="step"><span class="step-n">1</span><div class="step-t"><em>锁定名单：</em>确定总参与人数 N，为每位参与者分配唯一编号（1…N），并<em>全员公示</em></div></div>
-          <div class="step"><span class="step-n">2</span><div class="step-t"><em>选定信源：</em>公告一个未来的以太坊区块高度，作为本次抽奖的<em>唯一合法信源</em></div></div>
-          <div class="step"><span class="step-n">3</span><div class="step-t"><em>共同见证：</em>等待该区块被以太坊网络打包确认</div></div>
+          <div class="step"><span class="step-n">2</span><div class="step-t"><em>选定、等待：</em>公告一个未来的以太坊区块高度，作为本次抽奖的<em>唯一合法信源，等待该区块被以太坊网络打包确认</em></div></div>
           <div class="step"><span class="step-n">4</span><div class="step-t"><em>获取哈希：</em>在 Etherscan 上查询该区块，获取其 64 位十六进制的 Block Hash</div></div>
-          <div class="step"><span class="step-n">5</span><div class="step-t"><em>算法开奖：</em>将哈希值输入公开的开奖程序，瞬间得出<em>不可争议</em>的中奖号码</div></div>
+          <div class="step"><span class="step-n">5</span><div class="step-t"><em>算法开奖：</em>将哈希值输入公开的开奖程序，得出<em>不可争议</em>的中奖号码</div></div>
         </div>
 
         <div class="m-nav m-nav-down">
@@ -854,7 +853,7 @@ body {
         </div>
         <div class="pbox">
           <p class="title">5/7 · 硬核算法解析</p>
-          <p class="info-text" style="margin-bottom:10px;">计算逻辑不依赖任何编程语言自带的随机函数，而是纯粹的密码学哈希计算：</p>
+          <p class="info-text" ">计算逻辑不依赖任何编程语言自带的随机函数，而是纯粹的密码学哈希计算：</p>
           <div class="step"><span class="step-n">1</span><div class="step-t"><em>构建种子：</em>拼接 <code>区块哈希</code> 与 <code>当前轮次</code>（从 <code>0000</code> 开始递增的十六进制数）</div></div>
           <div class="step"><span class="step-n">2</span><div class="step-t"><em>哈希加密：</em>对种子进行一次 <code>SHA-256</code> 加密，得到全新的 64 位字符</div></div>
           <div class="step"><span class="step-n">3</span><div class="step-t"><em>计算号码：</em>截取前 16 位转为十进制，对总人数 N 取模并加 1，得出当前轮次中奖号码</div></div>
