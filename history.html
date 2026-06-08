@@ -277,8 +277,10 @@ main {
   align-items: center; margin-bottom: 6px;
 }
 .winners-row.collapsed {
-  max-height: 62px; /* ~2 rows of chips */
+  max-height: 70px; /* ~2 rows + outset padding */
   overflow: hidden;
+  padding: 3px; /* room for border-image-outset on edges */
+  margin: -3px; /* compensate so layout doesn't shift */
 }
 .winners-toggle {
   font-size: 11px; color: var(--blue); cursor: pointer;
@@ -569,7 +571,7 @@ function initWinnersCollapse() {
     if (!btn) return;
     // Check if content overflows 2-row height
     const natural = row.scrollHeight;
-    if (natural > 66) {
+    if (natural > 72) {
       row.classList.add('collapsed');
       btn.style.display = 'inline';
     }
