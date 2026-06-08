@@ -201,6 +201,11 @@ body {
 .btn-blue:hover  { background: #108de0; }
 .btn-blue:hover::after { box-shadow: inset -6px -6px var(--blue-d); }
 .btn-blue:active::after { box-shadow: inset 4px 4px var(--blue-d); }
+.btn-yellow { background: #f5c518; color: #212529; }
+.btn-yellow::after { box-shadow: inset -4px -4px #c9a000; }
+.btn-yellow:hover  { background: #f0b800; }
+.btn-yellow:hover::after { box-shadow: inset -6px -6px #c9a000; }
+.btn-yellow:active::after { box-shadow: inset 4px 4px #c9a000; }
 
 .btn-yellow { background: var(--yellow); color: var(--black); }
 .btn-yellow::after { box-shadow: inset -4px -4px var(--yellow-d); }
@@ -372,9 +377,14 @@ body {
   border-left: 4px solid var(--black); padding-left: 10px;
   font-family: 'Courier New', monospace;
 }
-.result-meta { font-size: 9px; color: var(--dim); margin-bottom: 10px; }
-.result-meta strong { color: var(--red); }
+.result-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 12px; }
+.result-meta .meta-item { font-size: 12px; color: var(--dim); }
+.result-meta .meta-item strong { font-size: 15px; color: var(--red); }
+.result-meta .meta-highlight { font-size: 14px; color: var(--dim); }
+.result-meta .meta-highlight strong { font-size: 22px; color: var(--red); font-weight: 700; }
 .btns { display: flex; gap: 0; flex-wrap: wrap; margin-top: 10px; }
+.cd-summary { font-size: 12px; color: var(--dim); margin: 4px 0 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ─── SCREEN 1 GRID ──────────────────────────────── */
 .s1-grid {
@@ -705,7 +715,7 @@ body {
             <label>目标区块号（须大于当前区块）</label>
             <div style="display:flex;align-items:center;gap:0;">
               <input type="number" id="targetBlock" placeholder="例：21000000" min="1" oninput="onBlockInput()">
-              <div style="display:flex;flex-wrap:wrap;">
+              <div style="margin-left:10px;display:flex;flex-wrap:wrap;">
                 <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(10)">+10</button>
                 <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(20)">+20</button>
                 <button class="btn btn-yellow btn-sm" onclick="setQuickBlock(50)">+50</button>
@@ -741,65 +751,79 @@ body {
         <!-- Countdown -->
         <div class="pbox" id="countdownBox" style="display:none">
           <p class="title">等待区块</p>
+          <!-- Compact overview row -->
+          <p class="cd-summary"><span id="cdTitle">—</span> &nbsp;·&nbsp; 共 <strong id="cdTotal">—</strong> 人抽 <strong id="cdWinCount" style="color:var(--red)">—</strong> 人</p>
+          <!-- Block animation + countdown -->
           <div class="countdown-wrap">
-            <svg id="hourglassSvg" viewBox="0 0 60 65" xmlns="http://www.w3.org/2000/svg"
-                 shape-rendering="crispEdges" style="display:block;margin:0 auto 12px;">
+            <svg id="hourglassSvg" xmlns="http://www.w3.org/2000/svg" viewBox="10 -10 80 140"
+                 style="display:block;margin:0 auto 6px;width:160px;">
+              <style>
+                @keyframes dropS1 {
+                  0%   { transform: translateY(-35px); opacity: 0; }
+                  5%   { transform: translateY(-20px); opacity: 1; }
+                  15%  { transform: translateY(0px);   opacity: 1; }
+                  100% { transform: translateY(0px);   opacity: 1; }
+                }
+                @keyframes pushS2 {
+                  0%   { transform: translateY(0px);  }
+                  15%  { transform: translateY(25px); }
+                  100% { transform: translateY(25px); }
+                }
+                @keyframes fadeGrassS2 {
+                  0%   { opacity: 1; }
+                  15%  { opacity: 1; }
+                  35%  { opacity: 0; }
+                  100% { opacity: 0; }
+                }
+                @keyframes pushAndFadeS3 {
+                  0%   { transform: translateY(25px); opacity: 1; }
+                  15%  { transform: translateY(50px); opacity: 1; }
+                  35%  { transform: translateY(50px); opacity: 0; }
+                  100% { transform: translateY(50px); opacity: 0; }
+                }
+                .s1 { animation: dropS1 2.4s infinite ease-in-out; }
+                .s2 { animation: pushS2 2.4s infinite ease-in-out; }
+                .s3 { animation: pushAndFadeS3 2.4s infinite ease-in-out; }
+                .s2-grass { animation: fadeGrassS2 2.4s infinite ease-in-out; }
+              </style>
               <defs>
-                <clipPath id="hg-top">
-                  <polygon points="5,5 55,5 55,10 50,10 50,15 45,15 45,20 40,20 40,25 35,25 35,30 25,30 25,25 20,25 20,20 15,20 15,15 10,15 10,10 5,10"/>
-                </clipPath>
-                <clipPath id="hg-bot">
-                  <polygon points="25,30 35,30 35,35 40,35 40,40 45,40 45,45 50,45 50,50 55,50 55,55 5,55 5,50 10,50 10,45 15,45 15,40 20,40 20,35 25,35"/>
-                </clipPath>
+                <g id="dirt-base">
+                  <polygon points="25,22.5 50,35 50,60 25,47.5" fill="#8C6345"/>
+                  <polygon points="50,35 75,22.5 75,47.5 50,60" fill="#6E4A30"/>
+                  <polygon points="35,45 40,47.5 40,52.5 35,50" fill="#000" opacity="0.15"/>
+                  <polygon points="40,52.5 45,55 45,60 40,57.5" fill="#fff" opacity="0.1"/>
+                  <polygon points="30,42.5 35,45 35,50 30,47.5" fill="#000" opacity="0.2"/>
+                  <polygon points="60,45 65,42.5 65,47.5 60,50" fill="#000" opacity="0.15"/>
+                  <polygon points="65,52.5 70,50 70,55 65,57.5" fill="#fff" opacity="0.1"/>
+                  <polygon points="55,47.5 60,45 60,50 55,52.5" fill="#000" opacity="0.2"/>
+                </g>
+                <g id="grass-overlay">
+                  <polygon points="50,35 50,40 45,37.5 45,42.5 40,40 40,37.5 35,35 35,40 30,37.5 30,30 25,27.5 25,22.5" fill="#529532"/>
+                  <polygon points="50,35 50,40 55,37.5 55,42.5 60,40 60,35 65,32.5 65,37.5 70,35 70,30 75,27.5 75,22.5" fill="#3E7621"/>
+                  <polygon points="40,37.5 45,40 45,42.5 40,40" fill="#fff" opacity="0.15"/>
+                  <polygon points="30,30 35,32.5 35,37.5 30,35" fill="#000" opacity="0.15"/>
+                  <polygon points="60,35 65,32.5 65,37.5 60,40" fill="#fff" opacity="0.15"/>
+                  <polygon points="70,30 75,27.5 75,30 70,32.5" fill="#000" opacity="0.15"/>
+                  <polygon points="25,22.5 50,10 75,22.5 50,35" fill="#67B644"/>
+                  <polygon points="50,20 55,22.5 50,25 45,22.5" fill="#fff" opacity="0.15"/>
+                  <polygon points="55,17.5 60,20 55,22.5 50,20" fill="#000" opacity="0.1"/>
+                  <polygon points="40,17.5 45,20 40,22.5 35,20" fill="#fff" opacity="0.15"/>
+                  <polygon points="45,27.5 50,30 45,32.5 40,30" fill="#000" opacity="0.1"/>
+                </g>
               </defs>
-              <!-- White fill for interiors -->
-              <polygon points="5,5 55,5 55,10 50,10 50,15 45,15 45,20 40,20 40,25 35,25 35,30 25,30 25,25 20,25 20,20 15,20 15,15 10,15 10,10 5,10" fill="white"/>
-              <polygon points="25,30 35,30 35,35 40,35 40,40 45,40 45,45 50,45 50,50 55,50 55,55 5,55 5,50 10,50 10,45 15,45 15,40 20,40 20,35 25,35" fill="white"/>
-              <!-- Animated sand top (draining) -->
-              <rect x="0" y="5" width="60" height="25" fill="#e76e55" clip-path="url(#hg-top)">
-                <animate attributeName="y"      values="5;30;5"   dur="3s" repeatCount="indefinite" calcMode="linear"/>
-                <animate attributeName="height" values="25;0;25"  dur="3s" repeatCount="indefinite" calcMode="linear"/>
-              </rect>
-              <!-- Animated sand bottom (filling) -->
-              <rect x="0" y="55" width="60" height="0" fill="#e76e55" clip-path="url(#hg-bot)">
-                <animate attributeName="y"      values="55;30;55" dur="3s" repeatCount="indefinite" calcMode="linear"/>
-                <animate attributeName="height" values="0;25;0"   dur="3s" repeatCount="indefinite" calcMode="linear"/>
-              </rect>
-              <!-- Sand stream at waist -->
-              <rect x="27" y="28" width="6" height="4" fill="#e76e55">
-                <animate attributeName="opacity" values="1;0;1" dur="0.5s" repeatCount="indefinite"/>
-              </rect>
-              <!-- Black frame caps -->
-              <rect x="0" y="0"  width="60" height="5"  fill="#212529"/>
-              <rect x="0" y="55" width="60" height="10" fill="#212529"/>
-              <!-- Left border pixels -->
-              <rect x="0"  y="5"  width="5" height="5" fill="#212529"/>
-              <rect x="5"  y="10" width="5" height="5" fill="#212529"/>
-              <rect x="10" y="15" width="5" height="5" fill="#212529"/>
-              <rect x="15" y="20" width="5" height="5" fill="#212529"/>
-              <rect x="20" y="25" width="5" height="5" fill="#212529"/>
-              <rect x="20" y="30" width="5" height="5" fill="#212529"/>
-              <rect x="15" y="35" width="5" height="5" fill="#212529"/>
-              <rect x="10" y="40" width="5" height="5" fill="#212529"/>
-              <rect x="5"  y="45" width="5" height="5" fill="#212529"/>
-              <rect x="0"  y="50" width="5" height="5" fill="#212529"/>
-              <!-- Right border pixels -->
-              <rect x="55" y="5"  width="5" height="5" fill="#212529"/>
-              <rect x="50" y="10" width="5" height="5" fill="#212529"/>
-              <rect x="45" y="15" width="5" height="5" fill="#212529"/>
-              <rect x="40" y="20" width="5" height="5" fill="#212529"/>
-              <rect x="35" y="25" width="5" height="5" fill="#212529"/>
-              <rect x="35" y="30" width="5" height="5" fill="#212529"/>
-              <rect x="40" y="35" width="5" height="5" fill="#212529"/>
-              <rect x="45" y="40" width="5" height="5" fill="#212529"/>
-              <rect x="50" y="45" width="5" height="5" fill="#212529"/>
-              <rect x="55" y="50" width="5" height="5" fill="#212529"/>
+              <g class="s3"><use href="#dirt-base"/></g>
+              <g class="s2"><use href="#dirt-base"/><use href="#grass-overlay" class="s2-grass"/></g>
+              <g class="s1"><use href="#dirt-base"/><use href="#grass-overlay"/></g>
             </svg>
+            <p style="margin:0 0 4px;font-size:13px;color:var(--dim);">开奖大约还要——</p>
             <div class="countdown-num" id="cdNum">--:--:--</div>
             <div class="countdown-sub">目标区块 <strong id="cdBlock" style="color:var(--red)">—</strong></div>
-            <div class="countdown-sub" style="margin-top:6px">剩余约 <strong id="cdBlocksLeft" style="color:var(--red)">—</strong> 个区块</div>
+            <div class="countdown-sub" style="margin-top:4px">剩余约 <strong id="cdBlocksLeft" style="color:var(--red)">—</strong> 个区块</div>
           </div>
-          <div class="console" id="waitLog" style="height:80px;border-top:2px solid #eee;margin-top:8px;"></div>
+          <!-- Cancel button -->
+          <div class="btns" style="margin-top:10px;">
+            <button class="btn btn-red btn-sm" onclick="cancelLottery()">✕ 取消本轮抽奖</button>
+          </div>
           <p style="text-align:center;font-size:11px;color:var(--dim);margin-top:10px;">进行中的抽奖已保存至本地，刷新或重新打开页面可自动恢复。</p>
         </div>
 
@@ -807,16 +831,16 @@ body {
         <div class="pbox" id="resultsBox" style="display:none">
           <p class="title">抽奖结果</p>
           <div class="result-meta">
-            区块 <strong id="rBlock">—</strong> &nbsp;·&nbsp;
-            总人数 <strong id="rTotal">—</strong> &nbsp;·&nbsp;
-            中奖 <strong id="rCount">—</strong> 人
+            <span class="meta-item">区块 <strong id="rBlock">—</strong></span>
+            <span class="meta-item">总人数 <strong id="rTotal">—</strong></span>
+            <span class="meta-highlight">中奖 <strong id="rCount">—</strong> 人</span>
           </div>
           <div style="font-size:8px;color:var(--dim);margin-bottom:4px;">区块哈希：</div>
           <div class="hash-val" id="rHash">—</div>
           <div class="sec-title" style="margin-top:14px">🏆 中奖号码</div>
           <div class="winners-grid" id="winnersGrid"></div>
           <div class="btns" style="margin-top:10px">
-            <button class="btn btn-sm" onclick="copyResult()">📋 复制结果</button>
+            <button class="btn btn-sm btn-yellow" onclick="copyResult()">📋 复制结果</button>
             <button class="btn btn-sm" onclick="resetAll()">再抽一次</button>
           </div>
         </div>
@@ -1106,7 +1130,7 @@ function fmtDur(s) {
 function sizeHourglass() {
   const cd = document.getElementById('cdNum');
   const hg = document.getElementById('hourglassSvg');
-  if (hg) hg.style.width = '60px';
+  if (hg) hg.style.width = '160px';
 }
 window.addEventListener('resize', sizeHourglass);
 
@@ -1143,8 +1167,11 @@ function startLottery() {
   document.getElementById('countdownBox').style.display = '';
   document.getElementById('resultsBox').style.display   = 'none';
   document.getElementById('cdBlock').textContent        = '#' + target.toLocaleString();
-  document.getElementById('waitLog').innerHTML          = '';
-  log(`⏳ 等待区块 #${target}…`, 'c-info', 'waitLog');
+  document.getElementById('cdTitle').textContent        = title;
+  document.getElementById('cdTotal').textContent        = total;
+  document.getElementById('cdWinCount').textContent     = count;
+
+  log(`⏳ 等待区块 #${target}…`, 'c-info');
   requestAnimationFrame(sizeHourglass);
   startCountdown(); startPolling();
 }
@@ -1172,9 +1199,9 @@ function startPolling() {
       document.getElementById('currentBlock').textContent = '#' + n.toLocaleString();
       document.getElementById('connDot').className = 'dot';
       const left = lotteryState.target - n;
-      if (left > 0) log(`⏳ #${n}，还剩 ${left} 块`, 'c-dim', 'waitLog');
+      if (left > 0) log(`⏳ #${n}，还剩 ${left} 块`, 'c-dim');
       else { clearInterval(pollTimer); await executeDrawing(); }
-    } catch (e) { log(`⚠ ${e.message}`, 'c-warn', 'waitLog'); }
+    } catch (e) { log(`⚠ ${e.message}`, 'c-warn'); }
   }, 13000);
 }
 
@@ -1182,14 +1209,14 @@ async function executeDrawing() {
   if (lotteryState.done) return;
   lotteryState.done = true;
   if (cdTimer) clearInterval(cdTimer);
-  log(`✅ 区块 #${lotteryState.target} 已确认！`, 'c-success', 'waitLog');
+  log(`✅ 区块 #${lotteryState.target} 已确认！`, 'c-success');
   try {
     const block = await fetchBlock(lotteryState.target);
     if (!block?.hash) throw new Error('区块数据为空');
     const hash = block.hash.replace('0x', '');
-    log(`🔑 哈希：0x${hash.slice(0,16)}…`, 'c-success', 'waitLog');
+    log(`🔑 哈希：0x${hash.slice(0,16)}…`, 'c-success');
     const winners = await selectWinners(hash, lotteryState.total, lotteryState.count);
-    log(`🏆 中奖：${winners.join(', ')}`, 'c-success', 'waitLog');
+    log(`🏆 中奖：${winners.join(', ')}`, 'c-success');
     lotteryState.hash = '0x' + hash;
     lotteryState.winners = winners;
     lotteryState.completedAt = new Date().toISOString();
@@ -1197,7 +1224,7 @@ async function executeDrawing() {
     showResults();
     saveRecord();
   } catch (e) {
-    log(`❌ ${e.message}`, 'c-error', 'waitLog');
+    log(`❌ ${e.message}`, 'c-error');
     lotteryState.done = false;
   }
 }
@@ -1219,6 +1246,7 @@ function showResults() {
   const { hash, target, total, count, winners } = lotteryState;
   document.getElementById('countdownBox').style.display = 'none';
   document.getElementById('resultsBox').style.display   = 'block';
+
   document.getElementById('rBlock').textContent  = '#' + target.toLocaleString();
   document.getElementById('rTotal').textContent  = total;
   document.getElementById('rCount').textContent  = count;
@@ -1287,10 +1315,22 @@ function resetAll() {
   document.getElementById('configBox').style.display    = 'block';
   document.getElementById('countdownBox').style.display = 'none';
   document.getElementById('resultsBox').style.display   = 'none';
+
   ['targetBlock','totalP','winnerN','lotteryTitle'].forEach(id =>
     document.getElementById(id).value = '');
   document.getElementById('blockEta').textContent = '';
   log('🔄 已重置');
+}
+
+function cancelLottery() {
+  if (pollTimer) clearInterval(pollTimer);
+  if (cdTimer)   clearInterval(cdTimer);
+  lotteryState = null;
+  clearActiveState();
+  document.getElementById('countdownBox').style.display = 'none';
+  document.getElementById('configBox').style.display    = 'block';
+
+  log('🚫 已取消本轮抽奖', 'c-warn');
 }
 
 /* ── LOCAL STATE PERSISTENCE ── */
@@ -1312,8 +1352,11 @@ async function restoreActiveState() {
   document.getElementById('countdownBox').style.display = '';
   document.getElementById('resultsBox').style.display   = 'none';
   document.getElementById('cdBlock').textContent        = '#' + state.target.toLocaleString();
-  document.getElementById('waitLog').innerHTML          = '';
-  log(`🔄 恢复进程「${state.title}」，目标 #${state.target.toLocaleString()}`, 'c-info', 'waitLog');
+  document.getElementById('cdTitle').textContent        = state.title;
+  document.getElementById('cdTotal').textContent        = state.total;
+  document.getElementById('cdWinCount').textContent     = state.count;
+
+  log(`🔄 恢复进程「${state.title}」，目标 #${state.target.toLocaleString()}`, 'c-info');
   requestAnimationFrame(sizeHourglass);
 
   if (currentBlock && currentBlock >= state.target) {
