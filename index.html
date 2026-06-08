@@ -1156,10 +1156,11 @@ function startLottery() {
   const count  = parseInt(document.getElementById('winnerN').value);
   const title  = document.getElementById('lotteryTitle').value.trim() || '未命名抽奖';
 
-  if (!currentBlock)                         return log('❌ 当前区块未加载', 'c-error');
-  if (!target || target <= currentBlock)     return log(`❌ 目标区块须大于 #${currentBlock}`, 'c-error');
-  if (!total || total < 2)                   return log('❌ 总人数至少 2 人', 'c-error');
-  if (!count || count < 1 || count >= total) return log(`❌ 中奖人数须在 1~${total-1}`, 'c-error');
+  if (!currentBlock)                              return log('❌ 当前区块未加载', 'c-error');
+  if (!target || target <= currentBlock)          return log(`❌ 目标区块须大于 #${currentBlock}`, 'c-error');
+  if (!total || total < 2 || total > 1000)        return log('❌ 总人数须在 2~1000 之间', 'c-error');
+  if (!count || count < 1 || count >= total)      return log(`❌ 中奖人数须在 1~${total-1}`, 'c-error');
+  if (count / total > 0.8)                        return log('❌ 中奖比例不能超过 80%', 'c-error');
 
   lotteryState = { target, total, count, title, createdAt: new Date().toISOString(), done: false };
   saveActiveState();
@@ -1394,6 +1395,7 @@ async function startFromParams() {
   const count  = parseInt(sp.get('count'));
   const title  = sp.get('title') || '未命名抽奖';
   if (!target || !total || !count) return false;
+  if (total < 2 || total > 1000 || count < 1 || count >= total || count / total > 0.8) return false;
   document.getElementById('cancelBtn').style.display = 'none';
   lotteryState = { target, total, count, title, createdAt: new Date().toISOString(), done: false };
   saveActiveState();
