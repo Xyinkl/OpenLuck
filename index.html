@@ -580,17 +580,22 @@ body {
   html { height: 100dvh; overflow: hidden; }
   body { height: 100dvh; overflow: hidden; }
 
-  /* Countdown fills 70% of viewport height */
+  /* Countdown: natural height, no forced min */
   #countdownBox {
-    min-height: 49vh;
-    justify-content: center;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    padding-bottom: 8px;
   }
   #countdownBox .countdown-wrap {
     flex: 0 0 auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    padding: 4px 10px;
+  }
+  /* Reduce pbox vertical rhythm inside countdownBox on mobile */
+  #countdownBox.pbox, #countdownBox {
+    margin-bottom: 6px;
   }
 
   /* Header */
@@ -619,8 +624,8 @@ body {
     padding: 10px 12px;
   }
 
-  /* 2/7 Console: fill remaining height in s1-main */
-  #logPane { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+  /* 2/7 Console: fill remaining height, guaranteed at least 1 line */
+  #logPane { flex: 1; display: flex; flex-direction: column; min-height: 64px; }
   #logPane #mainLog { flex: 1; min-height: 0; max-height: none; overflow-y: auto; }
 
   /* Info grid: vertical */
