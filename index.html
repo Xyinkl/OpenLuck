@@ -586,7 +586,7 @@ body {
     justify-content: center;
   }
   #countdownBox .countdown-wrap {
-    flex: 1;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -756,7 +756,7 @@ body {
           <!-- Block animation + countdown -->
           <div class="countdown-wrap">
             <svg id="hourglassSvg" xmlns="http://www.w3.org/2000/svg" viewBox="10 -10 80 140"
-                 style="display:block;margin:0 auto 6px;width:160px;">
+                 style="display:block;margin:0 auto 2px;width:160px;">
               <style>
                 @keyframes dropS1 {
                   0%   { transform: translateY(-35px); opacity: 0; }
@@ -1130,9 +1130,8 @@ function fmtDur(s) {
 }
 
 function sizeHourglass() {
-  const cd = document.getElementById('cdNum');
   const hg = document.getElementById('hourglassSvg');
-  if (hg) hg.style.width = '160px';
+  if (hg) hg.style.width = window.innerWidth <= 768 ? '100px' : '160px';
 }
 window.addEventListener('resize', sizeHourglass);
 
