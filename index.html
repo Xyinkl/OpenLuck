@@ -820,11 +820,13 @@ body {
             <div class="countdown-sub">目标区块 <strong id="cdBlock" style="color:var(--red)">—</strong></div>
             <div class="countdown-sub" style="margin-top:4px">剩余约 <strong id="cdBlocksLeft" style="color:var(--red)">—</strong> 个区块</div>
           </div>
-          <!-- Cancel button -->
-          <div class="btns" style="margin-top:10px;">
+          <!-- Action buttons -->
+          <div class="btns" style="margin-top:10px;justify-content:space-between;">
             <button class="btn btn-red btn-sm" onclick="cancelLottery()">✕ 取消本轮抽奖</button>
+            <button class="btn btn-blue btn-sm" id="shareBtn" onclick="shareLink()">🔗 分享开奖页面</button>
           </div>
-          <p style="text-align:center;font-size:11px;color:var(--dim);margin-top:10px;">进行中的抽奖已保存至本地，刷新或重新打开页面可自动恢复。</p>
+          <p style="font-size:11px;color:var(--dim);margin-top:8px;line-height:1.6;">取消后可重新发起抽奖。</p>
+          <p style="font-size:11px;color:var(--dim);margin-top:8px;line-height:1.6;">抽奖等待期间可以分享链接，所有人实时同步等待开奖，结果完全一致。</p>
         </div>
 
         <!-- Results -->
@@ -1368,13 +1370,57 @@ async function restoreActiveState() {
   }
 }
 
+function shareLink() {
+  if (!lotteryState) return;
+  const u = new URL(location.href);
+  u.search = '';
+  u.searchParams.set('title',  lotteryState.title);
+  u.searchParams.set('target', lotteryState.target);
+  u.searchParams.set('total',  lotteryState.total);
+  u.searchParams.set('count',  lotteryState.count);
+  navigator.clipboard.writeText(u.toString()).then(() => {
+    const btn = document.getElementById('shareBtn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ 已复制链接';
+    setTimeout(() => btn.innerHTML = orig, 2000);
+  }).catch(() => prompt('复制此链接：', u.toString()));
+}
+
+async function startFromParams() {
+  const sp = new URLSearchParams(location.search);
+  if (!sp.has('target')) return false;
+  const target = parseInt(sp.get('target'));
+  const total  = parseInt(sp.get('total'));
+  const count  = parseInt(sp.get('count'));
+  const title  = sp.get('title') || '未命名抽奖';
+  if (!target || !total || !count) return false;
+  lotteryState = { target, total, count, title, createdAt: new Date().toISOString(), done: false };
+  saveActiveState();
+  document.getElementById('configBox').style.display    = 'none';
+  document.getElementById('countdownBox').style.display = '';
+  document.getElementById('resultsBox').style.display   = 'none';
+  document.getElementById('cdBlock').textContent        = '#' + target.toLocaleString();
+  document.getElementById('cdTitle').textContent        = title;
+  document.getElementById('cdTotal').textContent        = total;
+  document.getElementById('cdWinCount').textContent     = count;
+  log(`🔗 通过分享链接加入「${title}」，目标 #${target.toLocaleString()}`, 'c-info');
+  requestAnimationFrame(sizeHourglass);
+  if (currentBlock && currentBlock >= target) {
+    await executeDrawing();
+  } else {
+    startCountdown();
+    startPolling();
+  }
+  return true;
+}
+
 (async () => {
   log('🎲 OpenLuck 启动，连接以太坊…');
   await refreshBlock();
   if (currentBlock) log(`✅ 已连接，当前 #${currentBlock.toLocaleString()}`, 'c-success');
   else log('⚠ 连接失败，15 秒后重试', 'c-warn');
   setInterval(refreshBlock, 15000);
-  await restoreActiveState();
+  if (!await startFromParams()) await restoreActiveState();
 })();
 </script>
 </body>
