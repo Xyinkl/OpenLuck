@@ -652,6 +652,27 @@ body {
   }
   .m-nav-up   { top: 0; margin-bottom: 30px; }
   .m-nav-down { bottom: 0; margin-top: auto; }
+
+  /* Page 1: halve console height */
+  #logPane { max-height: 30vh; }
+
+  /* Pages 2–4: halve edge (section + pbox) padding */
+  .s1-aside, #mpage-left, #infoColVerify { padding: 5px 6px; }
+  .s1-aside > .pbox,
+  #mpage-left > .pbox,
+  #infoColVerify > .pbox { padding: 10px 10px 8px; margin: 4px 2px 6px; }
+  .s1-aside > .pbox > .title,
+  #mpage-left > .pbox > .title,
+  #infoColVerify > .pbox > .title { margin: -2rem 0 0.5rem; }
+
+  /* Pages 2–4: halve item line spacing */
+  .why-item  { gap: 5px; margin-bottom: 6px; }
+  .why-text  { font-size: 12px; line-height: 1.4; }
+  .step      { gap: 5px; margin-bottom: 5px; }
+  .step-t    { font-size: 12px; line-height: 1.4; }
+  .info-text { font-size: 12px; line-height: 1.4; margin-bottom: 6px; }
+  .rpc-item  { margin-bottom: 5px; }
+  .toggle-hdr { padding-bottom: 3px; }
 }
 </style>
 </head>
