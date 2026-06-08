@@ -822,7 +822,7 @@ body {
           </div>
           <!-- Action buttons -->
           <div class="btns" style="margin-top:10px;justify-content:space-between;">
-            <button class="btn btn-red btn-sm" onclick="cancelLottery()">✕ 取消本轮抽奖</button>
+            <button class="btn btn-red btn-sm" id="cancelBtn" onclick="cancelLottery()">✕ 取消本轮抽奖</button>
             <button class="btn btn-blue btn-sm" id="shareBtn" onclick="shareLink()">🔗 分享开奖页面</button>
           </div>
           <p style="font-size:11px;color:var(--dim);margin-top:8px;line-height:1.6;">取消后可重新发起抽奖。</p>
@@ -1394,6 +1394,7 @@ async function startFromParams() {
   const count  = parseInt(sp.get('count'));
   const title  = sp.get('title') || '未命名抽奖';
   if (!target || !total || !count) return false;
+  document.getElementById('cancelBtn').style.display = 'none';
   lotteryState = { target, total, count, title, createdAt: new Date().toISOString(), done: false };
   saveActiveState();
   document.getElementById('configBox').style.display    = 'none';
