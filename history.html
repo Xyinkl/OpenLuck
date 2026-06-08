@@ -326,7 +326,7 @@ main {
   .global-header p  { display: none; }
   .nav-btn { padding: 4px 8px; font-size: 12px; }
   main { padding: 12px 10px; }
-  .toolbar .fg { flex: none; width: 75%; }
+  .toolbar .fg { flex: none; width: 55vw; min-width: 0; }
   .toolbar .fg input { width: 100%; }
   .site-footer { gap: 8px; font-size: 10px; }
 }
@@ -429,7 +429,7 @@ async function loadRecords() {
 
   if (currentSrc === 'local') {
     allRecords = JSON.parse(localStorage.getItem('openluck_records') || '[]');
-    allRecords.sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
+    allRecords.sort((a, b) => (b.targetBlock || 0) - (a.targetBlock || 0));
     currentPage = 1;
     render();
     return;
@@ -439,10 +439,10 @@ async function loadRecords() {
     const r = await fetch('/api/lottery');
     if (!r.ok) throw new Error('HTTP ' + r.status);
     allRecords = await r.json();
-    allRecords.sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
+    allRecords.sort((a, b) => (b.targetBlock || 0) - (a.targetBlock || 0));
   } catch (e) {
     allRecords = JSON.parse(localStorage.getItem('openluck_records') || '[]');
-    allRecords.sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
+    allRecords.sort((a, b) => (b.targetBlock || 0) - (a.targetBlock || 0));
     if (allRecords.length === 0) {
       listEl.innerHTML = `<div class="empty">
         <div class="big">🔌</div>
@@ -490,7 +490,8 @@ function render() {
     return;
   }
 
-  listEl.innerHTML = slice.map((rec, i) => buildCard(rec, (currentPage - 1) * PAGE_SIZE + i + 1)).join('');
+  const totalCount = filtered.length;
+  listEl.innerHTML = slice.map((rec, i) => buildCard(rec, totalCount - ((currentPage - 1) * PAGE_SIZE + i))).join('');
 
   // Pagination
   const pbar = document.getElementById('paginationBar');
@@ -525,7 +526,7 @@ function buildCard(rec, idx) {
     <div class="card-header">
       <div class="card-index">${idx}</div>
       <div>
-        <div class="card-title">${esc(rec.title || '未命名抽奖')}</div>
+        <div class="card-title">${esc(rec.title && rec.title !== '未命名抽奖' ? rec.title : '匿名抽奖')}</div>
         <div class="card-time">${dateStr}</div>
       </div>
       <span class="card-badge">已完成</span>
@@ -541,7 +542,7 @@ function buildCard(rec, idx) {
     <div class="winners-row">${winners}</div>
 
     <div class="card-actions">
-      <a href="${esUrl}" target="_blank" class="btn btn-sm">🔍 Etherscan 验证</a>
+      <a href="${esUrl}" target="_blank" class="btn btn-sm">🔍 验证区块 Hash</a>
       <button class="btn btn-sm" onclick="copyCard(${idx - 1})">📋 复制结果</button>
       <button class="btn btn-yellow btn-sm" onclick="openVerifier(${idx - 1})">⚙ 验证算法</button>
     </div>
