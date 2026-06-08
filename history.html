@@ -274,8 +274,18 @@ main {
 
 .winners-row {
   display: flex; flex-wrap: wrap; gap: 6px;
-  align-items: center; margin-bottom: 10px;
+  align-items: center; margin-bottom: 6px;
 }
+.winners-row.collapsed {
+  max-height: 62px; /* ~2 rows of chips */
+  overflow: hidden;
+}
+.winners-toggle {
+  font-size: 11px; color: var(--blue); cursor: pointer;
+  margin-bottom: 8px; display: none; background: none;
+  border: none; padding: 0; font-family: inherit;
+}
+.winners-toggle:hover { text-decoration: underline; }
 .winner-chip {
   background: var(--red); color: var(--white);
   padding: 4px 4px; font-size: 13px; font-weight: 700;
@@ -326,7 +336,7 @@ main {
   .global-header p  { display: none; }
   .nav-btn { padding: 4px 8px; font-size: 12px; }
   main { padding: 12px 10px; }
-  .toolbar .fg { flex: none; width: 55vw; min-width: 0; }
+  .toolbar .fg { flex: none; width: 35vw; min-width: 0; }
   .toolbar .fg input { width: 100%; }
   .site-footer { gap: 8px; font-size: 10px; }
 }
@@ -376,7 +386,7 @@ main {
       </div>
       <div class="stat-item">
         <span class="stat-label">最近一次</span>
-        <span class="stat-val" id="statLatest" style="font-size:14px;">—</span>
+        <span class="stat-val" id="statLatest">—</span>
       </div>
     </div>
   </div>
@@ -386,9 +396,9 @@ main {
     <div class="fg">
       <input id="searchInput" type="text" placeholder="搜索标题 / 区块号 / 哈希…" oninput="render()">
     </div>
-    <button class="btn btn-sm" onclick="document.getElementById('searchInput').value='';render()">清空</button>
-    <button class="btn btn-blue btn-sm" onclick="loadRecords()">🔄 刷新</button>
-    <button class="btn btn-sm" onclick="exportJSON()">⬇ 导出</button>
+    <button class="btn btn-red btn-sm" onclick="document.getElementById('searchInput').value='';render()">清空</button>
+    <button class="btn btn-blue btn-sm" onclick="loadRecords()">刷新</button>
+    <button class="btn btn-yellow btn-sm" onclick="exportJSON()">导出</button>
   </div>
 
   <!-- Records list -->
@@ -492,6 +502,7 @@ function render() {
 
   const totalCount = filtered.length;
   listEl.innerHTML = slice.map((rec, i) => buildCard(rec, totalCount - ((currentPage - 1) * PAGE_SIZE + i))).join('');
+  requestAnimationFrame(initWinnersCollapse);
 
   // Pagination
   const pbar = document.getElementById('paginationBar');
@@ -539,7 +550,8 @@ function buildCard(rec, idx) {
     </div>
 
     <div class="card-hash">${esc(hashDisp)}</div>
-    <div class="winners-row">${winners}</div>
+    <div class="winners-row" id="wr-${idx}">${winners}</div>
+    <button class="winners-toggle" id="wt-${idx}" onclick="toggleWinners(${idx})">▼ 展开全部</button>
 
     <div class="card-actions">
       <a href="${esUrl}" target="_blank" class="btn btn-sm">🔍 验证区块 Hash</a>
@@ -547,6 +559,28 @@ function buildCard(rec, idx) {
       <button class="btn btn-yellow btn-sm" onclick="openVerifier(${idx - 1})">⚙ 验证算法</button>
     </div>
   </div>`;
+}
+
+// ── WINNERS COLLAPSE ───────────────────────────
+function initWinnersCollapse() {
+  document.querySelectorAll('.winners-row').forEach(row => {
+    const id  = row.id.replace('wr-', '');
+    const btn = document.getElementById('wt-' + id);
+    if (!btn) return;
+    // Check if content overflows 2-row height
+    const natural = row.scrollHeight;
+    if (natural > 66) {
+      row.classList.add('collapsed');
+      btn.style.display = 'inline';
+    }
+  });
+}
+
+function toggleWinners(idx) {
+  const row = document.getElementById('wr-' + idx);
+  const btn = document.getElementById('wt-' + idx);
+  const collapsed = row.classList.toggle('collapsed');
+  btn.textContent = collapsed ? '▼ 展开全部' : '▲ 收起';
 }
 
 // ── STATS ──────────────────────────────────────
