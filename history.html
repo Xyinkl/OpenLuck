@@ -376,9 +376,68 @@ main {
   .header-inner .logo { font-size: 28px; line-height: 1; }
   .header-inner .nav-btn { margin: 0; line-height: 1.4; }
 }
+/* Default copy is Chinese. Hide it until i18n applies when the visitor's language may differ. */
+html.i18n-pending body { visibility: hidden; }
 </style>
-<script src="i18n.js?v=20261106-intl1"></script>
-<script defer src="/analytics.js?v=20261106-2" data-project="openluck" data-website-id="db5c7329-32e5-4028-a60d-02e5c6b8c5c4" data-domains="openluck.vtx.space,ol.vtx.space" data-tag="openluck" data-exclude-search="true" data-exclude-hash="true" data-do-not-track="true" data-before-send="vtxAnalyticsBeforeSend"></script>
+<link rel="preload" href="i18n.js?v=20261114-perf1" as="script">
+<script>
+/* Tiny synchronous language guess. Must match i18n.js resolution order for the sync steps
+   (manual localStorage > browser language > timezone). The network country lookup stays in i18n.js. */
+(function () {
+  var SUPPORTED = ['zh', 'en', 'ja'];
+  var STORAGE_KEY = 'openluck_lang';
+  var lang = null;
+  try { lang = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+  if (SUPPORTED.indexOf(lang) === -1) lang = null;
+  function mapBrowser(raw) {
+    if (!raw) return null;
+    var lower = String(raw).toLowerCase();
+    var base = lower.split('-')[0];
+    if (SUPPORTED.indexOf(base) !== -1) return base;
+    if (lower.indexOf('zh') === 0) return 'zh';
+    if (lower.indexOf('ja') === 0) return 'ja';
+    return null;
+  }
+  if (!lang) {
+    var list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ''];
+    for (var i = 0; i < list.length && !lang; i++) lang = mapBrowser(list[i]);
+  }
+  if (!lang) {
+    try {
+      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      if (/^Asia\/(Shanghai|Taipei|Hong_Kong|Macau|Singapore|Urumqi|Chongqing|Harbin|Kashgar)/.test(tz)) lang = 'zh';
+      else if (/^Asia\/Tokyo/.test(tz)) lang = 'ja';
+    } catch (e) {}
+  }
+  if (lang && lang !== 'zh') {
+    var titles = {
+      pageTitleIndex: { en: 'OpenLuck — Blockchain Public Lottery', ja: 'OpenLuck — ブロックチェーン公開抽選' },
+      pageTitleHistory: { en: 'OpenLuck — History', ja: 'OpenLuck — 履歴' }
+    };
+    var titleKey = document.documentElement.getAttribute('data-i18n-title');
+    if (titleKey && titles[titleKey] && titles[titleKey][lang]) document.title = titles[titleKey][lang];
+    document.documentElement.lang = lang === 'ja' ? 'ja' : 'en';
+  }
+  if (lang !== 'zh') document.documentElement.classList.add('i18n-pending');
+  /* Language buttons can be clicked before the deferred module replaces this stub. */
+  if (!window.I18N) {
+    window.I18N = {
+      setLanguage: function (next) {
+        if (SUPPORTED.indexOf(next) === -1) next = 'en';
+        try { localStorage.setItem(STORAGE_KEY, next); } catch (e) {}
+        if (next !== 'zh') document.documentElement.classList.add('i18n-pending');
+      }
+    };
+  }
+  setTimeout(function () {
+    if (!window.I18N || typeof window.I18N.resolveLanguage !== 'function') {
+      document.documentElement.classList.remove('i18n-pending');
+    }
+  }, 4000);
+})();
+</script>
+<script defer src="i18n.js?v=20261114-perf1"></script>
+<script defer src="/analytics.js?v=20261114-perf1" data-project="openluck" data-website-id="db5c7329-32e5-4028-a60d-02e5c6b8c5c4" data-domains="openluck.vtx.space,ol.vtx.space" data-tag="openluck" data-exclude-search="true" data-exclude-hash="true" data-do-not-track="true" data-before-send="vtxAnalyticsBeforeSend"></script>
 </head>
 <body>
 
@@ -440,7 +499,7 @@ main {
       <input id="searchInput" type="text" data-i18n-placeholder="histSearchPlaceholder" placeholder="搜索标题 / 区块号 / 哈希…" oninput="render()">
     </div>
     <button class="btn btn-red btn-sm" onclick="document.getElementById('searchInput').value='';render()" data-i18n="histClearBtn">清空</button>
-    <button class="btn btn-blue btn-sm" onclick="loadRecords()" data-i18n="histRefreshBtn">刷新</button>
+    <button class="btn btn-blue btn-sm" onclick="loadRecords({fresh:true})" data-i18n="histRefreshBtn">刷新</button>
     <button class="btn btn-yellow btn-sm" onclick="exportJSON()" data-i18n="histExportBtn">导出</button>
   </div>
 
@@ -476,7 +535,7 @@ function switchSource(src) {
 }
 
 // ── LOAD RECORDS ───────────────────────────────
-async function loadRecords() {
+async function loadRecords(opts) {
   const listEl = document.getElementById('recordsList');
   listEl.innerHTML = '<div class="empty"><div class="big">⏳</div><p data-i18n="histLoading">加载中…</p></div>';
 
@@ -489,7 +548,10 @@ async function loadRecords() {
   }
 
   try {
-    const r = await fetch('/api/lottery');
+    const fresh = !!(opts && opts.fresh);
+    const r = await fetch(fresh ? '/api/lottery?fresh=1' : '/api/lottery', {
+      cache: fresh ? 'no-store' : 'default',
+    });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     allRecords = await r.json();
     allRecords.sort((a, b) => (b.targetBlock || 0) - (a.targetBlock || 0));
@@ -715,7 +777,16 @@ window.addEventListener('i18n-changed', () => {
   render();
 });
 
-initHistory();
+document.addEventListener('DOMContentLoaded', () => {
+  if (!window.I18N || typeof I18N.resolveLanguage !== 'function') {
+    document.documentElement.classList.remove('i18n-pending');
+    return;
+  }
+  initHistory().catch(e => {
+    document.documentElement.classList.remove('i18n-pending');
+    console.error(e);
+  });
+});
 </script>
 </body>
 </html>

@@ -20,9 +20,13 @@
 OpenLuck/
 ├── index.html              # 主页：发起抽奖
 ├── history.html            # 历史记录查询
+├── i18n.js                 # 中 / EN / 日文案
+├── analytics.js            # 使用统计
+├── _headers                # Pages 缓存头
 ├── functions/
 │   └── api/
-│       └── lottery.js      # Cloudflare Pages Function（KV 存储）
+│       ├── lottery.js      # Cloudflare Pages Function（KV 存储）
+│       └── locale.js       # 语言回退用的国家 / 时区
 ├── wrangler.toml           # Cloudflare 配置
 └── README.md
 ```
@@ -95,7 +99,7 @@ BLOCK_NUMBER = 21000000  # 替换为实际区块号
 TOTAL        = 100       # 总参与人数
 COUNT        = 3         # 中奖人数
 
-r = requests.post("https://cloudflare-eth.com", json={
+r = requests.post("https://ethereum-rpc.publicnode.com", json={
     "jsonrpc": "2.0",
     "method":  "eth_getBlockByNumber",
     "params":  [hex(BLOCK_NUMBER), False],
@@ -125,9 +129,10 @@ print("中奖号码:", sorted(winners))
 
 | 节点 | 地址 |
 |------|------|
-| Cloudflare ETH | `https://cloudflare-eth.com` |
-| Llama RPC | `https://eth.llamarpc.com` |
-| Ankr | `https://rpc.ankr.com/eth` |
+| PublicNode | `https://ethereum-rpc.publicnode.com` |
+| dRPC | `https://eth.drpc.org` |
+| Blast API | `https://eth-mainnet.public.blastapi.io` |
+| 1RPC | `https://1rpc.io/eth` |
 
 ---
 
@@ -139,4 +144,4 @@ MIT
 
 The homepage and history page support Chinese, English and Japanese. Manual choices are remembered; otherwise browser language, timezone and coarse Cloudflare region determine the language. Language changes preserve form entries and do not rerun a draw.
 
-Run regression checks with `node --test tests/i18n.test.js`. The lottery API and selection algorithm are unchanged.
+Run regression checks with `node --test tests/i18n.test.js`. The winner selection algorithm is unchanged. `GET /api/lottery` reads an aggregated index (`index:lotteries`) and may be cached for about 45 seconds. `GET /api/lottery?rebuild=1` rebuilds that index from the existing `lottery:*` records without modifying them.

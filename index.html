@@ -706,9 +706,68 @@ body {
   .header-inner .logo { font-size: 28px; line-height: 1; }
   .header-inner .nav-btn { margin: 0; line-height: 1.4; }
 }
+/* Default copy is Chinese. Hide it until i18n applies when the visitor's language may differ. */
+html.i18n-pending body { visibility: hidden; }
 </style>
-<script src="i18n.js?v=20261106-intl1"></script>
-<script defer src="/analytics.js?v=20261106-2" data-project="openluck" data-website-id="db5c7329-32e5-4028-a60d-02e5c6b8c5c4" data-domains="openluck.vtx.space,ol.vtx.space" data-tag="openluck" data-exclude-search="true" data-exclude-hash="true" data-do-not-track="true" data-before-send="vtxAnalyticsBeforeSend"></script>
+<link rel="preload" href="i18n.js?v=20261114-perf1" as="script">
+<script>
+/* Tiny synchronous language guess. Must match i18n.js resolution order for the sync steps
+   (manual localStorage > browser language > timezone). The network country lookup stays in i18n.js. */
+(function () {
+  var SUPPORTED = ['zh', 'en', 'ja'];
+  var STORAGE_KEY = 'openluck_lang';
+  var lang = null;
+  try { lang = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+  if (SUPPORTED.indexOf(lang) === -1) lang = null;
+  function mapBrowser(raw) {
+    if (!raw) return null;
+    var lower = String(raw).toLowerCase();
+    var base = lower.split('-')[0];
+    if (SUPPORTED.indexOf(base) !== -1) return base;
+    if (lower.indexOf('zh') === 0) return 'zh';
+    if (lower.indexOf('ja') === 0) return 'ja';
+    return null;
+  }
+  if (!lang) {
+    var list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ''];
+    for (var i = 0; i < list.length && !lang; i++) lang = mapBrowser(list[i]);
+  }
+  if (!lang) {
+    try {
+      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      if (/^Asia\/(Shanghai|Taipei|Hong_Kong|Macau|Singapore|Urumqi|Chongqing|Harbin|Kashgar)/.test(tz)) lang = 'zh';
+      else if (/^Asia\/Tokyo/.test(tz)) lang = 'ja';
+    } catch (e) {}
+  }
+  if (lang && lang !== 'zh') {
+    var titles = {
+      pageTitleIndex: { en: 'OpenLuck — Blockchain Public Lottery', ja: 'OpenLuck — ブロックチェーン公開抽選' },
+      pageTitleHistory: { en: 'OpenLuck — History', ja: 'OpenLuck — 履歴' }
+    };
+    var titleKey = document.documentElement.getAttribute('data-i18n-title');
+    if (titleKey && titles[titleKey] && titles[titleKey][lang]) document.title = titles[titleKey][lang];
+    document.documentElement.lang = lang === 'ja' ? 'ja' : 'en';
+  }
+  if (lang !== 'zh') document.documentElement.classList.add('i18n-pending');
+  /* Language buttons can be clicked before the deferred module replaces this stub. */
+  if (!window.I18N) {
+    window.I18N = {
+      setLanguage: function (next) {
+        if (SUPPORTED.indexOf(next) === -1) next = 'en';
+        try { localStorage.setItem(STORAGE_KEY, next); } catch (e) {}
+        if (next !== 'zh') document.documentElement.classList.add('i18n-pending');
+      }
+    };
+  }
+  setTimeout(function () {
+    if (!window.I18N || typeof window.I18N.resolveLanguage !== 'function') {
+      document.documentElement.classList.remove('i18n-pending');
+    }
+  }, 4000);
+})();
+</script>
+<script defer src="i18n.js?v=20261114-perf1"></script>
+<script defer src="/analytics.js?v=20261114-perf1" data-project="openluck" data-website-id="db5c7329-32e5-4028-a60d-02e5c6b8c5c4" data-domains="openluck.vtx.space,ol.vtx.space" data-tag="openluck" data-exclude-search="true" data-exclude-hash="true" data-do-not-track="true" data-before-send="vtxAnalyticsBeforeSend"></script>
 </head>
 <body>
 
@@ -728,7 +787,7 @@ body {
         <button type="button" class="lang-sel" id="langEn" onclick="I18N.setLanguage('en')" title="English">EN</button>
         <button type="button" class="lang-sel" id="langJa" onclick="I18N.setLanguage('ja')" title="日本語">日</button>
       </span>
-      <a href="history.html" class="nav-btn nav-btn-blue" data-i18n="navHistory">📋 历史记录</a>
+      <a href="/history" class="nav-btn nav-btn-blue" data-i18n="navHistory">📋 历史记录</a>
       <a href="https://github.com/Xyinkl/OpenLuck" target="_blank" class="nav-btn nav-btn-gray" data-i18n="navGitHub">⭐ GitHub</a>
     </nav>
   </div>
@@ -1032,7 +1091,7 @@ body {
       <span data-i18n="footerTagline">OpenLuck · 以太坊区块哈希随机数 · 完全开源可验证</span>
       <span data-i18n="footerCredits">Vibed by @Xyinkl in 2 hours · 感谢 <a href="https://ffmpeg.bmmmd.com/" target="_blank">ffmpeg.bmmmd.com</a> 的 UI，很喜欢所以借鉴了一下</span>
       <a href="https://github.com/Xyinkl/OpenLuck" target="_blank">GitHub</a>
-      <a href="history.html" data-i18n="footerHistory">历史记录</a>
+      <a href="/history" data-i18n="footerHistory">历史记录</a>
       <a href="https://etherscan.io" target="_blank">Etherscan</a>
     </footer>
 
@@ -1043,12 +1102,16 @@ body {
 
 <script>
 const RPC_ENDPOINTS = [
-  'https://cloudflare-eth.com',
   'https://ethereum-rpc.publicnode.com',
-  'https://eth.llamarpc.com',
-  'https://rpc.ankr.com/eth',
+  'https://eth.drpc.org',
+  'https://eth-mainnet.public.blastapi.io',
   'https://1rpc.io/eth',
 ];
+const RPC_TIMEOUT_MS = 2000;
+const RPC_STORAGE_KEY = 'openluck_rpc';
+
+let preferredRpc = null;
+try { preferredRpc = localStorage.getItem(RPC_STORAGE_KEY); } catch (_) {}
 
 let currentBlock = null, lotteryState = null, pollTimer = null, cdTimer = null;
 
@@ -1081,23 +1144,61 @@ function log(msg, cls = 'c-info', panelId = 'mainLog') {
   el.scrollTop = el.scrollHeight;
 }
 
-async function rpc(method, params) {
-  for (const ep of RPC_ENDPOINTS) {
-    try {
-      const ctrl = new AbortController();
-      const tid  = setTimeout(() => ctrl.abort(), 8000);
-      const r = await fetch(ep, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jsonrpc: '2.0', method, params, id: 1 }),
-        signal: ctrl.signal,
-      });
-      clearTimeout(tid);
-      const d = await r.json();
-      if (d.result !== undefined && d.result !== null) return d.result;
-    } catch (_) {}
+function rpcEndpoints() {
+  if (preferredRpc && RPC_ENDPOINTS.includes(preferredRpc)) {
+    return [preferredRpc, ...RPC_ENDPOINTS.filter(ep => ep !== preferredRpc)];
   }
-  throw new Error('所有 RPC 节点均无法连接');
+  return RPC_ENDPOINTS.slice();
+}
+
+function rememberRpc(ep) {
+  preferredRpc = ep;
+  try { localStorage.setItem(RPC_STORAGE_KEY, ep); } catch (_) {}
+}
+
+async function rpcCall(ep, method, params, signal) {
+  const ctrl = new AbortController();
+  const tid = setTimeout(() => ctrl.abort(), RPC_TIMEOUT_MS);
+  const abort = () => ctrl.abort();
+  if (signal) signal.addEventListener('abort', abort);
+  try {
+    const r = await fetch(ep, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', method, params, id: 1 }),
+      signal: ctrl.signal,
+    });
+    const d = await r.json().catch(() => null);
+    if (!r.ok || !d || d.error || d.result === undefined || d.result === null) {
+      throw new Error('rpc failed');
+    }
+    return d.result;
+  } finally {
+    clearTimeout(tid);
+    if (signal) signal.removeEventListener('abort', abort);
+  }
+}
+
+async function rpc(method, params) {
+  const controllers = [];
+  const attempts = rpcEndpoints().map(ep => {
+    const ctrl = new AbortController();
+    controllers.push(ctrl);
+    const attempt = rpcCall(ep, method, params, ctrl.signal).then(result => ({ ep, result }));
+    attempt.catch(() => {});
+    return attempt;
+  });
+  try {
+    const { ep, result } = await Promise.any(attempts);
+    rememberRpc(ep);
+    controllers.forEach(ctrl => ctrl.abort());
+    return result;
+  } catch (_) {
+    const message = (window.I18N && typeof I18N.t === 'function')
+      ? I18N.t('logAllRpcFailed')
+      : 'All RPC nodes unreachable';
+    throw new Error(message);
+  }
 }
 
 async function fetchCurrentBlock() { return parseInt(await rpc('eth_blockNumber', []), 16); }
@@ -1499,24 +1600,35 @@ window.addEventListener('i18n-changed', () => {
 
 });
 
-/* ── Init ── */
-(async () => {
-  // 1. Resolve & apply language
-  const lang = await I18N.resolveLanguage();
-  updateLangUI();
-  I18N.applyTranslations();
-  buildPyCode();
+/* ── Init ──
+   Runs from DOMContentLoaded so the deferred i18n.js has executed first.
+   A classic script here would otherwise run before deferred scripts. */
+document.addEventListener('DOMContentLoaded', () => {
+  if (!window.I18N || typeof I18N.resolveLanguage !== 'function') {
+    document.documentElement.classList.remove('i18n-pending');
+    return;
+  }
+  (async () => {
+    try {
+      await I18N.resolveLanguage();
+      updateLangUI();
+      I18N.applyTranslations();
+      buildPyCode();
+    } catch (e) {
+      document.documentElement.classList.remove('i18n-pending');
+      console.error(e);
+      return;
+    }
 
-  // 2. Connect to Ethereum
-  log(I18N.t('logStartup'));
-  await refreshBlock();
-  if (currentBlock) log(I18N.t('logConnected', { n: currentBlock.toLocaleString() }), 'c-success');
-  else log(I18N.t('logConnFail'), 'c-warn');
-  setInterval(refreshBlock, 15000);
+    log(I18N.t('logStartup'));
+    await refreshBlock();
+    if (currentBlock) log(I18N.t('logConnected', { n: currentBlock.toLocaleString() }), 'c-success');
+    else log(I18N.t('logConnFail'), 'c-warn');
+    setInterval(refreshBlock, 15000);
 
-  // 3. Restore state or handle share link
-  if (!await startFromParams()) await restoreActiveState();
-})();
+    if (!await startFromParams()) await restoreActiveState();
+  })();
+});
 </script>
 </body>
 </html>
