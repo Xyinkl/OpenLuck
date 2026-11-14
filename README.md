@@ -134,3 +134,9 @@ print("中奖号码:", sorted(winners))
 ## License
 
 MIT
+
+## Language support
+
+The homepage and history page support Chinese, English and Japanese. Manual choices are remembered; otherwise browser language, timezone and coarse Cloudflare region determine the language. Language changes preserve form entries and do not rerun a draw.
+
+Run regression checks with `node --test tests/i18n.test.js`. The lottery API and selection algorithm are unchanged.

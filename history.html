@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en" data-i18n-title="pageTitleHistory">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" data-i18n-content="metaDescHistory" content="OpenLuck 历史抽奖记录 — 完全公开可验证。">
 <title>OpenLuck — 历史记录</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23209cee'/%3E%3Crect x='2' y='2' width='28' height='28' rx='3' fill='none' stroke='%23212529' stroke-width='2'/%3E%3Ccircle cx='10' cy='9' r='2.5' fill='%23fff'/%3E%3Ccircle cx='22' cy='9' r='2.5' fill='%23fff'/%3E%3Ccircle cx='10' cy='16' r='2.5' fill='%23fff'/%3E%3Ccircle cx='22' cy='16' r='2.5' fill='%23fff'/%3E%3Ccircle cx='10' cy='23' r='2.5' fill='%23fff'/%3E%3Ccircle cx='22' cy='23' r='2.5' fill='%23fff'/%3E%3C/svg%3E">
 <style>
@@ -329,6 +330,31 @@ main {
 .site-footer a { color: var(--dim); text-decoration: none; }
 .site-footer a:hover { color: var(--black); }
 
+/* ─── LANGUAGE SELECTOR ──────────────────────────── */
+.lang-sel {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 600;
+  padding: 3px 6px;
+  margin-left: 4px;
+  cursor: pointer;
+  user-select: none;
+  border-style: solid; border-width: 4px;
+  border-image-slice: 2; border-image-width: 2;
+  border-image-outset: 2; border-image-source: var(--pb5);
+  border-image-repeat: stretch;
+  background: var(--white); color: var(--dim);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+}
+.lang-sel::after {
+  position: absolute; top: -4px; right: -4px; bottom: -4px; left: -4px;
+  content: ""; box-shadow: inset -3px -3px var(--shadow);
+}
+.lang-sel:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.lang-sel:hover { background: #f0f0f0; color: var(--black); }
+.lang-sel.active { background: var(--black); color: var(--white); }
+.lang-sel.active::after { box-shadow: inset -3px -3px #555; }
+
 /* ─── MOBILE ─────────────────────────────────────── */
 @media (max-width: 768px) {
   :root { --header-h: 56px; }
@@ -337,12 +363,22 @@ main {
   .global-header h1 { font-size: 14px; }
   .global-header p  { display: none; }
   .nav-btn { padding: 4px 8px; font-size: 12px; }
+  .lang-sel { font-size: 10px; padding: 2px 5px; }
   main { padding: 12px 10px; }
   .toolbar .fg { flex: none; width: 35vw; min-width: 0; }
   .toolbar .fg input { width: 100%; }
   .site-footer { gap: 8px; font-size: 10px; }
 }
+@media (max-width: 768px) {
+  :root { --header-h: 96px; }
+  .header-inner { flex-wrap: wrap; gap: 5px; padding: 5px 14px; }
+  .header-inner nav { width: 100%; justify-content: flex-end; gap: 6px; }
+  .header-inner .logo { font-size: 28px; line-height: 1; }
+  .header-inner .nav-btn { margin: 0; line-height: 1.4; }
+}
 </style>
+<script src="i18n.js?v=20261106-intl1"></script>
+<script defer src="/analytics.js?v=20261106-2" data-project="openluck" data-website-id="db5c7329-32e5-4028-a60d-02e5c6b8c5c4" data-domains="openluck.vtx.space,ol.vtx.space" data-tag="openluck" data-exclude-search="true" data-exclude-hash="true" data-do-not-track="true" data-before-send="vtxAnalyticsBeforeSend"></script>
 </head>
 <body>
 
@@ -354,11 +390,16 @@ main {
     <span class="logo">🎲</span>
     <div>
       <h1>OpenLuck</h1>
-      <p>历史抽奖记录 — 完全公开可验证</p>
+      <p data-i18n="histDesc">历史抽奖记录 — 完全公开可验证</p>
     </div>
     <nav>
-      <a href="index.html" class="nav-btn nav-btn-red">🎲 发起抽奖</a>
-      <a href="https://github.com/Xyinkl/OpenLuck" target="_blank" class="nav-btn nav-btn-gray">⭐ GitHub</a>
+      <span style="display:inline-flex;align-items:center;gap:0;">
+        <button type="button" class="lang-sel" id="langZh" onclick="I18N.setLanguage('zh')" title="中文">中</button>
+        <button type="button" class="lang-sel" id="langEn" onclick="I18N.setLanguage('en')" title="English">EN</button>
+        <button type="button" class="lang-sel" id="langJa" onclick="I18N.setLanguage('ja')" title="日本語">日</button>
+      </span>
+      <a href="index.html" class="nav-btn nav-btn-red" data-i18n="navNewLottery">🎲 发起抽奖</a>
+      <a href="https://github.com/Xyinkl/OpenLuck" target="_blank" class="nav-btn nav-btn-gray" data-i18n="navGitHub">⭐ GitHub</a>
     </nav>
   </div>
 </header>
@@ -370,24 +411,24 @@ main {
 
   <!-- Source toggle -->
   <div class="source-tabs">
-    <div class="source-tab active" id="tab-server" onclick="switchSource('server')">🌐 服务器记录</div>
-    <div class="source-tab" id="tab-local" onclick="switchSource('local')">💾 本地记录</div>
+    <div class="source-tab active" id="tab-server" onclick="switchSource('server')" data-i18n="histTabServer">🌐 服务器记录</div>
+    <div class="source-tab" id="tab-local" onclick="switchSource('local')" data-i18n="histTabLocal">💾 本地记录</div>
   </div>
 
   <!-- Stats -->
   <div class="pbox" id="statsBar" style="margin-bottom:16px;">
-    <p class="title">抽奖统计</p>
+    <p class="title" data-i18n="histStatsTitle">抽奖统计</p>
     <div class="stats">
       <div class="stat-item">
-        <span class="stat-label">总抽奖次数</span>
+        <span class="stat-label" data-i18n="histStatTotal">总抽奖次数</span>
         <span class="stat-val" id="statTotal">—</span>
       </div>
       <div class="stat-item">
-        <span class="stat-label">参与总人次</span>
+        <span class="stat-label" data-i18n="histStatParticipants">参与总人次</span>
         <span class="stat-val" id="statParticipants">—</span>
       </div>
       <div class="stat-item">
-        <span class="stat-label">最近一次</span>
+        <span class="stat-label" data-i18n="histStatLatest">最近一次</span>
         <span class="stat-val" id="statLatest">—</span>
       </div>
     </div>
@@ -396,11 +437,11 @@ main {
   <!-- Toolbar -->
   <div class="toolbar">
     <div class="fg">
-      <input id="searchInput" type="text" placeholder="搜索标题 / 区块号 / 哈希…" oninput="render()">
+      <input id="searchInput" type="text" data-i18n-placeholder="histSearchPlaceholder" placeholder="搜索标题 / 区块号 / 哈希…" oninput="render()">
     </div>
-    <button class="btn btn-red btn-sm" onclick="document.getElementById('searchInput').value='';render()">清空</button>
-    <button class="btn btn-blue btn-sm" onclick="loadRecords()">刷新</button>
-    <button class="btn btn-yellow btn-sm" onclick="exportJSON()">导出</button>
+    <button class="btn btn-red btn-sm" onclick="document.getElementById('searchInput').value='';render()" data-i18n="histClearBtn">清空</button>
+    <button class="btn btn-blue btn-sm" onclick="loadRecords()" data-i18n="histRefreshBtn">刷新</button>
+    <button class="btn btn-yellow btn-sm" onclick="exportJSON()" data-i18n="histExportBtn">导出</button>
   </div>
 
   <!-- Records list -->
@@ -413,8 +454,8 @@ main {
      FOOTER
 ══════════════════════════════════════════════════ -->
 <footer class="site-footer">
-  <span>OpenLuck · 历史抽奖记录</span>
-  <a href="index.html">发起抽奖</a>
+  <span data-i18n="histFooterTagline">OpenLuck · 历史抽奖记录</span>
+  <a href="index.html" data-i18n="histNavNewDraw">发起抽奖</a>
   <a href="https://github.com/Xyinkl/OpenLuck" target="_blank">GitHub</a>
   <a href="https://etherscan.io" target="_blank">Etherscan</a>
 </footer>
@@ -437,7 +478,7 @@ function switchSource(src) {
 // ── LOAD RECORDS ───────────────────────────────
 async function loadRecords() {
   const listEl = document.getElementById('recordsList');
-  listEl.innerHTML = '<div class="empty"><div class="big">⏳</div><p>加载中…</p></div>';
+  listEl.innerHTML = '<div class="empty"><div class="big">⏳</div><p data-i18n="histLoading">加载中…</p></div>';
 
   if (currentSrc === 'local') {
     allRecords = JSON.parse(localStorage.getItem('openluck_records') || '[]');
@@ -458,7 +499,7 @@ async function loadRecords() {
     if (allRecords.length === 0) {
       listEl.innerHTML = `<div class="empty">
         <div class="big">🔌</div>
-        <p>服务器暂时无法连接。<br>已切换到本地记录（共 ${allRecords.length} 条）。</p></div>`;
+        <p>${I18N.t('histServerDown1')}<br>${I18N.t('histServerDown2', { n: allRecords.length })}</p></div>`;
       updateStats(allRecords);
       return;
     }
@@ -492,10 +533,10 @@ function render() {
     listEl.innerHTML = `<div class="empty">
       <div class="big">🎲</div>
       <p>${allRecords.length === 0
-        ? '还没有任何抽奖记录。<br>去发起第一次抽奖吧！'
-        : '没有匹配的记录。'}</p>
+        ? I18N.t('histEmptyNone')
+        : I18N.t('histEmptyNoMatch')}</p>
       ${allRecords.length === 0
-        ? '<br><a href="index.html" style="color:var(--red);font-size:13px;font-weight:700;">→ 发起抽奖</a>'
+        ? `<br><a href="index.html" style="color:var(--red);font-size:13px;font-weight:700;">${I18N.t('histEmptyGoDraw')}</a>`
         : ''}
     </div>`;
     document.getElementById('paginationBar').innerHTML = '';
@@ -511,7 +552,7 @@ function render() {
   if (totalPages <= 1) { pbar.innerHTML = ''; return; }
   let html = '';
   if (currentPage > 1)
-    html += `<button class="btn btn-sm" onclick="gotoPage(${currentPage - 1})">◀ 上一页</button>`;
+    html += `<button class="btn btn-sm" onclick="gotoPage(${currentPage - 1})">${I18N.t('histPagePrev')}</button>`;
   for (let p = 1; p <= totalPages; p++) {
     if (p === currentPage)
       html += `<button class="btn btn-blue btn-sm">${p}</button>`;
@@ -521,7 +562,7 @@ function render() {
       html += `<span style="color:var(--dim);padding:5px 4px;line-height:2;">…</span>`;
   }
   if (currentPage < totalPages)
-    html += `<button class="btn btn-sm" onclick="gotoPage(${currentPage + 1})">下一页 ▶</button>`;
+    html += `<button class="btn btn-sm" onclick="gotoPage(${currentPage + 1})">${I18N.t('histPageNext')}</button>`;
   pbar.innerHTML = html;
 }
 
@@ -530,7 +571,7 @@ function gotoPage(p) { currentPage = p; render(); window.scrollTo(0, 0); }
 // ── BUILD CARD ─────────────────────────────────
 function buildCard(rec, idx) {
   const winners  = (rec.winners || []).map(w => `<span class="winner-chip">#&thinsp;${w}</span>`).join('');
-  const dateStr  = rec.completedAt ? new Date(rec.completedAt).toLocaleString('zh-CN') : '—';
+  const dateStr  = rec.completedAt ? new Date(rec.completedAt).toLocaleString() : '—';
   const hashDisp = rec.blockHash   ? rec.blockHash : '—';
   const esUrl    = rec.targetBlock ? `https://etherscan.io/block/${rec.targetBlock}` : '#';
 
@@ -539,26 +580,26 @@ function buildCard(rec, idx) {
     <div class="card-header">
       <div class="card-index">${idx}</div>
       <div>
-        <div class="card-title">${esc(rec.title && rec.title !== '未命名抽奖' ? rec.title : '匿名抽奖')}</div>
+        <div class="card-title">${esc(rec.title && rec.title !== I18N.t('untitledLottery') ? rec.title : I18N.t('anonymousLottery'))}</div>
         <div class="card-time">${dateStr}</div>
       </div>
-      <span class="card-badge">已完成</span>
+      <span class="card-badge">${I18N.t('histCardDone')}</span>
     </div>
 
     <div class="card-meta">
-      <span><span>区块号</span><em>#${(rec.targetBlock || '—').toLocaleString()}</em></span>
-      <span><span>总人数</span><em>${rec.total || '—'}</em></span>
-      <span><span>中奖人数</span><em>${rec.count || (rec.winners || []).length}</em></span>
+      <span><span>${I18N.t('histCardBlock')}</span><em>#${(rec.targetBlock || '—').toLocaleString()}</em></span>
+      <span><span>${I18N.t('histCardTotal')}</span><em>${rec.total || '—'}</em></span>
+      <span><span>${I18N.t('histCardWinners')}</span><em>${rec.count || (rec.winners || []).length}</em></span>
     </div>
 
     <div class="card-hash">${esc(hashDisp)}</div>
     <div class="winners-row" id="wr-${idx}">${winners}</div>
-    <button class="winners-toggle" id="wt-${idx}" onclick="toggleWinners(${idx})">▼ 展开全部</button>
+    <button class="winners-toggle" id="wt-${idx}" onclick="toggleWinners(${idx})">${I18N.t('histExpandAll')}</button>
 
     <div class="card-actions">
-      <a href="${esUrl}" target="_blank" class="btn btn-sm">🔍 验证区块 Hash</a>
-      <button class="btn btn-sm" onclick="copyCard(${idx - 1})">📋 复制结果</button>
-      <button class="btn btn-yellow btn-sm" onclick="openVerifier(${idx - 1})">⚙ 验证算法</button>
+      <a href="${esUrl}" target="_blank" class="btn btn-sm">${I18N.t('histCardVerifyBlock')}</a>
+      <button class="btn btn-sm" onclick="copyCard(${idx - 1})">${I18N.t('histCardCopyResult')}</button>
+      <button class="btn btn-yellow btn-sm" onclick="openVerifier(${idx - 1})">${I18N.t('histCardVerifyAlgo')}</button>
     </div>
   </div>`;
 }
@@ -582,7 +623,7 @@ function toggleWinners(idx) {
   const row = document.getElementById('wr-' + idx);
   const btn = document.getElementById('wt-' + idx);
   const collapsed = row.classList.toggle('collapsed');
-  btn.textContent = collapsed ? '▼ 展开全部' : '▲ 收起';
+  btn.textContent = collapsed ? I18N.t('histExpandAll') : I18N.t('histCollapse');
 }
 
 // ── STATS ──────────────────────────────────────
@@ -591,7 +632,7 @@ function updateStats(records) {
   document.getElementById('statParticipants').textContent = records.reduce((s, r) => s + (r.total || 0), 0);
   const latest = records[0];
   document.getElementById('statLatest').textContent = latest
-    ? (latest.completedAt ? new Date(latest.completedAt).toLocaleDateString('zh-CN') : '—')
+    ? (latest.completedAt ? new Date(latest.completedAt).toLocaleDateString() : '—')
     : '—';
 }
 
@@ -600,17 +641,17 @@ function copyCard(rawIdx) {
   const rec = getFiltered()[rawIdx];
   if (!rec) return;
   const text = [
-    '【OpenLuck 抽奖结果】',
-    `标题：${rec.title || '未命名'}`,
-    `区块：#${rec.targetBlock}`,
-    `哈希：${rec.blockHash}`,
-    `总人数：${rec.total}  中奖 ${rec.count || rec.winners.length} 人`,
-    `中奖号码：${(rec.winners || []).join(', ')}`,
-    `时间：${rec.completedAt ? new Date(rec.completedAt).toLocaleString('zh-CN') : ''}`,
-    `Etherscan：https://etherscan.io/block/${rec.targetBlock}`,
-    `验证代码：https://github.com/Xyinkl/OpenLuck`,
+    I18N.t('histCopyHeader'),
+    I18N.t('histCopyTitle', { t: rec.title || I18N.t('untitledLottery') }),
+    I18N.t('histCopyBlock', { b: rec.targetBlock }),
+    I18N.t('histCopyHash', { h: rec.blockHash }),
+    I18N.t('histCopyTotal', { t: rec.total, c: rec.count || rec.winners.length }),
+    I18N.t('histCopyNumbers', { w: (rec.winners || []).join(', ') }),
+    I18N.t('histCopyTime', { t: rec.completedAt ? new Date(rec.completedAt).toLocaleString() : '' }),
+    I18N.t('histCopyEtherscan', { b: rec.targetBlock }),
+    I18N.t('histCopyVerify'),
   ].join('\n');
-  navigator.clipboard.writeText(text).then(() => alert('已复制到剪贴板'));
+  navigator.clipboard.writeText(text).then(() => alert(I18N.t('histCopyAlert')));
 }
 
 // ── OPEN VERIFIER ──────────────────────────────
@@ -618,10 +659,10 @@ function openVerifier(rawIdx) {
   const rec = getFiltered()[rawIdx];
   if (!rec) return;
   const hash = (rec.blockHash || '').replace('0x', '');
-  const code = `# OpenLuck 验证代码\nimport hashlib\n\nBLOCK_HASH = "${hash}"\nTOTAL      = ${rec.total}\nCOUNT      = ${rec.count || rec.winners.length}\n\nwinners, selected, rnd = [], set(), 0\nwhile len(winners) < COUNT:\n    seed = f"{BLOCK_HASH}{rnd:04x}".encode()\n    h    = hashlib.sha256(seed).hexdigest()\n    num  = int(h[:16], 16) % TOTAL + 1\n    if num not in selected:\n        selected.add(num)\n        winners.append(num)\n    rnd += 1\n\nprint("中奖号码:", sorted(winners))\nprint("预期结果:", ${JSON.stringify(rec.winners)})\nprint("验证通过:", sorted(winners) == sorted(${JSON.stringify(rec.winners)}))`;
+  const code = `${I18N.t('histVerifierTitle')}\nimport hashlib\n\nBLOCK_HASH = "${hash}"\nTOTAL      = ${rec.total}\nCOUNT      = ${rec.count || rec.winners.length}\n\nwinners, selected, rnd = [], set(), 0\nwhile len(winners) < COUNT:\n    seed = f"{BLOCK_HASH}{rnd:04x}".encode()\n    h    = hashlib.sha256(seed).hexdigest()\n    num  = int(h[:16], 16) % TOTAL + 1\n    if num not in selected:\n        selected.add(num)\n        winners.append(num)\n    rnd += 1\n\n${I18N.t('histVerifierWinners')}\n${I18N.t('histVerifierExpected', { w: JSON.stringify(rec.winners) })}\n${I18N.t('histVerifierPass', { w: JSON.stringify(rec.winners) })}`;
 
   navigator.clipboard.writeText(code).then(() => {
-    alert('验证代码已复制到剪贴板！\n请粘贴到在线 Python 平台运行。\n\n即将打开 OnlinePython…');
+    alert(I18N.t('histVerifierAlert'));
     window.open('https://www.online-python.com', '_blank');
   });
 }
@@ -631,7 +672,7 @@ function exportJSON() {
   const blob = new Blob([JSON.stringify(allRecords, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `openluck_history_${Date.now()}.json`;
+  a.download = `${I18N.t('histExportPrefix')}${Date.now()}.json`;
   a.click();
 }
 
@@ -653,7 +694,28 @@ function getFiltered() {
 }
 
 // ── INIT ───────────────────────────────────────
-loadRecords();
+async function initHistory() {
+  await I18N.resolveLanguage();
+  updateLangUI();
+  I18N.applyTranslations();
+  loadRecords();
+}
+
+function updateLangUI() {
+  const lang = I18N.getLang();
+  ['zh','en','ja'].forEach(l => {
+    const el = document.getElementById('lang' + l.charAt(0).toUpperCase() + l.slice(1));
+    if (el) { el.classList.toggle('active', l === lang); el.setAttribute('aria-pressed', String(l === lang)); }
+  });
+}
+
+// Re-render on language change
+window.addEventListener('i18n-changed', () => {
+  updateLangUI();
+  render();
+});
+
+initHistory();
 </script>
 </body>
 </html>
