@@ -22,7 +22,7 @@
     try { referrer = payload.referrer ? new URL(payload.referrer).origin : ''; } catch {}
     // Fixed paths/titles prevent shared configuration hashes and lottery identifiers leaking.
     return {website:payload.website, hostname:location.hostname, language:payload.language,
-      screen:payload.screen, url:location.pathname === '/history.html' ? '/history.html' : '/',
+      screen:payload.screen, url:(location.pathname === '/history' || location.pathname === '/history.html') ? '/history' : '/',
       title:project === 'badgelab' ? 'BadgeLab' : 'OpenLuck', referrer, tag:project,
       ...(payload.name ? {name:payload.name, data:{project}} : {})};
   };

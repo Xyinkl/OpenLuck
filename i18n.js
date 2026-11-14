@@ -416,7 +416,10 @@
     }
     manualChoice = lang;
     setStoredLang(lang);
-    if (lang === _currentLang && _resolved) return;
+    if (lang === _currentLang && _resolved) {
+      document.documentElement.classList?.remove('i18n-pending');
+      return;
+    }
     _currentLang = lang;
     _resolved = true;
     applyTranslations();
@@ -428,6 +431,7 @@
    * For elements with children (like buttons with emoji), uses textContent.
    */
   function applyTranslations() {
+    try {
     // Update document lang attribute
     document.documentElement.lang = _currentLang === 'zh' ? 'zh-CN' : _currentLang === 'ja' ? 'ja' : 'en';
 
@@ -464,6 +468,9 @@
 
     // Fire a custom event so page-specific code can update dynamic content
     window.dispatchEvent(new CustomEvent('i18n-changed', { detail: { lang: _currentLang } }));
+    } finally {
+      document.documentElement.classList?.remove('i18n-pending');
+    }
   }
 
   /* ═══════════════════════════════════════════════════

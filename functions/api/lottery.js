@@ -7,8 +7,14 @@
  * Then add the binding in wrangler.toml (see project root).
  *
  * Routes:
- *   POST /api/lottery   — save a completed lottery record
- *   GET  /api/lottery   — list all records (newest first)
+ *   POST /api/lottery          — save a completed lottery record
+ *   GET  /api/lottery          — list records (newest first) from the aggregated index
+ *   GET  /api/lottery?rebuild=1 — rebuild that index from lottery:* keys (migration / repair)
+ *   GET  /api/lottery?fresh=1   — skip the short edge cache (history refresh)
+ *
+ * Individual `lottery:*` keys stay the source of truth. `index:lotteries` is a
+ * derived copy updated on write. Existing keys are never rewritten.
+ * If the index is missing, the next GET rebuilds it (one-time backfill).
  */
 
 const CORS = {
@@ -17,7 +23,120 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-const JSON_HEADERS = { 'Content-Type': 'application/json', ...CORS };
+const JSON_HEADERS = {
+  'Content-Type': 'application/json',
+  'Cache-Control': 'no-store',
+  ...CORS,
+};
+
+const INDEX_KEY = 'index:lotteries';
+const INDEX_VERSION = 1;
+const LIST_TTL_SECONDS = 45;
+const RECORD_TTL_SECONDS = 60 * 60 * 24 * 365 * 2;
+const RECORD_TTL_MS = RECORD_TTL_SECONDS * 1000;
+
+function sortRecords(records) {
+  return records
+    .filter(record => {
+      if (!record || typeof record !== 'object' || !record.id) return false;
+      const raw = record.completedAt || record.createdAt;
+      if (!raw) return true;
+      const ts = Date.parse(raw);
+      if (!Number.isFinite(ts)) return true;
+      return Date.now() - ts < RECORD_TTL_MS;
+    })
+    .sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
+}
+
+async function loadAllRecords(kv) {
+  const records = [];
+  let cursor;
+  do {
+    const page = await kv.list({ prefix: 'lottery:', cursor, limit: 1000 });
+    const values = await Promise.all(page.keys.map(key => kv.get(key.name, { type: 'json' })));
+    for (const value of values) records.push(value);
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor);
+  return sortRecords(records);
+}
+
+async function readIndex(kv) {
+  const data = await kv.get(INDEX_KEY, { type: 'json' });
+  if (!data || data.v !== INDEX_VERSION || !Array.isArray(data.records)) return null;
+  return sortRecords(data.records);
+}
+
+async function writeIndex(kv, records) {
+  const sorted = sortRecords(records);
+  await kv.put(INDEX_KEY, JSON.stringify({
+    v: INDEX_VERSION,
+    updatedAt: new Date().toISOString(),
+    records: sorted,
+  }));
+  return sorted;
+}
+
+async function rebuildIndex(kv) {
+  const records = await loadAllRecords(kv);
+  await writeIndex(kv, records);
+  return records;
+}
+
+async function upsertIndex(kv, record) {
+  let records = await readIndex(kv);
+  if (!records) records = await loadAllRecords(kv);
+  const next = records.filter(item => item.id !== record.id);
+  next.push(record);
+  await writeIndex(kv, next);
+}
+
+function listCacheRequest(request) {
+  const url = new URL(request.url);
+  url.search = '';
+  url.hash = '';
+  return new Request(url.toString(), { method: 'GET' });
+}
+
+async function readCachedList(request) {
+  try {
+    return await caches.default.match(listCacheRequest(request));
+  } catch (_) {
+    return null;
+  }
+}
+
+async function writeCachedList(request, response) {
+  const copy = response.clone();
+  try {
+    await caches.default.put(listCacheRequest(request), copy);
+  } catch (_) {}
+}
+
+async function invalidateListCache(request) {
+  try {
+    await caches.default.delete(listCacheRequest(request));
+  } catch (_) {}
+}
+
+function listResponse(records, cacheable) {
+  const headers = { ...JSON_HEADERS };
+  if (cacheable) {
+    const policy = `public, max-age=${LIST_TTL_SECONDS}, stale-while-revalidate=${LIST_TTL_SECONDS}`;
+    headers['Cache-Control'] = policy;
+    headers['CDN-Cache-Control'] = policy;
+  } else {
+    headers['Cache-Control'] = 'no-store';
+  }
+  return new Response(JSON.stringify(records), { headers });
+}
+
+async function respondWithList(context, records, { browserCache }) {
+  const cacheable = listResponse(records, true);
+  const stored = writeCachedList(context.request, cacheable);
+  if (context.waitUntil) context.waitUntil(stored);
+  else stored.catch(() => {});
+  return browserCache ? cacheable : listResponse(records, false);
+}
 
 // Same algorithm as the frontend — re-derive winners from blockHash server-side
 async function computeWinners(blockHash, total, count) {
@@ -45,23 +164,24 @@ export async function onRequest(context) {
 
   const kv = env.OPENLUCK_KV;
 
-  // ── GET: list all records ──────────────────────────
+  // ── GET: list records from the aggregated index ──
   if (request.method === 'GET') {
     try {
-      const list = await kv.list({ prefix: 'lottery:' });
-      const records = await Promise.all(
-        list.keys.map(k => kv.get(k.name, { type: 'json' }))
-      );
-      // Filter nulls, sort newest first
-      const sorted = records
-        .filter(Boolean)
-        .sort((a, b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt));
+      const url = new URL(request.url);
+      const rebuild = url.searchParams.get('rebuild') === '1';
+      const fresh = rebuild || url.searchParams.get('fresh') === '1';
+      if (!fresh) {
+        const hit = await readCachedList(request);
+        if (hit) return hit;
+      }
 
-      return new Response(JSON.stringify(sorted), { headers: JSON_HEADERS });
+      let records = rebuild ? null : await readIndex(kv);
+      if (!records) records = await rebuildIndex(kv);
+      return await respondWithList(context, records, { browserCache: !fresh });
     } catch (err) {
       return new Response(JSON.stringify({ error: err.message }), {
         status: 500,
-        headers: JSON_HEADERS,
+        headers: { ...JSON_HEADERS, 'Cache-Control': 'no-store' },
       });
     }
   }
@@ -149,8 +269,16 @@ export async function onRequest(context) {
       const key = `lottery:${record.completedAt}:${record.id}`;
       await kv.put(key, JSON.stringify(record), {
         // Records expire after 2 years (optional — remove to keep forever)
-        expirationTtl: 60 * 60 * 24 * 365 * 2,
+        expirationTtl: RECORD_TTL_SECONDS,
       });
+
+      // Index update is derived. A failure must not lose the record above.
+      try {
+        await upsertIndex(kv, record);
+      } catch (_) {
+        try { await kv.delete(INDEX_KEY); } catch (__) {}
+      }
+      await invalidateListCache(request);
 
       return new Response(JSON.stringify({ success: true, id: record.id }), {
         status: 201,
