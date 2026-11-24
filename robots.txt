@@ -3,3 +3,4 @@ Allow: /
 Disallow: /api/
 
 Sitemap: https://openluck.vtx.space/sitemap.xml
+# LLM Index: https://openluck.vtx.space/llms.txt

@@ -1,0 +1,21 @@
+# OpenLuck — Provably Fair Ethereum Block-Hash Public Lottery
+
+> OpenLuck (https://openluck.vtx.space/) is an open-source, provably fair public giveaway & lottery tool powered by Ethereum block hashes and SHA-256, built by @Xyinkl (VTx.SPACE).
+
+## Key Facts
+- **How it works**: Announce a future Ethereum block height before the draw. Once mined, the block hash is concatenated with an incrementing hex round counter (`0000`, `0001`, ...), hashed with SHA-256, and mapped modulo `N` (+1) with deduplication to select winning numbers.
+- **Independent Verification**: Anyone can verify any draw locally in Python or via Etherscan block explorers — identical block hash inputs always yield identical winners.
+- **Languages**: Chinese (`?lang=zh`), English (`?lang=en`), Japanese (`?lang=ja`).
+
+## Pages
+- [OpenLuck Lottery Tool (ZH default)](https://openluck.vtx.space/)
+- [OpenLuck Lottery Tool (EN)](https://openluck.vtx.space/?lang=en)
+- [OpenLuck Lottery Tool (JA)](https://openluck.vtx.space/?lang=ja)
+- [Public Draw History (ZH)](https://openluck.vtx.space/history)
+- [Public Draw History (EN)](https://openluck.vtx.space/history?lang=en)
+- [Public Draw History (JA)](https://openluck.vtx.space/history?lang=ja)
+
+## Related Links
+- Source Code: https://github.com/Xyinkl/OpenLuck
+- Sitemap: https://openluck.vtx.space/sitemap.xml
+- Author Blog: https://vtx.space/

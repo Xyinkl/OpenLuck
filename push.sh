@@ -10,7 +10,7 @@ cd "$(dirname "$0")"
 # 提交信息：使用参数或默认时间戳
 MSG="${1:-update $(date '+%Y-%m-%d %H:%M')}"
 
-git add index.html history.html i18n.js analytics.js functions/api/lottery.js functions/api/locale.js functions/_middleware.js robots.txt sitemap.xml a3d51cf26561f062a6bd53e8d8a06022.txt _headers wrangler.toml README.md tests/i18n.test.js
+git add index.html history.html i18n.js analytics.js functions/api/lottery.js functions/api/locale.js functions/_middleware.js robots.txt sitemap.xml llms.txt a3d51cf26561f062a6bd53e8d8a06022.txt _headers wrangler.toml README.md tests/i18n.test.js
 git status
 
 echo ""
