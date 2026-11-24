@@ -26,3 +26,12 @@
 
 /history.html
   Cache-Control: public, max-age=60, stale-while-revalidate=300
+
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
+/a3d51cf26561f062a6bd53e8d8a06022.txt
+  Cache-Control: public, max-age=86400

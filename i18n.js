@@ -246,10 +246,10 @@
     histCollapse:          { zh:'▲ 收起',                  en:'▲ Collapse',            ja:'▲ 折りたたむ' },
 
     /* ── Document Meta ───────────────────────────── */
-    pageTitleIndex:        { zh:'OpenLuck — 区块链公开抽奖', en:'OpenLuck — Blockchain Public Lottery', ja:'OpenLuck — ブロックチェーン公開抽選' },
-    pageTitleHistory:      { zh:'OpenLuck — 历史记录',     en:'OpenLuck — History',    ja:'OpenLuck — 履歴' },
-    metaDescIndex:         { zh:'基于以太坊区块哈希的公开透明抽奖系统，完全可独立验证，绝无作弊可能。', en:'A transparent Ethereum block-hash lottery system — fully independently verifiable, impossible to cheat.', ja:'イーサリアムブロックハッシュを使用した透明な抽選システム — 完全に独立検証可能で、不正は不可能です。' },
-    metaDescHistory:       { zh:'OpenLuck 历史抽奖记录 — 完全公开可验证。', en:'OpenLuck lottery history — fully public and verifiable.', ja:'OpenLuck 抽選履歴 — 完全公開・検証可能。' },
+    pageTitleIndex:        { zh:'OpenLuck — 区块链公开抽奖｜以太坊区块哈希可验证抽奖工具', en:'OpenLuck — Provably Fair Ethereum Block-Hash Public Lottery', ja:'OpenLuck — イーサリアム公開抽選｜ブロックハッシュ検証可能ツール' },
+    pageTitleHistory:      { zh:'OpenLuck — 公开历史抽奖记录与区块哈希验算',     en:'OpenLuck — Public Ethereum Lottery History & Verification',    ja:'OpenLuck — 公開抽選履歴とブロックハッシュ検証' },
+    metaDescIndex:         { zh:'基于以太坊区块哈希的公开透明抽奖工具（Provably Fair）。开源 SHA-256 算法，支持任意 Python 环境独立验算，公平不可篡改，绝无暗箱操作。', en:'Open-source, provably fair public lottery powered by Ethereum block hashes and SHA-256. Independently verifiable in Python or on Etherscan — impossible to rig.', ja:'イーサリアムのブロックハッシュと公開 SHA-256 アルゴリズムを使った透明・検証可能な公開抽選ツール。Python で誰でも独立検証でき、不正は不可能です。' },
+    metaDescHistory:       { zh:'查看 OpenLuck 所有公开以太坊区块哈希抽奖历史记录，支持按标题、区块号或哈希检索，并一键复制 Python 代码独立验算。', en:'Browse all public OpenLuck Ethereum block-hash lottery draws, search by title, block height, or hash, and verify every winning number independently in Python.', ja:'OpenLuck のイーサリアム公開抽選履歴一覧。タイトル・ブロック番号・ハッシュで検索し、Python コードで当選番号を独立検証できます。' },
   };
 
   /* ═══════════════════════════════════════════════════
@@ -367,6 +367,19 @@
    * returns the best sync resolution. Call again after CF arrives.
    */
   async function resolveLanguage() {
+    // 0. Explicit URL ?lang= query param (SEO & deep-link support)
+    try {
+      const search = typeof location !== 'undefined' && location?.search ? location.search : '';
+      if (search && typeof URLSearchParams !== 'undefined') {
+        const ql = new URLSearchParams(search).get('lang');
+        if (ql && SUPPORTED.includes(ql)) {
+          _currentLang = ql;
+          _resolved = true;
+          return _currentLang;
+        }
+      }
+    } catch {}
+
     // 1. Manual selection always wins
     const stored = manualChoice || getStoredLang();
     if (stored && SUPPORTED.includes(stored)) {
